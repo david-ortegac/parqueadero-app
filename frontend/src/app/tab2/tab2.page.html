@@ -11,28 +11,141 @@
 
 <ion-content class="ion-padding pp-page">
   @if (auth.getUser()?.role === 'vehicle_owner') {
-    <p-card header="Mis vehículos" subheader="Toca una fila para ver detalle" styleClass="pp-card-shadow">
+    <p-card
+      header="Estado en el parqueadero"
+      subheader="Abre cada placa para ver tiempo, modalidad, tarifa y cobro. Edición e historial en Inicio."
+      styleClass="pp-card-shadow pp-owner-parking-main-card"
+    >
+      <p class="pp-muted pp-owner-parking-hint">
+       <strong>Inicio</strong>: identifica el vehículo por la placa y despliega el detalle.
+      </p>
       @if (loadingList) {
         <div class="pp-center"><ion-spinner name="crescent" color="primary"></ion-spinner></div>
       } @else if (!vehicles.length) {
-        <p class="pp-muted">No hay vehículos vinculados a tu cuenta.</p>
+        <p class="pp-muted">
+          No hay vehículos vinculados a tu cuenta. Debes estar activado y los ingresos deben usar tu misma cédula.
+        </p>
       } @else {
-        <p-table [value]="vehicles" styleClass="p-datatable-sm pp-table" [tableStyle]="{ 'min-width': '100%' }">
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Placa</th>
-              <th>Clase</th>
-              <th>Detalle</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-v>
-            <tr class="pp-row-click" (click)="openVehicleDetail(v)">
-              <td><strong>{{ v.plate }}</strong></td>
-              <td>{{ v.vehicle_class }}</td>
-              <td>{{ v.brand ?? '—' }} · {{ v.color ?? '—' }}</td>
-            </tr>
-          </ng-template>
-        </p-table>
+        <ion-accordion-group
+          class="pp-easy-acc-group"
+          [value]="ownerParkingAccordionOpen"
+          (ionChange)="onOwnerParkingAccordionChange($event)"
+        >
+          @for (v of vehicles; track v.id) {
+            <ion-accordion
+              [value]="ownerParkingAccordionKey(v.id)"
+              class="pp-easy-acc"
+              [attr.id]="'pp-owner-park-' + v.id"
+            >
+              <span slot="toggle-icon" class="pp-easy-acc-toggle-slot-hidden" aria-hidden="true"></span>
+              <ion-item slot="header" lines="none" button detail="false" class="pp-easy-acc-header">
+                <div class="pp-easy-acc-toggle-box" aria-hidden="true">
+                  <span class="pp-easy-acc-toggle-glyph">{{ ownerParkingAccordionGlyph(v.id) }}</span>
+                </div>
+                <ion-icon class="pp-easy-acc-meta-icon" name="car-outline" aria-hidden="true"></ion-icon>
+                <ion-label class="pp-easy-acc-label">
+                  <h2 class="pp-easy-acc-plate">{{ v.plate }}</h2>
+                  <p class="pp-easy-acc-sub">
+                    {{ vehicleClassLabelShort(v.vehicle_class) }}
+                    @if (v.active_session) {
+                      <span class="pp-owner-parking-badge pp-owner-parking-badge--in"> · En parqueo</span>
+                    } @else {
+                      <span class="pp-owner-parking-badge pp-owner-parking-badge--out"> · Sin parqueo activo</span>
+                    }
+                  </p>
+                  @if (v.active_session; as act) {
+                    <p class="pp-easy-acc-entry">
+                      <span class="pp-easy-acc-entry-k">Ingreso</span>
+                      {{ act.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}
+                      <span class="pp-easy-acc-entry-tz">(Colombia)</span>
+                    </p>
+                  } @else {
+                    <p class="pp-easy-acc-entry pp-easy-acc-entry--muted">Sin fecha de ingreso (no hay parqueo activo)</p>
+                  }
+                </ion-label>
+              </ion-item>
+              <div slot="content" class="pp-easy-acc-panel">
+                @if (!v.active_session) {
+                  <p class="pp-muted">No hay parqueo activo para este vehículo en este momento.</p>
+                } @else {
+                  @let s = v.active_session!;
+                  <ul class="pp-owner-parking-list">
+                    <li>
+                      <span class="pp-owner-k">Tipo de parqueo (al ingresar)</span>
+                      <span class="pp-owner-v"><p-tag [value]="billingModeLabel(s.billing_mode)" severity="info"></p-tag></span>
+                    </li>
+                    <li>
+                      <span class="pp-owner-k">Valor del parqueo seleccionado</span>
+                      @if (s.rate_unit_price !== null) {
+                        @let rp = rateDisplayParts(s.rate_unit_price, s.rate_currency);
+                        <span class="pp-owner-v pp-owner-parking-amount">
+                          <strong>
+                            {{ rp.amount }} {{ rp.currency }} · {{ billingRateUnitSuffix(s.billing_mode) }}
+                          </strong>
+                        </span>
+                      } @else {
+                        <span class="pp-owner-v pp-owner-parking-amount">
+                          <strong>—</strong>
+                        </span>
+                      }
+                    </li>
+                    @if (s.billing_mode === 'week' || s.billing_mode === 'month') {
+                      <li>
+                        <span class="pp-owner-k">Días de cobertura del período</span>
+                        <span class="pp-owner-v pp-owner-parking-amount">
+                          <strong>{{
+                            s.subscription_period_days ?? '—'
+                          }}</strong>
+                        </span>
+                      </li>
+                      <li>
+                        <span class="pp-owner-k">Período hasta</span>
+                        <span class="pp-owner-v pp-owner-parking-amount">
+                          <strong>{{
+                            s.period_ends_at
+                              ? (s.period_ends_at | date : coDateTimeFormat : coTimezone : coLocale)
+                              : '—'
+                          }}</strong>
+                        </span>
+                      </li>
+                    }
+                    <li class="pp-owner-parking-amount-row">
+                      <span class="pp-owner-k">Cobro a este momento</span>
+                      <span class="pp-owner-v pp-owner-parking-amount"
+                        ><strong>{{ formatMoney(displayOwnerAmount(s)) }} COP</strong></span
+                      >
+                    </li>
+                  </ul>
+                  @if (s.billing_mode === 'minute') {
+                    <p class="pp-minute-hint">
+                      El valor <strong>por minuto puede variar</strong> si el operador o la administración cambian la tarifa.
+                      Pulsa <strong>Refrescar aquí</strong> para consultar el valor actualizado: el sistema recalcula el cobro de
+                      forma dinámica según el tiempo transcurrido y la tarifa vigente.
+                    </p>
+                  }
+                  @if (s.uses_live_estimate || s.billing_mode === 'minute') {
+                    <p-button
+                      label="Refrescar aquí (cobro actualizado)"
+                      icon="pi pi-refresh"
+                      styleClass="w-full ion-margin-top"
+                      (onClick)="refreshOwnerParkingFromApi()"
+                    />
+                  }
+                }
+                <ion-button
+                  class="pp-easy-acc-close"
+                  fill="outline"
+                  size="small"
+                  expand="block"
+                  color="medium"
+                  (click)="closeOwnerParkingAccordion()"
+                >
+                  Cerrar
+                </ion-button>
+              </div>
+            </ion-accordion>
+          }
+        </ion-accordion-group>
       }
     </p-card>
   } @else {
@@ -48,21 +161,31 @@
             autocomplete="off"
             autocapitalize="characters"
             spellcheck="false"
+            maxlength="6"
             class="w-full"
           />
+          <p class="pp-field-hint">{{ plateHintForClass() }}</p>
+          @if (plateFieldError) {
+            <ion-text color="danger"><p class="pp-field-error">{{ plateFieldError }}</p></ion-text>
+          }
         </div>
         <div class="pp-field">
           <label class="pp-field-label" for="fld-doc">Documento quien entrega</label>
           <input
             id="fld-doc"
             pInputText
-            [(ngModel)]="depositorDocument"
+            [ngModel]="depositorDocument"
             (ngModelChange)="onDocumentModelChange($event)"
+            (keydown)="onDepositorDocumentKeydown($event)"
+            (beforeinput)="onDepositorDocumentBeforeInput($event)"
+            (paste)="onDepositorDocumentPaste($event)"
             inputmode="numeric"
             pattern="[0-9]*"
+            [attr.maxlength]="documentMaxDigits"
             autocomplete="off"
             class="w-full"
           />
+          <p class="pp-field-hint">Solo números, máximo 15 dígitos; letras y espacios no se guardan.</p>
         </div>
         <div class="pp-field">
           <label class="pp-field-label" for="fld-class">Tipo de vehículo</label>
@@ -89,7 +212,13 @@
           ></p-select>
         </div>
       </div>
-      <p-button label="Registrar ingreso" icon="pi pi-plus" styleClass="w-full ion-margin-top" (onClick)="registerEntry()" />
+      <p-button
+        label="Registrar ingreso"
+        icon="pi pi-plus"
+        styleClass="w-full ion-margin-top"
+        [disabled]="registerEntryDisabled"
+        (onClick)="registerEntry()"
+      />
     </p-card>
 
     <p-card header="Sesiones activas" subheader="Vehículos dentro del parqueadero en este momento" styleClass="pp-card-shadow ion-margin-top">
@@ -98,20 +227,63 @@
       } @else if (!activeSessions.length) {
         <p class="pp-muted">No hay vehículos dentro del parqueadero.</p>
       } @else {
-        <p-table [value]="activeSessions" styleClass="p-datatable-sm pp-table" [tableStyle]="{ 'min-width': '100%' }">
+        <div class="pp-field ion-margin-bottom">
+          <label class="pp-field-label" for="fld-active-plate-filter">Buscar por placa</label>
+          <input
+            id="fld-active-plate-filter"
+            pInputText
+            [(ngModel)]="activeSessionsPlateFilter"
+            placeholder="Ej. ABC o 123"
+            autocomplete="off"
+            autocapitalize="characters"
+            class="w-full"
+          />
+        </div>
+        @if (!filteredActiveSessions.length) {
+          <p class="pp-muted">Ninguna sesión coincide con el filtro.</p>
+        } @else {
+        <p-table
+          [value]="filteredActiveSessions"
+          styleClass="p-datatable-sm pp-table"
+          [tableStyle]="{ 'min-width': '100%' }"
+        >
           <ng-template pTemplate="header">
             <tr>
               <th>Placa</th>
+              <th>Documento</th>
+              <th>Propietario</th>
               <th>Modalidad</th>
               <th>Ingreso</th>
+              <th>Prepago</th>
               <th class="pp-active-actions-col">Acciones</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-s>
             <tr>
               <td><strong>{{ s.vehicle?.plate }}</strong></td>
+              <td class="pp-session-doc">{{ sessionDepositorDocument(s) }}</td>
+              <td>
+                @if (sessionOwnerAppName(s); as ownerNm) {
+                  {{ ownerNm }}
+                } @else {
+                  <span class="pp-session-doc pp-muted">Cliente sin registro</span>
+                }
+              </td>
               <td><p-tag [value]="billingModeLabel(s.billing_mode)" severity="info"></p-tag></td>
-              <td>{{ s.entered_at | date : 'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ s.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</td>
+              <td>
+                @if (s.billing_mode === 'week' || s.billing_mode === 'month') {
+                  @if (s.subscription_period_days != null) {
+                    {{ s.subscription_period_days }} días
+                  } @else if (s.period_ends_at) {
+                    Hasta {{ s.period_ends_at | date : coDateTimeFormat : coTimezone : coLocale }}
+                  } @else {
+                    —
+                  }
+                } @else {
+                  —
+                }
+              </td>
               <td class="pp-active-actions-cell">
                 <div class="pp-active-actions">
                   <p-button
@@ -128,6 +300,7 @@
             </tr>
           </ng-template>
         </p-table>
+        }
       }
     </p-card>
 
@@ -165,6 +338,8 @@
           <ng-template pTemplate="header">
             <tr>
               <th>Placa</th>
+              <th>Documento</th>
+              <th>Propietario</th>
               <th>Modalidad</th>
               <th>Ingreso</th>
               <th>Salida</th>
@@ -175,9 +350,17 @@
           <ng-template pTemplate="body" let-s>
             <tr>
               <td><strong>{{ s.vehicle?.plate }}</strong></td>
+              <td class="pp-session-doc">{{ sessionDepositorDocument(s) }}</td>
+              <td>
+                @if (sessionOwnerAppName(s); as ownerNm) {
+                  {{ ownerNm }}
+                } @else {
+                  <span class="pp-session-doc pp-muted">Cliente sin registro</span>
+                }
+              </td>
               <td><p-tag [value]="billingModeLabel(s.billing_mode)" severity="success"></p-tag></td>
-              <td>{{ s.entered_at | date : 'dd/MM/yyyy HH:mm' }}</td>
-              <td>{{ s.exited_at | date : 'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ s.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</td>
+              <td>{{ s.exited_at | date : coDateTimeFormat : coTimezone : coLocale }}</td>
               <td>{{ s.amount_paid ?? s.amount_due }} COP</td>
               <td>
                 <p-button
@@ -202,6 +385,8 @@
             <ng-template pTemplate="header">
               <tr>
                 <th>Placa</th>
+                <th>Documento</th>
+                <th>Propietario</th>
                 <th>Modalidad</th>
                 <th>Ingreso</th>
                 <th>Estado</th>
@@ -211,8 +396,16 @@
             <ng-template pTemplate="body" let-s>
               <tr>
                 <td><strong>{{ s.vehicle?.plate }}</strong></td>
+                <td class="pp-session-doc">{{ sessionDepositorDocument(s) }}</td>
+                <td>
+                  @if (sessionOwnerAppName(s); as ownerNm) {
+                    {{ ownerNm }}
+                  } @else {
+                    <span class="pp-session-doc pp-muted">Cliente sin registro</span>
+                  }
+                </td>
                 <td><p-tag [value]="billingModeLabel(s.billing_mode)" severity="warn"></p-tag></td>
-                <td>{{ s.entered_at | date : 'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ s.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</td>
                 <td>
                   @if (s.status === 'active') {
                     <p-tag value="Dentro" severity="warn"></p-tag>
@@ -220,7 +413,7 @@
                     <p-tag value="Salida después de este día" severity="info"></p-tag>
                   }
                 </td>
-                <td>{{ s.exited_at ? (s.exited_at | date : 'dd/MM/yyyy HH:mm') : '—' }}</td>
+                <td>{{ s.exited_at ? (s.exited_at | date : coDateTimeFormat : coTimezone : coLocale) : '—' }}</td>
               </tr>
             </ng-template>
           </p-table>

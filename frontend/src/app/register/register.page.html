@@ -1,0 +1,75 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary" class="pp-toolbar">
+    <ion-buttons slot="start">
+      <ion-button fill="clear" (click)="goLogin()">Volver</ion-button>
+    </ion-buttons>
+    <ion-title>Registro</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="pp-login-content ion-padding">
+  <p-card header="Crear cuenta de propietario" subheader="Nombre completo, cédula, correo y contraseña" styleClass="pp-login-card pp-card-shadow">
+    <div class="pp-login-fields">
+      <p-floatlabel>
+        <input pInputText id="reg-name" [(ngModel)]="name" type="text" autocomplete="name" class="w-full" />
+        <label for="reg-name">Nombre completo</label>
+      </p-floatlabel>
+      <p-floatlabel class="ion-margin-top">
+        <input
+          pInputText
+          id="reg-doc"
+          [ngModel]="document"
+          (ngModelChange)="onDocumentChange($event)"
+          (keydown)="onRegisterDocumentKeydown($event)"
+          (beforeinput)="onRegisterDocumentBeforeInput($event)"
+          (paste)="onRegisterDocumentPaste($event)"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          [attr.maxlength]="documentMaxDigits"
+          autocomplete="off"
+          class="w-full"
+        />
+        <label for="reg-doc">Cédula (solo números, máx. {{ documentMaxDigits }})</label>
+      </p-floatlabel>
+      <p-floatlabel class="ion-margin-top">
+        <input pInputText id="reg-email" [(ngModel)]="email" type="email" autocomplete="email" class="w-full" />
+        <label for="reg-email">Correo</label>
+      </p-floatlabel>
+      <p-floatlabel class="ion-margin-top">
+        <p-password
+          inputId="reg-password"
+          [(ngModel)]="password"
+          [feedback]="true"
+          [toggleMask]="true"
+          styleClass="w-full"
+          [inputStyle]="{ width: '100%' }"
+          autocomplete="new-password"
+        />
+        <label for="reg-password">Contraseña</label>
+      </p-floatlabel>
+      <p-floatlabel class="ion-margin-top">
+        <p-password
+          inputId="reg-password2"
+          [(ngModel)]="passwordConfirm"
+          [feedback]="false"
+          [toggleMask]="true"
+          styleClass="w-full"
+          [inputStyle]="{ width: '100%' }"
+          autocomplete="new-password"
+        />
+        <label for="reg-password2">Confirmar contraseña</label>
+      </p-floatlabel>
+    </div>
+    <p class="pp-register-hint ion-margin-top">
+      Un administrador u operador debe activar tu cuenta antes de poder iniciar sesión. Los vehículos ingresados con tu cédula quedarán vinculados al activarte.
+    </p>
+    <p-button
+      label="Registrarme"
+      icon="pi pi-user-plus"
+      styleClass="w-full ion-margin-top"
+      [loading]="loading"
+      [disabled]="loading"
+      (onClick)="submit()"
+    />
+  </p-card>
+</ion-content>

@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 final class Vehicle extends Model
 {
@@ -17,6 +18,7 @@ final class Vehicle extends Model
         'owner_user_id',
         'brand',
         'color',
+        'cylinder_cc',
         'photo_path',
         'registered_by_user_id',
     ];
@@ -34,5 +36,12 @@ final class Vehicle extends Model
     public function parkingSessions(): HasMany
     {
         return $this->hasMany(ParkingSession::class);
+    }
+
+    public function activeParkingSession(): HasOne
+    {
+        return $this->hasOne(ParkingSession::class)
+            ->where('status', 'active')
+            ->latestOfMany('entered_at');
     }
 }

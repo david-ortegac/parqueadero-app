@@ -11,11 +11,141 @@
   @if (auth.getUser()?.role === 'vehicle_owner') {
     <p-card
       [header]="'Hola, ' + (auth.getUser()?.name ?? '')"
-      subheader="Usuario vehículo"
+      subheader="Propietario: gestiona tus vehículos y consulta el historial"
       styleClass="pp-card-shadow"
     >
-      <p class="pp-welcome-text">Consulta el tiempo de permanencia y alertas en la pestaña <strong>Parqueo</strong>.</p>
+      <div class="pp-owner-home-actions">
+        <p-button label="Ver mis vehículos" icon="pi pi-car" styleClass="pp-owner-action-btn" (onClick)="goToParkingTab()" />
+        <p-button
+          label="Ver historial"
+          icon="pi pi-history"
+          severity="secondary"
+          styleClass="pp-owner-action-btn"
+          [outlined]="true"
+          (onClick)="openOwnerHistory()"
+        />
+      </div>
+      <p class="pp-welcome-text ion-margin-top">
+        En <strong>Parqueo</strong> verás el tiempo dentro del parqueadero, la modalidad elegida al ingresar, la tarifa y el
+        cobro calculado (actualiza si es por minuto).
+      </p>
     </p-card>
+
+    <p-card header="Mis vehículos" subheader="Placa en cada fila. Abre el acordeón para editar marca, color y cilindraje." styleClass="pp-card-shadow ion-margin-top pp-owner-vehicles-card">
+      @if (loadingOwnerVehicles) {
+        <div class="pp-loading">
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+        </div>
+      } @else if (!ownerVehicles.length) {
+        <p class="pp-muted">
+          Aún no hay vehículos vinculados. Debes estar activado y los ingresos deben registrarse con tu misma cédula.
+        </p>
+      } @else {
+        <ion-accordion-group
+          class="pp-easy-acc-group"
+          [value]="ownerAccordionOpen"
+          (ionChange)="onOwnerAccordionChange($event)"
+        >
+          @for (v of ownerVehicles; track v.id) {
+            @if (ownerEditDrafts[v.id]; as ed) {
+              <ion-accordion [value]="ownerAccordionKey(v.id)" class="pp-easy-acc" [attr.id]="'pp-owner-veh-' + v.id">
+                <span slot="toggle-icon" class="pp-easy-acc-toggle-slot-hidden" aria-hidden="true"></span>
+                <ion-item slot="header" lines="none" button detail="false" class="pp-easy-acc-header">
+                  <div class="pp-easy-acc-toggle-box" aria-hidden="true">
+                    <span class="pp-easy-acc-toggle-glyph">{{ ownerAccordionToggleGlyph(v.id) }}</span>
+                  </div>
+                  <ion-icon class="pp-easy-acc-meta-icon" name="car-outline" aria-hidden="true"></ion-icon>
+                  <ion-label class="pp-easy-acc-label">
+                    <h2 class="pp-easy-acc-plate">{{ v.plate }}</h2>
+                    <p class="pp-easy-acc-sub">{{ vehicleClassLabelShort(v.vehicle_class) }}</p>
+                  </ion-label>
+                </ion-item>
+                <div slot="content" class="pp-easy-acc-panel">
+                  <div class="pp-form-stack">
+                    <div class="pp-field">
+                      <label class="pp-field-label" [attr.for]="'own-brand-' + v.id">Marca</label>
+                      <input [id]="'own-brand-' + v.id" pInputText [(ngModel)]="ed.brand" class="w-full" autocomplete="off" />
+                    </div>
+                    <div class="pp-field">
+                      <label class="pp-field-label" [attr.for]="'own-color-' + v.id">Color</label>
+                      <input [id]="'own-color-' + v.id" pInputText [(ngModel)]="ed.color" class="w-full" autocomplete="off" />
+                    </div>
+                    <div class="pp-field">
+                      <label class="pp-field-label" [attr.for]="'own-cc-' + v.id">Cilindraje (cc)</label>
+                      <input [id]="'own-cc-' + v.id" pInputText [(ngModel)]="ed.cylinder_cc" class="w-full" inputmode="numeric" autocomplete="off" />
+                    </div>
+                  </div>
+                  <p-button
+                    label="Guardar cambios"
+                    icon="pi pi-save"
+                    size="small"
+                    styleClass="ion-margin-top pp-easy-acc-save"
+                    [loading]="savingOwnerVehicleId === v.id"
+                    [disabled]="savingOwnerVehicleId === v.id"
+                    (onClick)="saveOwnerVehicle(v)"
+                  />
+                  <ion-button
+                    class="pp-easy-acc-close"
+                    fill="outline"
+                    size="small"
+                    expand="block"
+                    color="medium"
+                    (click)="closeOwnerVehicleAccordion()"
+                  >
+                    Cerrar
+                  </ion-button>
+                </div>
+              </ion-accordion>
+            }
+          }
+        </ion-accordion-group>
+      }
+    </p-card>
+
+    @if (ownerHistoryVisible) {
+      <p-card header="Historial de parqueo" subheader="Sesiones cerradas (solo consulta)" styleClass="pp-card-shadow ion-margin-top" id="owner-history">
+        @if (ownerHistoryLoading) {
+          <div class="pp-loading">
+            <ion-spinner name="crescent" color="primary"></ion-spinner>
+          </div>
+        } @else {
+          @for (v of ownerVehicles; track v.id) {
+            <section class="pp-owner-history-block">
+              <h3 class="pp-owner-vehicle-title">{{ v.plate }}</h3>
+              @if (!(ownerHistoryByVehicleId[v.id]?.length)) {
+                <p class="pp-muted">Sin sesiones anteriores.</p>
+              } @else {
+                <p-table
+                  [value]="ownerHistoryByVehicleId[v.id]"
+                  styleClass="p-datatable-sm pp-table"
+                  [tableStyle]="{ 'min-width': '100%' }"
+                >
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Modalidad</th>
+                      <th>Ingreso</th>
+                      <th>Salida</th>
+                      <th>Cobrado</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-h>
+                    <tr>
+                      <td><p-tag [value]="billingModeLabel(h.billing_mode)" severity="secondary"></p-tag></td>
+                      <td>{{ h.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</td>
+                      <td>{{ h.exited_at ? (h.exited_at | date : coDateTimeFormat : coTimezone : coLocale) : '—' }}</td>
+                      <td>{{ formatMoney(h.amount_paid ?? h.amount_due) }} COP</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              }
+            </section>
+            @if (!$last) {
+              <p-divider styleClass="ion-margin-vertical" />
+            }
+          }
+        }
+      </p-card>
+    }
   } @else if (loading) {
     <div class="pp-loading">
       <ion-spinner name="crescent" color="primary"></ion-spinner>
@@ -97,63 +227,148 @@
       </p-card>
     }
 
+    @if (auth.getUser()?.role === 'admin' || auth.getUser()?.role === 'operator') {
+      <p-card
+        header="Propietarios de vehículo"
+        subheader="Activa las cuentas creadas en Registrarme; se vinculan vehículos cuyo documento de ingreso coincida con la cédula"
+        styleClass="pp-card-shadow ion-margin-top"
+      >
+        @if (loadingOwners) {
+          <div class="pp-loading">
+            <ion-spinner name="crescent" color="primary"></ion-spinner>
+          </div>
+        } @else if (!vehicleOwners.length) {
+          <p class="pp-muted">Aún no hay propietarios registrados en la app.</p>
+        } @else {
+          <p-table [value]="vehicleOwners" styleClass="p-datatable-sm pp-table" [tableStyle]="{ 'min-width': '100%' }">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Cédula</th>
+                <th>Activo</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-o>
+              <tr>
+                <td>{{ o.name }}</td>
+                <td>{{ o.email }}</td>
+                <td>{{ o.document ?? '—' }}</td>
+                <td>
+                  <ion-toggle
+                    [checked]="o.is_active"
+                    [disabled]="savingOwnerId === o.id || isOwnActiveVehicleOwnerRow(o)"
+                    (ionChange)="setVehicleOwnerActive(o, $event.detail.checked)"
+                  >
+                    Activo
+                  </ion-toggle>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        }
+      </p-card>
+    }
+
     @if (auth.getUser()?.role === 'admin' && rates.length) {
       <h3 class="pp-section-title">Cobros por tipo de vehículo</h3>
-      <p-card header="Tarifas centralizadas" subheader="Carros y motos: mismo orden de modalidades (minuto → mes). Los cambios aplican a nuevos cobros." styleClass="pp-card-shadow">
-        @for (group of rateGroups; track group.vehicleClass) {
-          <section class="pp-rate-vehicle-section" [class.pp-rate-vehicle-section--car]="group.vehicleClass === 'car'" [class.pp-rate-vehicle-section--moto]="group.vehicleClass === 'motorcycle'">
-            <h4 class="pp-rate-section-heading">{{ group.sectionTitle }}</h4>
-            <p class="pp-rate-section-hint">Modalidades de cobro</p>
-            @for (r of group.rates; track r.id) {
-              @if (rateDrafts[r.id]) {
-                <div class="pp-rate-edit">
-                  <div class="pp-rate-edit-head">
-                    <p class="pp-rate-meta">{{ billingModeLabel(r.billing_mode) }}</p>
-                    <span class="pp-rate-currency">{{ r.currency }}</span>
-                  </div>
-                  <div class="pp-rate-edit-grid">
-                    <ion-item lines="none" class="pp-rate-ion-item">
-                      <ion-input
-                        class="pp-rate-price-input"
-                        label="Precio"
-                        labelPlacement="stacked"
-                        type="number"
-                        inputmode="decimal"
-                        [min]="0"
-                        step="any"
-                        [(ngModel)]="rateDrafts[r.id].price"
-                        name="price-{{ r.id }}"
-                      ></ion-input>
-                    </ion-item>
-                    <ion-item lines="none" class="pp-rate-ion-item pp-rate-toggle-item">
-                      <ion-toggle [(ngModel)]="rateDrafts[r.id].is_active" name="active-{{ r.id }}">
-                        Tarifa activa
-                      </ion-toggle>
-                    </ion-item>
-                    <ion-button
-                      size="small"
-                      class="pp-rate-save"
-                      (click)="saveRate(r)"
-                      [disabled]="savingRateId === r.id"
-                    >
-                      @if (savingRateId === r.id) {
-                        <ion-spinner name="crescent" color="light"></ion-spinner>
-                      } @else {
-                        Guardar
-                      }
-                    </ion-button>
-                  </div>
+      <p-card
+        header="Tarifas centralizadas"
+        subheader="Carros y motos: mismo orden de modalidades (minuto → mes). Los cambios aplican a nuevos cobros."
+        styleClass="pp-card-shadow pp-admin-rates-card"
+      >
+        <ion-accordion-group
+          class="pp-easy-acc-group"
+          [value]="ratesAccordionOpen"
+          (ionChange)="onRatesAccordionChange($event)"
+        >
+          @for (group of rateGroups; track group.vehicleClass) {
+            <ion-accordion
+              [value]="ratesAccordionKey(group.vehicleClass)"
+              class="pp-easy-acc"
+              [class.pp-rate-acc--car]="group.vehicleClass === 'car'"
+              [class.pp-rate-acc--moto]="group.vehicleClass === 'motorcycle'"
+            >
+              <span slot="toggle-icon" class="pp-easy-acc-toggle-slot-hidden" aria-hidden="true"></span>
+              <ion-item slot="header" lines="none" button detail="false" class="pp-easy-acc-header">
+                <div class="pp-easy-acc-toggle-box" aria-hidden="true">
+                  <span class="pp-easy-acc-toggle-glyph">{{ ratesAccordionToggleGlyph(group.vehicleClass) }}</span>
                 </div>
-              }
-              @if (!$last) {
-                <p-divider />
-              }
-            }
-          </section>
-          @if (!$last) {
-            <p-divider styleClass="pp-rate-between-groups" />
+                <ion-icon
+                  class="pp-easy-acc-meta-icon"
+                  [name]="ratesVehicleIcon(group.vehicleClass)"
+                  aria-hidden="true"
+                ></ion-icon>
+                <ion-label class="pp-easy-acc-label">
+                  <h2 class="pp-easy-acc-plate">{{ group.sectionTitle }}</h2>
+                  <p class="pp-easy-acc-sub">Modalidades de cobro (minuto → mes)</p>
+                </ion-label>
+              </ion-item>
+              <div slot="content" class="pp-easy-acc-panel">
+                @for (r of group.rates; track r.id) {
+                  @if (rateDrafts[r.id]) {
+                    <div class="pp-rate-edit">
+                      <div class="pp-rate-edit-head">
+                        <p class="pp-rate-meta">{{ billingModeLabel(r.billing_mode) }}</p>
+                        <span class="pp-rate-currency">{{ r.currency }}</span>
+                      </div>
+                      <div class="pp-rate-edit-grid">
+                        <ion-item lines="none" class="pp-rate-ion-item">
+                          <ion-input
+                            class="pp-rate-price-input"
+                            label="Precio ({{ r.currency || 'COP' }})"
+                            labelPlacement="stacked"
+                            type="number"
+                            inputmode="decimal"
+                            [min]="0"
+                            step="any"
+                            [(ngModel)]="rateDrafts[r.id].price"
+                            name="price-{{ r.id }}"
+                          ></ion-input>
+                        </ion-item>
+                        <p class="pp-rate-cop-preview">{{ formatRateMoneyCop(rateDrafts[r.id].price) }}</p>
+                        <ion-item lines="none" class="pp-rate-ion-item pp-rate-toggle-item">
+                          <ion-toggle [(ngModel)]="rateDrafts[r.id].is_active" name="active-{{ r.id }}">
+                            @if (rateDrafts[r.id].is_active) {
+                              Tarifa activa (disponible al ingresar vehículos)
+                            } @else {
+                              Tarifa inactiva (no se ofrece en nuevo ingreso)
+                            }
+                          </ion-toggle>
+                        </ion-item>
+                        <ion-button
+                          size="small"
+                          class="pp-rate-save"
+                          (click)="saveRate(r)"
+                          [disabled]="savingRateId === r.id"
+                        >
+                          @if (savingRateId === r.id) {
+                            <ion-spinner name="crescent" color="light"></ion-spinner>
+                          } @else {
+                            Guardar
+                          }
+                        </ion-button>
+                      </div>
+                    </div>
+                  }
+                  @if (!$last) {
+                    <p-divider />
+                  }
+                }
+                <ion-button
+                  class="pp-easy-acc-close"
+                  fill="outline"
+                  size="small"
+                  expand="block"
+                  color="medium"
+                  (click)="closeRatesAccordion()"
+                >
+                  Cerrar
+                </ion-button>
+              </div>
+            </ion-accordion>
           }
-        }
+        </ion-accordion-group>
       </p-card>
     }
   }

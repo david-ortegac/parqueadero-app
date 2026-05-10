@@ -30,7 +30,17 @@ export interface ParkingSession {
   amount_paid?: string | null;
   period_starts_at?: string | null;
   period_ends_at?: string | null;
-  vehicle?: { plate: string; vehicle_class: string; depositor_document?: string | null };
+  /** Día del mes (1–31) en America/Bogotá al ingreso; semana/mes prepago. */
+  subscription_entry_day?: number | null;
+  /** Duración del período prepago: 7 (semana) o 30 (mes). */
+  subscription_period_days?: number | null;
+  vehicle?: {
+    plate: string;
+    vehicle_class: string;
+    depositor_document?: string | null;
+    /** Usuario propietario vinculado al vehículo en la app, si existe. */
+    owner?: { id: number; name: string; document?: string | null } | null;
+  };
 }
 
 export interface DailyHistoryResponse {
@@ -46,7 +56,44 @@ export interface OwnerVehicle {
   vehicle_class: string;
   brand: string | null;
   color: string | null;
+  cylinder_cc: string | null;
   photo_url: string | null;
+  /** Sesión activa en el parqueadero, si existe (incluye cobro y tarifa vigente). */
+  active_session?: OwnerActiveSession | null;
+}
+
+export interface OperatorVehicleOwnerRow {
+  id: number;
+  name: string;
+  email: string;
+  document: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface OwnerActiveSession {
+  id: number;
+  billing_mode: string;
+  entered_at: string;
+  amount_due: string;
+  amount_due_live: string;
+  uses_live_estimate: boolean;
+  period_starts_at: string | null;
+  period_ends_at: string | null;
+  subscription_entry_day?: number | null;
+  subscription_period_days?: number | null;
+  /** Precio unitario de la tarifa aplicada (minuto, hora, día, semana o mes). */
+  rate_unit_price: string | null;
+  rate_currency: string;
+}
+
+export interface OwnerSessionHistoryRow {
+  id: number;
+  billing_mode: string;
+  entered_at: string;
+  exited_at: string | null;
+  amount_due: string;
+  amount_paid: string | null;
 }
 
 @Injectable({
@@ -122,21 +169,29 @@ export class ParkingApiService {
     return this.http.post<{ message: string }>(`${this.base}/push-devices`, body);
   }
 
-  getOwnerActiveSession(vehicleId: number): Observable<{
-    id: number;
-    billing_mode: string;
-    entered_at: string;
-    amount_due: string;
-    period_starts_at: string | null;
-    period_ends_at: string | null;
-  }> {
-    return this.http.get<{
-      id: number;
-      billing_mode: string;
-      entered_at: string;
-      amount_due: string;
-      period_starts_at: string | null;
-      period_ends_at: string | null;
-    }>(`${this.base}/owner/vehicles/${vehicleId}/active-session`);
+  getOwnerActiveSession(vehicleId: number): Observable<OwnerActiveSession> {
+    return this.http.get<OwnerActiveSession>(`${this.base}/owner/vehicles/${vehicleId}/active-session`);
+  }
+
+  getOwnerVehicleSessions(vehicleId: number): Observable<OwnerSessionHistoryRow[]> {
+    return this.http.get<OwnerSessionHistoryRow[]>(`${this.base}/owner/vehicles/${vehicleId}/sessions`);
+  }
+
+  patchOwnerVehicle(
+    vehicleId: number,
+    body: { brand?: string | null; color?: string | null; cylinder_cc?: string | null },
+  ): Observable<OwnerVehicle> {
+    return this.http.patch<OwnerVehicle>(`${this.base}/owner/vehicles/${vehicleId}`, body);
+  }
+
+  getOperatorVehicleOwners(): Observable<OperatorVehicleOwnerRow[]> {
+    return this.http.get<OperatorVehicleOwnerRow[]>(`${this.base}/operator/vehicle-owners`);
+  }
+
+  patchVehicleOwnerActivation(userId: number, body: { is_active: boolean }): Observable<{ id: number; is_active: boolean }> {
+    return this.http.patch<{ id: number; is_active: boolean }>(
+      `${this.base}/operator/vehicle-owners/${userId}`,
+      body,
+    );
   }
 }

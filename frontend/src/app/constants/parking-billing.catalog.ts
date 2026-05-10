@@ -5,6 +5,11 @@ import { Rate } from '../services/parking-api.service';
  * Cambiar orden o etiquetas aquí para propagar a tarifas admin, check-in, textos.
  */
 
+/** Fecha y hora mostradas en Colombia (API puede enviar UTC; el pipe `date` usa esta zona). */
+export const PARKING_DISPLAY_TIMEZONE = 'America/Bogota';
+export const PARKING_DISPLAY_LOCALE = 'es-CO';
+export const PARKING_DATETIME_FORMAT = 'dd/MM/yyyy HH:mm';
+
 export const VEHICLE_CLASSES = ['car', 'motorcycle'] as const;
 export type VehicleClassId = (typeof VEHICLE_CLASSES)[number];
 
@@ -29,6 +34,20 @@ export const BILLING_MODE_LABEL: Record<BillingModeId, string> = {
   week: 'Semana',
   month: 'Mes',
 };
+
+/** Texto para tarifa unitaria (ej. "por minuto"). */
+export const BILLING_MODE_RATE_SUFFIX: Record<BillingModeId, string> = {
+  minute: 'por minuto',
+  hour: 'por hora',
+  day: 'por día',
+  week: 'por semana',
+  month: 'por mes',
+};
+
+export function billingRateUnitSuffix(mode: string): string {
+  const id = mode as BillingModeId;
+  return BILLING_MODE_RATE_SUFFIX[id] ?? '';
+}
 
 /** Selectores Ionic / Prime (Parqueo tab). */
 export const VEHICLE_OPTIONS: { label: string; value: VehicleClassId }[] = VEHICLE_CLASSES.map((value) => ({

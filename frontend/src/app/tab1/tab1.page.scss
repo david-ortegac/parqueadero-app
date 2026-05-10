@@ -174,35 +174,16 @@
   padding: 0.35rem 0;
 }
 
-.pp-rate-vehicle-section {
-  margin-bottom: 0.5rem;
+.pp-admin-rates-card ::ng-deep .p-card-body {
+  padding-top: 0.5rem;
 }
 
-.pp-rate-vehicle-section--car .pp-rate-section-heading {
+ion-accordion.pp-rate-acc--car .pp-easy-acc-plate {
   color: var(--pp-chart-car, #2563eb);
 }
 
-.pp-rate-vehicle-section--moto .pp-rate-section-heading {
+ion-accordion.pp-rate-acc--moto .pp-easy-acc-plate {
   color: var(--pp-chart-moto, #f97316);
-}
-
-.pp-rate-section-heading {
-  margin: 0 0 0.15rem;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-.pp-rate-section-hint {
-  margin: 0 0 0.65rem;
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ion-color-medium);
-}
-
-.pp-rate-between-groups {
-  margin: 1rem 0;
 }
 
 .pp-rate-edit {
@@ -247,8 +228,24 @@
   font-weight: 600;
 }
 
+.pp-rate-cop-preview {
+  margin-top: 0.35rem;
+  padding-inline: 0.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+}
+
 .pp-rate-toggle-item {
   --min-height: 52px;
+}
+
+.pp-rate-toggle-item ion-toggle {
+  --track-background: #e2e8f0;
+  --track-background-checked: #0f2744;
+  --handle-background: #ffffff;
+  --handle-background-checked: #ffffff;
+  color: #0f2744;
 }
 
 .pp-rate-save {
@@ -260,4 +257,175 @@
   margin: 0;
   line-height: 1.5;
   color: var(--ion-color-medium);
+}
+
+.pp-owner-home-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 480px) {
+  .pp-owner-home-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+::ng-deep .pp-owner-action-btn {
+  width: 100%;
+}
+
+@media (min-width: 480px) {
+  ::ng-deep .pp-owner-action-btn {
+    flex: 1;
+    min-width: 160px;
+  }
+}
+
+.pp-owner-vehicle-block,
+.pp-owner-history-block {
+  margin: 0;
+}
+
+.pp-owner-vehicle-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+  color: var(--ion-text-color);
+}
+
+.pp-form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pp-field-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+  margin-bottom: 0.35rem;
+}
+
+.pp-field .w-full {
+  width: 100%;
+}
+
+.pp-owner-vehicles-card ::ng-deep .p-card-body {
+  padding-top: 0.5rem;
+}
+
+.pp-easy-acc-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: transparent;
+}
+
+ion-accordion.pp-easy-acc {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(13, 148, 136, 0.22);
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(13, 148, 136, 0.08);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+ion-accordion.pp-easy-acc.accordion-expanded,
+ion-accordion.pp-easy-acc[expanded] {
+  border: 2px solid #0d9488;
+  box-shadow: 0 4px 18px rgba(13, 148, 136, 0.18);
+}
+
+ion-accordion.pp-easy-acc .pp-easy-acc-header {
+  --background: #ecfdf5;
+  --border-width: 0;
+  --inner-border-width: 0;
+  --min-height: 58px;
+  --padding-start: 0;
+  --padding-end: 12px;
+  --inner-padding-end: 0;
+  margin: 0;
+}
+
+ion-accordion.pp-easy-acc .pp-easy-acc-header::part(native) {
+  padding-inline-start: 0;
+}
+
+.pp-easy-acc-toggle-box {
+  flex-shrink: 0;
+  width: 44px;
+  min-height: 58px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0d9488;
+  color: #fff;
+}
+
+.pp-easy-acc-toggle-glyph {
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1;
+  font-family: system-ui, sans-serif;
+  user-select: none;
+}
+
+.pp-easy-acc-meta-icon {
+  flex-shrink: 0;
+  margin-inline-start: 10px;
+  margin-inline-end: 8px;
+  font-size: 1.35rem;
+  color: #475569;
+}
+
+.pp-easy-acc-label {
+  margin: 0;
+}
+
+.pp-easy-acc-plate {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #334155;
+  text-transform: uppercase;
+}
+
+.pp-easy-acc-sub {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.pp-easy-acc-panel {
+  padding: 1rem 1rem 1.25rem;
+  background: #fff;
+  border-top: 1px solid rgba(13, 148, 136, 0.15);
+}
+
+ion-accordion.pp-easy-acc.accordion-expanded .pp-easy-acc-panel,
+ion-accordion.pp-easy-acc[expanded] .pp-easy-acc-panel {
+  border-top-color: rgba(13, 148, 136, 0.35);
+}
+
+.pp-easy-acc-close {
+  margin-top: 0.85rem;
+}
+
+.pp-easy-acc-toggle-slot-hidden {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+ion-accordion.pp-easy-acc::part(header) .ion-accordion-toggle-icon,
+ion-accordion.pp-easy-acc .ion-accordion-toggle-icon {
+  display: none !important;
 }

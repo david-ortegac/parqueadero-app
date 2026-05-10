@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Vehicle;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -17,7 +18,7 @@ final class UserAdminController extends Controller
     public function index(): JsonResponse
     {
         return response()->json(
-            User::query()->orderBy('name')->get(['id', 'name', 'email', 'role', 'is_active', 'created_at'])
+            User::query()->orderBy('name')->get(['id', 'name', 'email', 'document', 'role', 'is_active', 'created_at'])
         );
     }
 
@@ -62,7 +63,32 @@ final class UserAdminController extends Controller
             $data['password'] = Hash::make($data['password']);
         }
 
+        if (
+            isset($data['is_active'])
+            && $data['is_active'] === false
+            && $request->user()?->id === $user->id
+        ) {
+            return response()->json(['message' => 'No puedes desactivar tu propia cuenta.'], 403);
+        }
+
         $user->update($data);
+
+        $user->refresh();
+
+        if (
+            ($data['is_active'] ?? null) === true
+            && $user->role === UserRole::VehicleOwner->value
+            && $user->document !== null
+            && $user->document !== ''
+        ) {
+            Vehicle::query()
+                ->where('depositor_document', $user->document)
+                ->where(function ($q) use ($user): void {
+                    $q->whereNull('owner_user_id')
+                        ->orWhere('owner_user_id', $user->id);
+                })
+                ->update(['owner_user_id' => $user->id]);
+        }
 
         return response()->json([
             'id' => $user->id,

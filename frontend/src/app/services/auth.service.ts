@@ -50,6 +50,15 @@ export class AuthService {
       );
   }
 
+  register(body: {
+    name: string;
+    document: string;
+    email: string;
+    password: string;
+  }): Observable<{ message?: string }> {
+    return this.http.post<{ message?: string }>(`${environment.apiUrl}/register`, body);
+  }
+
   logout(): void {
     const token = this.getToken();
     if (token) {

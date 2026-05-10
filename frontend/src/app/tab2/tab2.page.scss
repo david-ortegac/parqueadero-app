@@ -12,6 +12,19 @@
   margin-bottom: 0.35rem;
 }
 
+.pp-field-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  color: var(--ion-color-medium);
+  line-height: 1.35;
+}
+
+.pp-field-error {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
 .pp-field .w-full {
   width: 100%;
 }
@@ -46,6 +59,12 @@
 
 ::ng-deep .pp-table .p-datatable-tbody > tr > td {
   vertical-align: middle;
+}
+
+.pp-session-doc {
+  font-variant-numeric: tabular-nums;
+  word-break: break-word;
+  max-width: 10rem;
 }
 
 .pp-active-actions-col {
@@ -154,4 +173,221 @@
   font-weight: 600;
   margin: 0 0 0.5rem;
   color: var(--ion-text-color);
+}
+
+.pp-minute-hint {
+  font-size: 0.875rem;
+  color: var(--ion-color-medium-shade, #666);
+  line-height: 1.45;
+  margin-top: 12px;
+}
+
+.pp-owner-parking-hint {
+  margin: 0 0 0.5rem;
+  line-height: 1.45;
+}
+
+.pp-owner-parking-main-card ::ng-deep .p-card-body {
+  padding-top: 0.5rem;
+}
+
+.pp-owner-parking-badge {
+  font-weight: 600;
+}
+
+.pp-owner-parking-badge--in {
+  color: #0d9488;
+}
+
+.pp-owner-parking-badge--out {
+  color: #94a3b8;
+}
+
+.pp-easy-acc-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: transparent;
+}
+
+ion-accordion.pp-easy-acc {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(13, 148, 136, 0.22);
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(13, 148, 136, 0.08);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+ion-accordion.pp-easy-acc.accordion-expanded,
+ion-accordion.pp-easy-acc[expanded] {
+  border: 2px solid #0d9488;
+  box-shadow: 0 4px 18px rgba(13, 148, 136, 0.18);
+}
+
+ion-accordion.pp-easy-acc .pp-easy-acc-header {
+  --background: #ecfdf5;
+  --border-width: 0;
+  --inner-border-width: 0;
+  --min-height: 76px;
+  --padding-start: 0;
+  --padding-end: 12px;
+  --inner-padding-end: 0;
+  margin: 0;
+}
+
+ion-accordion.pp-easy-acc .pp-easy-acc-header::part(native) {
+  padding-inline-start: 0;
+}
+
+.pp-easy-acc-toggle-box {
+  flex-shrink: 0;
+  width: 44px;
+  min-height: 76px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0d9488;
+  color: #fff;
+}
+
+.pp-easy-acc-toggle-glyph {
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1;
+  font-family: system-ui, sans-serif;
+  user-select: none;
+}
+
+.pp-easy-acc-meta-icon {
+  flex-shrink: 0;
+  margin-inline-start: 10px;
+  margin-inline-end: 8px;
+  font-size: 1.35rem;
+  color: #475569;
+}
+
+.pp-easy-acc-label {
+  margin: 0;
+}
+
+.pp-easy-acc-plate {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #334155;
+  text-transform: uppercase;
+}
+
+.pp-easy-acc-sub {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.pp-easy-acc-entry {
+  margin: 0.35rem 0 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #0f766e;
+  line-height: 1.35;
+}
+
+.pp-easy-acc-entry-k {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  margin-bottom: 0.1rem;
+}
+
+.pp-easy-acc-entry-tz {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-inline-start: 0.25rem;
+}
+
+.pp-easy-acc-entry--muted {
+  color: #94a3b8;
+  font-weight: 500;
+  font-size: 0.78rem;
+}
+
+.pp-easy-acc-panel {
+  padding: 1rem 1rem 1.25rem;
+  background: #fff;
+  border-top: 1px solid rgba(13, 148, 136, 0.15);
+}
+
+ion-accordion.pp-easy-acc.accordion-expanded .pp-easy-acc-panel,
+ion-accordion.pp-easy-acc[expanded] .pp-easy-acc-panel {
+  border-top-color: rgba(13, 148, 136, 0.35);
+}
+
+.pp-easy-acc-close {
+  margin-top: 0.85rem;
+}
+
+.pp-easy-acc-toggle-slot-hidden {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+ion-accordion.pp-easy-acc::part(header) .ion-accordion-toggle-icon,
+ion-accordion.pp-easy-acc .ion-accordion-toggle-icon {
+  display: none !important;
+}
+
+.pp-owner-parking-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.pp-owner-parking-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+@media (min-width: 480px) {
+  .pp-owner-parking-list li {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+}
+
+.pp-owner-k {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pp-owner-v {
+  font-size: 0.95rem;
+  color: var(--ion-text-color);
+}
+
+.pp-owner-parking-amount {
+  font-size: 1.05rem;
+}
+
+.pp-owner-parking-amount strong {
+  color: var(--ion-color-primary);
 }

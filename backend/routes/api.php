@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function (): void {
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
 
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('/logout', [AuthController::class, 'logout']);
@@ -40,6 +41,8 @@ Route::prefix('v1')->group(function (): void {
         });
 
         Route::middleware('role:admin,operator')->prefix('operator')->group(function (): void {
+            Route::get('/vehicle-owners', [VehicleOwnerActivationController::class, 'index']);
+
             Route::post('/check-in', [ParkingOperatorController::class, 'checkIn']);
             Route::post('/sessions/{session}/check-out', [ParkingOperatorController::class, 'checkOut']);
             Route::get('/sessions/active', [ParkingOperatorController::class, 'activeSessions']);
@@ -55,6 +58,7 @@ Route::prefix('v1')->group(function (): void {
             Route::get('/vehicles/{vehicle}', [OwnerVehicleController::class, 'show']);
             Route::patch('/vehicles/{vehicle}', [OwnerVehicleController::class, 'updateProfile']);
             Route::get('/vehicles/{vehicle}/active-session', [OwnerVehicleController::class, 'activeSession']);
+            Route::get('/vehicles/{vehicle}/sessions', [OwnerVehicleController::class, 'sessionHistory']);
         });
     });
 });

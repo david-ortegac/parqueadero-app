@@ -31,6 +31,15 @@
             <hr class="pp-r-rule" />
             <div class="pp-r-row"><span>Ticket</span><span>#{{ receipt.ticketNo }}</span></div>
             <div class="pp-r-row"><span>Placa</span><span>{{ receipt.plate }}</span></div>
+            @if (receiptPlateBarcodeSrc; as bsrc) {
+              <div class="pp-r-barcode"><img [src]="bsrc" alt="Código de barras placa" /></div>
+            }
+            @if (plateQrSrc; as qr) {
+              <div class="pp-r-qr">
+                <img [src]="qr" alt="Código QR app propietario" />
+                <p class="pp-r-qr-caption">Escanea para abrir Parqueo en la app con esta placa.</p>
+              </div>
+            }
             <div class="pp-r-row"><span>Vehículo</span><span>{{ receipt.vehicleClassLabel }}</span></div>
             <div class="pp-r-row"><span>Modalidad</span><span>{{ receipt.billingModeLabel }}</span></div>
             @if (receipt.depositorDocument) {
@@ -59,6 +68,15 @@
             <hr class="pp-r-rule" />
             <div class="pp-r-row"><span>Ticket</span><span>#{{ entryTicket.ticketNo }}</span></div>
             <div class="pp-r-row"><span>Placa</span><span>{{ entryTicket.plate }}</span></div>
+            @if (entryTicketPlateBarcodeSrc; as bsrc) {
+              <div class="pp-r-barcode"><img [src]="bsrc" alt="Código de barras placa" /></div>
+            }
+            @if (plateQrSrc; as qr) {
+              <div class="pp-r-qr">
+                <img [src]="qr" alt="Código QR app propietario" />
+                <p class="pp-r-qr-caption">Escanea para abrir Parqueo en la app con esta placa.</p>
+              </div>
+            }
             <div class="pp-r-row"><span>Vehículo</span><span>{{ entryTicket.vehicleClassLabel }}</span></div>
             <div class="pp-r-row"><span>Modalidad</span><span>{{ entryTicket.billingModeLabel }}</span></div>
             @if (entryTicket.depositorDocument) {
@@ -67,6 +85,11 @@
             <div class="pp-r-row"><span>Ingreso</span><span>{{ formatWhen(entryTicket.enteredAtIso) }}</span></div>
             @if (entryTicket.periodEndsAtIso) {
               <div class="pp-r-row"><span>Válido hasta</span><span>{{ formatWhen(entryTicket.periodEndsAtIso) }}</span></div>
+            }
+            @if (entryTicket.subscriptionCoverageLine) {
+              <div class="pp-r-row">
+                <span>Cobertura</span><span class="pp-r-wrap">{{ entryTicket.subscriptionCoverageLine }}</span>
+              </div>
             }
             <hr class="pp-r-rule" />
             <div class="pp-r-total pp-r-entry-amount">{{ entryTicket.amountLine }}</div>

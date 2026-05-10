@@ -47,8 +47,8 @@ final class ParkingBillingService
     public function subscriptionEndsAt(BillingMode $mode, CarbonImmutable $start): CarbonImmutable
     {
         return match ($mode) {
-            BillingMode::Week => $start->addWeek(),
-            BillingMode::Month => $start->addMonth(),
+            BillingMode::Week => $start->addDays(7),
+            BillingMode::Month => $start->addDays(30),
             default => $start,
         };
     }

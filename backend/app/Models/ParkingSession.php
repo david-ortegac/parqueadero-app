@@ -19,6 +19,8 @@ final class ParkingSession extends Model
         'amount_paid',
         'period_starts_at',
         'period_ends_at',
+        'subscription_entry_day',
+        'subscription_period_days',
         'registered_by_user_id',
     ];
 
@@ -31,6 +33,8 @@ final class ParkingSession extends Model
             'period_ends_at' => 'datetime',
             'amount_due' => 'decimal:2',
             'amount_paid' => 'decimal:2',
+            'subscription_entry_day' => 'integer',
+            'subscription_period_days' => 'integer',
         ];
     }
 

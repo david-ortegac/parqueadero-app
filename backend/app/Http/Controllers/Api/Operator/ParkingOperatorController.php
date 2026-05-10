@@ -5,16 +5,20 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\Operator;
 
 use App\Enums\BillingMode;
+use App\Enums\UserRole;
 use App\Enums\VehicleClass;
 use App\Http\Controllers\Controller;
 use App\Models\CapacityConfig;
 use App\Models\ParkingSession;
 use App\Models\Rate;
+use App\Models\User;
 use App\Models\Vehicle;
 use App\Services\ParkingBillingService;
+use App\Support\ColombianPlateValidator;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 final class ParkingOperatorController extends Controller
@@ -22,6 +26,74 @@ final class ParkingOperatorController extends Controller
     public function __construct(
         private readonly ParkingBillingService $billing,
     ) {}
+
+    /**
+     * Relación vehículo + propietario de app (si está vinculado por owner_user_id).
+     *
+     * @return array<string, mixed>
+     */
+    private function relationsForSessionVehicleWithOwner(): array
+    {
+        return [
+            'vehicle' => static function ($query): void {
+                $query->with([
+                    'owner' => static function ($q): void {
+                        $q->select(['id', 'name', 'document']);
+                    },
+                ]);
+            },
+        ];
+    }
+
+    /**
+     * Si el vehículo no tiene owner_user_id pero existe un propietario con la misma cédula
+     * que depositor_document, expone ese usuario como `owner` en el JSON.
+     */
+    private function attachOwnersByDocumentForSessions(Collection $sessions): void
+    {
+        $toResolve = [];
+        foreach ($sessions as $session) {
+            $vehicle = $session->vehicle;
+            if ($vehicle === null) {
+                continue;
+            }
+            if ($vehicle->relationLoaded('owner') && $vehicle->owner !== null) {
+                continue;
+            }
+            $doc = trim((string) $vehicle->depositor_document);
+            if ($doc === '') {
+                continue;
+            }
+            $toResolve[] = $vehicle;
+        }
+
+        if ($toResolve === []) {
+            return;
+        }
+
+        $docs = collect($toResolve)
+            ->map(fn (Vehicle $v): string => trim((string) $v->depositor_document))
+            ->unique()
+            ->values()
+            ->all();
+
+        $byDoc = User::query()
+            ->where('role', UserRole::VehicleOwner->value)
+            ->whereIn('document', $docs)
+            ->get(['id', 'name', 'document'])
+            ->keyBy(fn (User $u): string => trim((string) $u->document));
+
+        foreach ($toResolve as $vehicle) {
+            if ($vehicle->owner !== null) {
+                continue;
+            }
+            $doc = trim((string) $vehicle->depositor_document);
+            $user = $byDoc->get($doc);
+            if ($user !== null) {
+                $vehicle->setRelation('owner', $user);
+            }
+        }
+    }
 
     public function checkIn(Request $request): JsonResponse
     {
@@ -32,6 +104,22 @@ final class ParkingOperatorController extends Controller
             'billing_mode' => ['required', 'in:'.implode(',', BillingMode::values())],
             'owner_user_id' => ['nullable', 'exists:users,id'],
         ]);
+
+        $plateNormalized = ColombianPlateValidator::normalize($data['plate']);
+        if (! ColombianPlateValidator::isValid($plateNormalized, $data['vehicle_class'])) {
+            return response()->json([
+                'message' => ColombianPlateValidator::messageFor($data['vehicle_class']),
+            ], 422);
+        }
+        $data['plate'] = $plateNormalized;
+
+        $depositorDigits = preg_replace('/\D+/', '', (string) $data['depositor_document']);
+        if ($depositorDigits === '' || strlen($depositorDigits) > 15) {
+            return response()->json([
+                'message' => 'El documento debe contener solo números y como máximo 15 dígitos.',
+            ], 422);
+        }
+        $data['depositor_document'] = $depositorDigits;
 
         $rate = Rate::query()
             ->where('vehicle_class', $data['vehicle_class'])
@@ -55,7 +143,7 @@ final class ParkingOperatorController extends Controller
         }
 
         return DB::transaction(function () use ($request, $data, $rate): JsonResponse {
-            $plate = strtoupper(trim($data['plate']));
+            $plate = $data['plate'];
             $vehicle = Vehicle::query()->firstOrNew(['plate' => $plate]);
             $vehicle->fill([
                 'depositor_document' => $data['depositor_document'],
@@ -79,11 +167,15 @@ final class ParkingOperatorController extends Controller
             $amountDue = '0.00';
             $periodStart = null;
             $periodEnd = null;
+            $subscriptionEntryDay = null;
+            $subscriptionPeriodDays = null;
 
             if (in_array($mode, [BillingMode::Week, BillingMode::Month], true)) {
                 $amountDue = number_format((float) $rate->price, 2, '.', '');
                 $periodStart = $now;
                 $periodEnd = $this->billing->subscriptionEndsAt($mode, $now);
+                $subscriptionEntryDay = (int) $now->timezone('America/Bogota')->day;
+                $subscriptionPeriodDays = $mode === BillingMode::Month ? 30 : 7;
             }
 
             $session = ParkingSession::query()->create([
@@ -94,11 +186,16 @@ final class ParkingOperatorController extends Controller
                 'amount_due' => $amountDue,
                 'period_starts_at' => $periodStart,
                 'period_ends_at' => $periodEnd,
+                'subscription_entry_day' => $subscriptionEntryDay,
+                'subscription_period_days' => $subscriptionPeriodDays,
                 'registered_by_user_id' => $request->user()?->id,
             ]);
 
+            $session->load($this->relationsForSessionVehicleWithOwner());
+            $this->attachOwnersByDocumentForSessions(collect([$session]));
+
             return response()->json([
-                'session' => $session->load('vehicle'),
+                'session' => $session,
             ], 201);
         });
     }
@@ -123,16 +220,21 @@ final class ParkingOperatorController extends Controller
             'amount_paid' => $amountDue,
         ]);
 
-        return response()->json($session->load('vehicle'));
+        $session->load($this->relationsForSessionVehicleWithOwner());
+        $this->attachOwnersByDocumentForSessions(collect([$session]));
+
+        return response()->json($session);
     }
 
     public function activeSessions(): JsonResponse
     {
         $sessions = ParkingSession::query()
             ->where('status', 'active')
-            ->with('vehicle')
+            ->with($this->relationsForSessionVehicleWithOwner())
             ->orderByDesc('entered_at')
             ->get();
+
+        $this->attachOwnersByDocumentForSessions($sessions);
 
         return response()->json($sessions);
     }
@@ -218,7 +320,7 @@ final class ParkingOperatorController extends Controller
         $completedExits = ParkingSession::query()
             ->where('status', 'completed')
             ->whereDate('exited_at', $day->toDateString())
-            ->with('vehicle')
+            ->with($this->relationsForSessionVehicleWithOwner())
             ->orderBy('exited_at')
             ->get();
 
@@ -232,9 +334,12 @@ final class ParkingOperatorController extends Controller
                             ->where('exited_at', '>', $dayEnd);
                     });
             })
-            ->with('vehicle')
+            ->with($this->relationsForSessionVehicleWithOwner())
             ->orderBy('entered_at')
             ->get();
+
+        $this->attachOwnersByDocumentForSessions($completedExits);
+        $this->attachOwnersByDocumentForSessions($openStays);
 
         return response()->json([
             'date' => $day->toDateString(),

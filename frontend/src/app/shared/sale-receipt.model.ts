@@ -58,6 +58,8 @@ export interface EntryTicketData {
   /** Texto ya formateado: referencia de cobro o mensaje “al salir”. */
   amountLine: string;
   periodEndsAtIso?: string | null;
+  /** Línea opcional: días de cobertura del período prepago. */
+  subscriptionCoverageLine?: string | null;
 }
 
 export function buildEntryTicketFromSession(session: ParkingSession): EntryTicketData {
@@ -73,6 +75,11 @@ export function buildEntryTicketFromSession(session: ParkingSession): EntryTicke
     amountLine = 'Cobro al salir según tarifa vigente';
   }
 
+  let subscriptionCoverageLine: string | undefined;
+  if (session.subscription_period_days != null) {
+    subscriptionCoverageLine = `Cobertura: ${session.subscription_period_days} días`;
+  }
+
   return {
     businessName: environment.receiptBusinessName || 'Parqueadero',
     nit: environment.receiptNit?.trim() || undefined,
@@ -85,6 +92,7 @@ export function buildEntryTicketFromSession(session: ParkingSession): EntryTicke
     enteredAtIso: session.entered_at,
     amountLine,
     periodEndsAtIso: session.period_ends_at ?? null,
+    subscriptionCoverageLine: subscriptionCoverageLine ?? null,
   };
 }
 

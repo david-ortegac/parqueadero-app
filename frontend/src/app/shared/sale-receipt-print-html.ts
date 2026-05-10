@@ -62,10 +62,36 @@ const THERMAL_TICKET_CSS = `
       text-align: center;
       color: #444;
     }
+    .barcode-block {
+      margin: 8px 0 4px;
+      padding: 2px 0;
+    }
+    .barcode-block img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      image-rendering: pixelated;
+    }
+    .qr-block {
+      margin: 8px 0 4px;
+      padding: 4px 0;
+    }
+    .qr-block img {
+      display: block;
+      margin: 0 auto;
+      width: 120px;
+      height: 120px;
+      image-rendering: pixelated;
+    }
 `;
 
 /** Documento HTML completo para impresora térmica 80mm (iframe / ventana de impresión). */
-export function buildSaleReceiptPrintDocument(data: SaleReceiptData): string {
+export function buildSaleReceiptPrintDocument(
+  data: SaleReceiptData,
+  plateBarcodeHtml = '',
+  plateQrHtml = '',
+): string {
   const title = escapeHtml(data.businessName);
   const nitLine =
     data.nit && data.nit.length > 0 ? `<div class="muted">NIT: ${escapeHtml(data.nit)}</div>` : '';
@@ -95,11 +121,13 @@ export function buildSaleReceiptPrintDocument(data: SaleReceiptData): string {
     <hr class="rule" />
     <div class="row"><span>Ticket</span><span>#${escapeHtml(data.ticketNo)}</span></div>
     <div class="row"><span>Placa</span><span>${escapeHtml(data.plate)}</span></div>
+    ${plateBarcodeHtml}
     <div class="row"><span>Vehículo</span><span>${escapeHtml(data.vehicleClassLabel)}</span></div>
     <div class="row"><span>Modalidad</span><span>${escapeHtml(data.billingModeLabel)}</span></div>
     ${docLine}
     <div class="row"><span>Ingreso</span><span>${escapeHtml(formatReceiptDateTime(data.enteredAtIso))}</span></div>
     <div class="row"><span>Salida</span><span>${escapeHtml(formatReceiptDateTime(data.exitedAtIso))}</span></div>
+    ${plateQrHtml}
     <hr class="rule" />
     <div class="big">TOTAL ${escapeHtml(amount)}</div>
     <div class="footer">Gracias por su visita<br />Documento para control interno</div>
@@ -109,7 +137,11 @@ export function buildSaleReceiptPrintDocument(data: SaleReceiptData): string {
 }
 
 /** Ticket de ingreso — misma anchura 80mm que el recibo de salida. */
-export function buildEntryTicketPrintDocument(data: EntryTicketData): string {
+export function buildEntryTicketPrintDocument(
+  data: EntryTicketData,
+  plateBarcodeHtml = '',
+  plateQrHtml = '',
+): string {
   const title = escapeHtml(data.businessName);
   const nitLine =
     data.nit && data.nit.length > 0 ? `<div class="muted">NIT: ${escapeHtml(data.nit)}</div>` : '';
@@ -122,6 +154,10 @@ export function buildEntryTicketPrintDocument(data: EntryTicketData): string {
   const periodLine =
     data.periodEndsAtIso && data.periodEndsAtIso.length > 0
       ? `<div class="row"><span>Válido hasta</span><span>${escapeHtml(formatReceiptDateTime(data.periodEndsAtIso))}</span></div>`
+      : '';
+  const subscriptionLine =
+    data.subscriptionCoverageLine && data.subscriptionCoverageLine.length > 0
+      ? `<div class="row wrap"><span>Cobertura</span><span>${escapeHtml(data.subscriptionCoverageLine)}</span></div>`
       : '';
 
   return `<!DOCTYPE html>
@@ -141,11 +177,14 @@ export function buildEntryTicketPrintDocument(data: EntryTicketData): string {
     <hr class="rule" />
     <div class="row"><span>Ticket</span><span>#${escapeHtml(data.ticketNo)}</span></div>
     <div class="row"><span>Placa</span><span>${escapeHtml(data.plate)}</span></div>
+    ${plateBarcodeHtml}
     <div class="row"><span>Vehículo</span><span>${escapeHtml(data.vehicleClassLabel)}</span></div>
     <div class="row"><span>Modalidad</span><span>${escapeHtml(data.billingModeLabel)}</span></div>
     ${docLine}
     <div class="row"><span>Ingreso</span><span>${escapeHtml(formatReceiptDateTime(data.enteredAtIso))}</span></div>
     ${periodLine}
+    ${subscriptionLine}
+    ${plateQrHtml}
     <hr class="rule" />
     <div class="big">${escapeHtml(data.amountLine)}</div>
     <div class="footer">Conserve este ticket · Presente al retirar el vehículo</div>
