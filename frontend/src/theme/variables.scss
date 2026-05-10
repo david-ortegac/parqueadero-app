@@ -1,0 +1,55 @@
+// Tema inspirado en dashboard tipo “Parking Solutions”: azul oscuro + grises claros
+
+:root {
+  /** Fondo de página */
+  --pp-page-bg: #eef2f6;
+  --pp-card-shadow: 0 4px 14px rgba(15, 39, 68, 0.08);
+  --pp-card-radius: 14px;
+
+  /** Texto del input “Precio” en tarifas (tab Inicio, admin). Cambia el hex aquí si lo necesitas. */
+  --pp-rate-input-text: var(--ion-color-secondary);
+
+  /** Segmentos gráfico ocupación */
+  --pp-chart-car: #2563eb;
+  --pp-chart-moto: #f97316;
+  --pp-chart-empty: #e2e8f0;
+
+  /** Ionic — primario azul oscuro */
+  --ion-color-primary: #0f2744;
+  --ion-color-primary-rgb: 15, 39, 68;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #0d223a;
+  --ion-color-primary-tint: #273d57;
+
+  --ion-color-secondary: #3b82f6;
+  --ion-color-secondary-rgb: 59, 130, 246;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #3472d8;
+  --ion-color-secondary-tint: #4f8ff7;
+
+  --ion-color-tertiary: #64748b;
+  --ion-color-tertiary-rgb: 100, 116, 139;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #58657a;
+  --ion-color-tertiary-tint: #748196;
+
+  --ion-color-success: #22c55e;
+  --ion-color-warning: #eab308;
+  --ion-color-danger: #ef4444;
+
+  --ion-toolbar-background: var(--ion-color-primary);
+  --ion-toolbar-color: var(--ion-color-primary-contrast);
+
+  --ion-tab-bar-background: #ffffff;
+  --ion-tab-bar-border-color: rgba(15, 39, 68, 0.08);
+  --ion-tab-bar-color: #64748b;
+  --ion-tab-bar-color-selected: var(--ion-color-primary);
+}
+
+.ion-palette-dark {
+  --pp-page-bg: #0f172a;
+  --pp-rate-input-text: #60a5fa;
+}

@@ -1,0 +1,160 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary" class="pp-toolbar">
+    <ion-title>Inicio</ion-title>
+    <ion-buttons slot="end">
+      <span class="pp-brand-mark ion-padding-end">Parking</span>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding pp-page">
+  @if (auth.getUser()?.role === 'vehicle_owner') {
+    <p-card
+      [header]="'Hola, ' + (auth.getUser()?.name ?? '')"
+      subheader="Usuario vehículo"
+      styleClass="pp-card-shadow"
+    >
+      <p class="pp-welcome-text">Consulta el tiempo de permanencia y alertas en la pestaña <strong>Parqueo</strong>.</p>
+    </p-card>
+  } @else if (loading) {
+    <div class="pp-loading">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando tablero…</p>
+    </div>
+  } @else if (error) {
+    <div class="pp-error-box">
+      <ion-text color="danger">{{ error }}</ion-text>
+      <ion-button expand="block" fill="outline" class="ion-margin-top" (click)="load()">
+        Reintentar
+      </ion-button>
+    </div>
+  } @else {
+    <section class="pp-period">
+      <i class="pi pi-calendar pp-period-icon" aria-hidden="true"></i>
+      <span>Resumen · {{ periodLabel }}</span>
+    </section>
+
+    @if (dashboard) {
+      <p-card
+        header="Ocupación por tipo"
+        subheader="Distribución actual en el parqueadero"
+        styleClass="pp-card-shadow"
+      >
+        <div class="pp-chart-box">
+          <p-chart type="doughnut" [data]="chartData" [options]="chartOptions" height="220"></p-chart>
+          <div class="pp-chart-center">
+            <span class="pp-chart-total">{{ totalActive }}</span>
+            <span class="pp-chart-sub">Total dentro</span>
+          </div>
+        </div>
+
+        <div class="pp-legend">
+          <div class="pp-legend-row">
+            <span class="pp-dot pp-dot--car"></span>
+            <span class="pp-legend-label">Carros</span>
+            <strong class="pp-legend-pct">{{ shareCar() }}%</strong>
+          </div>
+          <div class="pp-legend-row">
+            <span class="pp-dot pp-dot--moto"></span>
+            <span class="pp-legend-label">Motos</span>
+            <strong class="pp-legend-pct">{{ shareMoto() }}%</strong>
+          </div>
+        </div>
+
+        <p-divider />
+
+        <div class="pp-stat-grid">
+          <div class="pp-stat-cell">
+            <span class="pp-stat-num">{{ dashboard.occupancy.car.active }}</span>
+            <span class="pp-stat-cap">de {{ dashboard.occupancy.car.capacity ?? '—' }} carros</span>
+          </div>
+          <div class="pp-stat-cell">
+            <span class="pp-stat-num">{{ dashboard.occupancy.motorcycle.active }}</span>
+            <span class="pp-stat-cap">de {{ dashboard.occupancy.motorcycle.capacity ?? '—' }} motos</span>
+          </div>
+        </div>
+
+        <div class="pp-bars ion-margin-top">
+          <div class="pp-bar-label">Cupos carros</div>
+          <p-progressBar
+            [value]="pct(dashboard.occupancy.car.active, dashboard.occupancy.car.capacity)"
+            [showValue]="false"
+            styleClass="pp-pbar"
+          ></p-progressBar>
+          <div class="pp-bar-label ion-margin-top">Cupos motos</div>
+          <p-progressBar
+            [value]="pct(dashboard.occupancy.motorcycle.active, dashboard.occupancy.motorcycle.capacity)"
+            [showValue]="false"
+            styleClass="pp-pbar pp-pbar--warn"
+          ></p-progressBar>
+        </div>
+      </p-card>
+    }
+
+    @if (revenueTotal !== null) {
+      <p-card header="Ingresos acumulados" subheader="Ventas saldadas (histórico)" styleClass="pp-card-shadow ion-margin-top">
+        <p class="pp-money">{{ formatMoney(revenueTotal) }} <span class="pp-currency">COP</span></p>
+      </p-card>
+    }
+
+    @if (auth.getUser()?.role === 'admin' && rates.length) {
+      <h3 class="pp-section-title">Cobros por tipo de vehículo</h3>
+      <p-card header="Tarifas centralizadas" subheader="Carros y motos: mismo orden de modalidades (minuto → mes). Los cambios aplican a nuevos cobros." styleClass="pp-card-shadow">
+        @for (group of rateGroups; track group.vehicleClass) {
+          <section class="pp-rate-vehicle-section" [class.pp-rate-vehicle-section--car]="group.vehicleClass === 'car'" [class.pp-rate-vehicle-section--moto]="group.vehicleClass === 'motorcycle'">
+            <h4 class="pp-rate-section-heading">{{ group.sectionTitle }}</h4>
+            <p class="pp-rate-section-hint">Modalidades de cobro</p>
+            @for (r of group.rates; track r.id) {
+              @if (rateDrafts[r.id]) {
+                <div class="pp-rate-edit">
+                  <div class="pp-rate-edit-head">
+                    <p class="pp-rate-meta">{{ billingModeLabel(r.billing_mode) }}</p>
+                    <span class="pp-rate-currency">{{ r.currency }}</span>
+                  </div>
+                  <div class="pp-rate-edit-grid">
+                    <ion-item lines="none" class="pp-rate-ion-item">
+                      <ion-input
+                        class="pp-rate-price-input"
+                        label="Precio"
+                        labelPlacement="stacked"
+                        type="number"
+                        inputmode="decimal"
+                        [min]="0"
+                        step="any"
+                        [(ngModel)]="rateDrafts[r.id].price"
+                        name="price-{{ r.id }}"
+                      ></ion-input>
+                    </ion-item>
+                    <ion-item lines="none" class="pp-rate-ion-item pp-rate-toggle-item">
+                      <ion-toggle [(ngModel)]="rateDrafts[r.id].is_active" name="active-{{ r.id }}">
+                        Tarifa activa
+                      </ion-toggle>
+                    </ion-item>
+                    <ion-button
+                      size="small"
+                      class="pp-rate-save"
+                      (click)="saveRate(r)"
+                      [disabled]="savingRateId === r.id"
+                    >
+                      @if (savingRateId === r.id) {
+                        <ion-spinner name="crescent" color="light"></ion-spinner>
+                      } @else {
+                        Guardar
+                      }
+                    </ion-button>
+                  </div>
+                </div>
+              }
+              @if (!$last) {
+                <p-divider />
+              }
+            }
+          </section>
+          @if (!$last) {
+            <p-divider styleClass="pp-rate-between-groups" />
+          }
+        }
+      </p-card>
+    }
+  }
+</ion-content>

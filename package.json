@@ -1,0 +1,12 @@
+{
+  "name": "parqueadero-monorepo",
+  "private": true,
+  "description": "Delegación de scripts npm hacia frontend/ (Ionic + Capacitor).",
+  "scripts": {
+    "android:apk:debug": "npm run android:apk:debug --prefix frontend",
+    "android:apk:release": "npm run android:apk:release --prefix frontend",
+    "build:android": "npm run build:android --prefix frontend",
+    "cap:sync": "npm run cap:sync --prefix frontend",
+    "cap:open:android": "npm run cap:open:android --prefix frontend"
+  }
+}

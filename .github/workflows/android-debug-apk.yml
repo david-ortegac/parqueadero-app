@@ -1,0 +1,35 @@
+# Ejecutar desde GitHub → Actions → "Android APK (debug)" → Run workflow.
+name: Android APK (debug)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependencias y compilar web
+        run: npm ci && npm run build && npx cap sync android
+
+      - uses: android-actions/setup-android@v3
+
+      - name: assembleDebug
+        working-directory: frontend/android
+        run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: parqueadero-debug-apk
+          path: frontend/android/app/build/outputs/apk/debug/app-debug.apk

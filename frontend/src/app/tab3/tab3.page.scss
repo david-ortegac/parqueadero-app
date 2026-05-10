@@ -1,0 +1,18 @@
+.pp-card-shadow {
+  box-shadow: var(--pp-card-shadow, 0 4px 14px rgba(15, 39, 68, 0.08));
+}
+
+.pp-role {
+  margin: 0;
+  color: var(--ion-color-medium);
+}
+
+.pp-push-msg {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+}
+
+.pp-page ::ng-deep .w-full {
+  width: 100%;
+}

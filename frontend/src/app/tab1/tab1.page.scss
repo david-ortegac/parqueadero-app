@@ -1,0 +1,263 @@
+.pp-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  gap: 1rem;
+  color: var(--ion-color-medium);
+}
+
+.pp-period {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--ion-color-medium);
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+.pp-period-icon {
+  color: var(--ion-color-primary);
+}
+
+.pp-card-shadow {
+  box-shadow: var(--pp-card-shadow, 0 4px 14px rgba(15, 39, 68, 0.08));
+}
+
+.pp-chart-box {
+  position: relative;
+  height: 240px;
+  margin-bottom: 1rem;
+}
+
+.pp-chart-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.pp-chart-total {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  line-height: 1.1;
+}
+
+.pp-chart-sub {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ion-color-medium);
+  font-weight: 600;
+}
+
+.pp-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 0.5rem;
+}
+
+.pp-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pp-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pp-dot--car {
+  background: var(--pp-chart-car);
+}
+
+.pp-dot--moto {
+  background: var(--pp-chart-moto);
+}
+
+.pp-legend-label {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--ion-color-dark);
+}
+
+.pp-legend-pct {
+  font-variant-numeric: tabular-nums;
+}
+
+.pp-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.pp-stat-cell {
+  background: rgba(15, 39, 68, 0.04);
+  border-radius: 10px;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.pp-stat-num {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+}
+
+.pp-stat-cap {
+  font-size: 0.7rem;
+  color: var(--ion-color-medium);
+  line-height: 1.2;
+}
+
+.pp-bar-label {
+  font-size: 0.75rem;
+  color: var(--ion-color-medium);
+  margin-bottom: 0.25rem;
+}
+
+::ng-deep .pp-pbar {
+  height: 0.65rem;
+  border-radius: 6px;
+}
+
+.pp-money {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  margin: 0;
+}
+
+.pp-currency {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+}
+
+.pp-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+  margin: 1rem 0 0.5rem 0.25rem;
+}
+
+.pp-rate-meta {
+  font-size: 0.8rem;
+  color: var(--ion-color-medium);
+  margin-bottom: 0.25rem;
+}
+
+.pp-rate-price {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+}
+
+.pp-rate-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.35rem 0;
+}
+
+.pp-rate-vehicle-section {
+  margin-bottom: 0.5rem;
+}
+
+.pp-rate-vehicle-section--car .pp-rate-section-heading {
+  color: var(--pp-chart-car, #2563eb);
+}
+
+.pp-rate-vehicle-section--moto .pp-rate-section-heading {
+  color: var(--pp-chart-moto, #f97316);
+}
+
+.pp-rate-section-heading {
+  margin: 0 0 0.15rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.pp-rate-section-hint {
+  margin: 0 0 0.65rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ion-color-medium);
+}
+
+.pp-rate-between-groups {
+  margin: 1rem 0;
+}
+
+.pp-rate-edit {
+  padding: 0.25rem 0 0.5rem;
+}
+
+.pp-rate-edit-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.pp-rate-currency {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+}
+
+.pp-rate-edit-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pp-rate-ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --background: rgba(15, 39, 68, 0.03);
+  border-radius: 10px;
+  margin-bottom: 0.35rem;
+}
+
+/**
+ * Color del texto del input nativo (shadow DOM): usar variables de ion-input.
+ * Ajusta --pp-rate-input-text si quieres otro tono sin tocar el HTML.
+ */
+.pp-rate-price-input {
+  --color: var(--pp-rate-input-text, var(--ion-color-primary));
+  --placeholder-color: var(--ion-color-medium);
+  font-weight: 600;
+}
+
+.pp-rate-toggle-item {
+  --min-height: 52px;
+}
+
+.pp-rate-save {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+}
+
+.pp-welcome-text {
+  margin: 0;
+  line-height: 1.5;
+  color: var(--ion-color-medium);
+}

@@ -1,0 +1,157 @@
+.pp-form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pp-field-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+  margin-bottom: 0.35rem;
+}
+
+.pp-field .w-full {
+  width: 100%;
+}
+
+/* PrimeNG select fluid en móvil */
+::ng-deep .pp-field .p-select {
+  width: 100%;
+}
+
+.pp-muted {
+  color: var(--ion-color-medium);
+  margin: 0;
+}
+
+.pp-center {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.pp-row-click {
+  cursor: pointer;
+}
+
+.pp-row-click:hover {
+  background: rgba(15, 39, 68, 0.04);
+}
+
+.pp-card-shadow {
+  box-shadow: var(--pp-card-shadow, 0 4px 14px rgba(15, 39, 68, 0.08));
+}
+
+::ng-deep .pp-table .p-datatable-tbody > tr > td {
+  vertical-align: middle;
+}
+
+.pp-active-actions-col {
+  min-width: 200px;
+  white-space: nowrap;
+  text-align: right;
+}
+
+::ng-deep .pp-table .p-datatable-thead > tr > th.pp-active-actions-col {
+  text-align: right;
+}
+
+.pp-active-actions-cell {
+  vertical-align: top;
+  text-align: right;
+}
+
+.pp-active-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: flex-end;
+}
+
+@media (min-width: 480px) {
+  .pp-active-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+  }
+}
+
+.pp-date-input {
+  width: 100%;
+  max-width: 280px;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  line-height: 1.35;
+  color: #000000;
+  background: #f5f7fa;
+  border: 1px solid #dce3eb;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+  color-scheme: light;
+
+  &::placeholder {
+    color: #525252;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: #b8c5d4;
+    background: #fafbfc;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    border-color: #3b82f6;
+    background: #ffffff;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      0 0 0 3px rgba(59, 130, 246, 0.2);
+  }
+}
+
+.ion-palette-dark .pp-date-input {
+  /* Mismo campo claro + texto negro sobre fondos oscuros de la app */
+  color: #000000;
+  background: #f0f4f8;
+  border-color: #cfd8e3;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  color-scheme: light;
+
+  &::placeholder {
+    color: #525252;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: #b8c5d4;
+    background: #f7f9fc;
+  }
+
+  &:focus-visible {
+    border-color: #3b82f6;
+    background: #ffffff;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      0 0 0 3px rgba(59, 130, 246, 0.25);
+  }
+}
+
+.pp-history-meta {
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.pp-history-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: var(--ion-text-color);
+}

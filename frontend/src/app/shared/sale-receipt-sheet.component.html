@@ -1,0 +1,80 @@
+<ion-modal
+  [isOpen]="isOpen && (receipt !== null || entryTicket !== null)"
+  (didDismiss)="close()"
+  class="pp-sale-receipt-modal"
+>
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar color="primary">
+        <ion-title>{{ isEntryMode ? 'Ticket de ingreso' : 'Factura / recibo' }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button fill="clear" (click)="printThermal()" [disabled]="!receipt && !entryTicket">
+            <ion-icon slot="start" name="print-outline"></ion-icon>
+            Imprimir 80mm
+          </ion-button>
+          <ion-button fill="clear" (click)="close()">Cerrar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding pp-sale-receipt-modal-body">
+      @if (receipt) {
+        <div class="pp-receipt-preview">
+          <div class="pp-receipt-preview-inner">
+            <div class="pp-r-title">{{ receipt.businessName }}</div>
+            @if (receipt.nit) {
+              <div class="pp-r-muted center">NIT: {{ receipt.nit }}</div>
+            }
+            @if (receipt.address) {
+              <div class="pp-r-muted center pp-r-wrap">{{ receipt.address }}</div>
+            }
+            <div class="pp-r-muted center pp-r-sub">Recibo de pago — Parqueo</div>
+            <hr class="pp-r-rule" />
+            <div class="pp-r-row"><span>Ticket</span><span>#{{ receipt.ticketNo }}</span></div>
+            <div class="pp-r-row"><span>Placa</span><span>{{ receipt.plate }}</span></div>
+            <div class="pp-r-row"><span>Vehículo</span><span>{{ receipt.vehicleClassLabel }}</span></div>
+            <div class="pp-r-row"><span>Modalidad</span><span>{{ receipt.billingModeLabel }}</span></div>
+            @if (receipt.depositorDocument) {
+              <div class="pp-r-row"><span>Doc.</span><span class="pp-r-wrap">{{ receipt.depositorDocument }}</span></div>
+            }
+            <div class="pp-r-row"><span>Ingreso</span><span>{{ formatWhen(receipt.enteredAtIso) }}</span></div>
+            <div class="pp-r-row"><span>Salida</span><span>{{ formatWhen(receipt.exitedAtIso) }}</span></div>
+            <hr class="pp-r-rule" />
+            <div class="pp-r-total">{{ formatMoney(receipt.amountPaid) }}</div>
+            <div class="pp-r-footer">Gracias por su visita · Documento para control interno</div>
+          </div>
+        </div>
+        <p class="pp-receipt-hint">Usa «Imprimir 80mm» y elige tu impresora térmica. En el cuadro de impresión, desactiva márgenes si tu driver lo permite.</p>
+      }
+      @if (entryTicket) {
+        <div class="pp-receipt-preview">
+          <div class="pp-receipt-preview-inner">
+            <div class="pp-r-title">{{ entryTicket.businessName }}</div>
+            @if (entryTicket.nit) {
+              <div class="pp-r-muted center">NIT: {{ entryTicket.nit }}</div>
+            }
+            @if (entryTicket.address) {
+              <div class="pp-r-muted center pp-r-wrap">{{ entryTicket.address }}</div>
+            }
+            <div class="pp-r-muted center pp-r-sub">Ticket de ingreso — Parqueo</div>
+            <hr class="pp-r-rule" />
+            <div class="pp-r-row"><span>Ticket</span><span>#{{ entryTicket.ticketNo }}</span></div>
+            <div class="pp-r-row"><span>Placa</span><span>{{ entryTicket.plate }}</span></div>
+            <div class="pp-r-row"><span>Vehículo</span><span>{{ entryTicket.vehicleClassLabel }}</span></div>
+            <div class="pp-r-row"><span>Modalidad</span><span>{{ entryTicket.billingModeLabel }}</span></div>
+            @if (entryTicket.depositorDocument) {
+              <div class="pp-r-row"><span>Doc.</span><span class="pp-r-wrap">{{ entryTicket.depositorDocument }}</span></div>
+            }
+            <div class="pp-r-row"><span>Ingreso</span><span>{{ formatWhen(entryTicket.enteredAtIso) }}</span></div>
+            @if (entryTicket.periodEndsAtIso) {
+              <div class="pp-r-row"><span>Válido hasta</span><span>{{ formatWhen(entryTicket.periodEndsAtIso) }}</span></div>
+            }
+            <hr class="pp-r-rule" />
+            <div class="pp-r-total pp-r-entry-amount">{{ entryTicket.amountLine }}</div>
+            <div class="pp-r-footer">Conserve este ticket · Presente al retirar el vehículo</div>
+          </div>
+        </div>
+        <p class="pp-receipt-hint">Usa «Imprimir 80mm» para la impresora térmica al ingreso.</p>
+      }
+    </ion-content>
+  </ng-template>
+</ion-modal>

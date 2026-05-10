@@ -1,0 +1,27 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary" class="pp-toolbar">
+    <ion-title>Cuenta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding pp-page">
+  @if (auth.getUser(); as u) {
+    <p-card [header]="u.name" [subheader]="u.email" styleClass="pp-card-shadow">
+      <p class="pp-role">Rol: <strong>{{ u.role }}</strong></p>
+    </p-card>
+  }
+
+  <p-card header="Notificaciones push" subheader="FCM en dispositivo nativo" styleClass="pp-card-shadow ion-margin-top">
+    <p class="pp-push-msg">{{ pushStatus }}</p>
+    <p-button label="Activar push (dispositivo)" icon="pi pi-bell" styleClass="w-full" (onClick)="setupPush()" />
+  </p-card>
+
+  <p-button
+    label="Cerrar sesión"
+    icon="pi pi-sign-out"
+    severity="danger"
+    styleClass="w-full ion-margin-top"
+    [outlined]="true"
+    (onClick)="logout()"
+  />
+</ion-content>

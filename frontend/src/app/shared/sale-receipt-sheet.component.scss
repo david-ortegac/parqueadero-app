@@ -1,0 +1,102 @@
+.pp-sale-receipt-modal-body {
+  --background: var(--pp-page-bg, #eef2f6);
+}
+
+.pp-receipt-preview {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0 1rem;
+}
+
+.pp-receipt-preview-inner {
+  width: 80mm;
+  max-width: 100%;
+  padding: 12px 14px;
+  background: #fff;
+  color: #000;
+  border: 1px solid #dce3eb;
+  border-radius: 10px;
+  box-shadow: var(--pp-card-shadow, 0 4px 14px rgba(15, 39, 68, 0.08));
+  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', 'Roboto Mono', monospace;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.pp-r-title {
+  font-weight: 700;
+  font-size: 14px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pp-r-muted {
+  font-size: 11px;
+  color: #444;
+}
+
+.pp-r-muted.center,
+.pp-r-sub {
+  text-align: center;
+}
+
+.pp-r-sub {
+  margin-top: 6px;
+}
+
+.pp-r-wrap {
+  word-break: break-word;
+}
+
+.pp-r-rule {
+  border: none;
+  border-top: 1px dashed #000;
+  margin: 10px 0;
+}
+
+.pp-r-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 4px 0;
+
+  span:first-child {
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  span:last-child {
+    text-align: right;
+    min-width: 0;
+  }
+}
+
+.pp-r-total {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.pp-r-entry-amount {
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.pp-r-footer {
+  margin-top: 12px;
+  font-size: 10px;
+  text-align: center;
+  color: #555;
+  line-height: 1.35;
+}
+
+.pp-receipt-hint {
+  font-size: 0.8rem;
+  color: var(--ion-color-medium, #64748b);
+  margin: 0;
+  text-align: center;
+  max-width: 360px;
+  margin-inline: auto;
+}

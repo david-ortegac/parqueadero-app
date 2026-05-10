@@ -1,0 +1,44 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary" class="pp-toolbar">
+    <ion-title>Acceso</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="pp-login-content">
+  <div class="pp-login-hero">
+    <div class="pp-login-brand">
+      <span class="pp-login-brand-title">Parqueadero</span>
+      <span class="pp-login-brand-sub">Parking solutions</span>
+    </div>
+    <p class="pp-login-tagline">Gestión de ocupación, cobros y usuarios en un solo lugar.</p>
+  </div>
+
+  <p-card header="Iniciar sesión" subheader="Credenciales del sistema" styleClass="pp-login-card pp-card-shadow">
+    <div class="pp-login-fields">
+      <p-floatlabel>
+        <input pInputText id="login-email" [(ngModel)]="email" type="email" autocomplete="email" class="w-full" />
+        <label for="login-email">Correo</label>
+      </p-floatlabel>
+      <p-floatlabel class="ion-margin-top">
+        <p-password
+          inputId="login-password"
+          [(ngModel)]="password"
+          [feedback]="false"
+          [toggleMask]="true"
+          styleClass="w-full"
+          [inputStyle]="{ width: '100%' }"
+          autocomplete="current-password"
+        />
+        <label for="login-password">Contraseña</label>
+      </p-floatlabel>
+    </div>
+    <p-button
+      label="Entrar"
+      icon="pi pi-sign-in"
+      styleClass="w-full ion-margin-top"
+      [loading]="loading"
+      [disabled]="loading"
+      (onClick)="submit()"
+    />
+  </p-card>
+</ion-content>

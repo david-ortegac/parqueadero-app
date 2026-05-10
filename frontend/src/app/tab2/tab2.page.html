@@ -1,0 +1,238 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary" class="pp-toolbar">
+    <ion-title>Parqueo</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="refresh()">
+        <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding pp-page">
+  @if (auth.getUser()?.role === 'vehicle_owner') {
+    <p-card header="Mis vehículos" subheader="Toca una fila para ver detalle" styleClass="pp-card-shadow">
+      @if (loadingList) {
+        <div class="pp-center"><ion-spinner name="crescent" color="primary"></ion-spinner></div>
+      } @else if (!vehicles.length) {
+        <p class="pp-muted">No hay vehículos vinculados a tu cuenta.</p>
+      } @else {
+        <p-table [value]="vehicles" styleClass="p-datatable-sm pp-table" [tableStyle]="{ 'min-width': '100%' }">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Placa</th>
+              <th>Clase</th>
+              <th>Detalle</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-v>
+            <tr class="pp-row-click" (click)="openVehicleDetail(v)">
+              <td><strong>{{ v.plate }}</strong></td>
+              <td>{{ v.vehicle_class }}</td>
+              <td>{{ v.brand ?? '—' }} · {{ v.color ?? '—' }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      }
+    </p-card>
+  } @else {
+    <p-card header="Nuevo ingreso" subheader="Registro operativo de entrada" styleClass="pp-card-shadow">
+      <div class="pp-form-stack">
+        <div class="pp-field">
+          <label class="pp-field-label" for="fld-plate">Placa</label>
+          <input
+            id="fld-plate"
+            pInputText
+            [(ngModel)]="plate"
+            (ngModelChange)="onPlateModelChange($event)"
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            class="w-full"
+          />
+        </div>
+        <div class="pp-field">
+          <label class="pp-field-label" for="fld-doc">Documento quien entrega</label>
+          <input
+            id="fld-doc"
+            pInputText
+            [(ngModel)]="depositorDocument"
+            (ngModelChange)="onDocumentModelChange($event)"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            autocomplete="off"
+            class="w-full"
+          />
+        </div>
+        <div class="pp-field">
+          <label class="pp-field-label" for="fld-class">Tipo de vehículo</label>
+          <p-select
+            inputId="fld-class"
+            [options]="vehicleOptions"
+            [(ngModel)]="vehicleClass"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleccione"
+            styleClass="w-full"
+          ></p-select>
+        </div>
+        <div class="pp-field">
+          <label class="pp-field-label" for="fld-mode">Modalidad de cobro</label>
+          <p-select
+            inputId="fld-mode"
+            [options]="billingOptions"
+            [(ngModel)]="billingMode"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleccione"
+            styleClass="w-full"
+          ></p-select>
+        </div>
+      </div>
+      <p-button label="Registrar ingreso" icon="pi pi-plus" styleClass="w-full ion-margin-top" (onClick)="registerEntry()" />
+    </p-card>
+
+    <p-card header="Sesiones activas" subheader="Vehículos dentro del parqueadero en este momento" styleClass="pp-card-shadow ion-margin-top">
+      @if (loadingList) {
+        <div class="pp-center"><ion-spinner name="crescent" color="primary"></ion-spinner></div>
+      } @else if (!activeSessions.length) {
+        <p class="pp-muted">No hay vehículos dentro del parqueadero.</p>
+      } @else {
+        <p-table [value]="activeSessions" styleClass="p-datatable-sm pp-table" [tableStyle]="{ 'min-width': '100%' }">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Placa</th>
+              <th>Modalidad</th>
+              <th>Ingreso</th>
+              <th class="pp-active-actions-col">Acciones</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-s>
+            <tr>
+              <td><strong>{{ s.vehicle?.plate }}</strong></td>
+              <td><p-tag [value]="billingModeLabel(s.billing_mode)" severity="info"></p-tag></td>
+              <td>{{ s.entered_at | date : 'dd/MM/yyyy HH:mm' }}</td>
+              <td class="pp-active-actions-cell">
+                <div class="pp-active-actions">
+                  <p-button
+                    label="Ticket"
+                    icon="pi pi-print"
+                    size="small"
+                    severity="secondary"
+                    [outlined]="true"
+                    (onClick)="reprintEntryTicket(s)"
+                  />
+                  <p-button label="Salida / cobro" icon="pi pi-wallet" size="small" (onClick)="checkout(s)" />
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      }
+    </p-card>
+
+    <p-card
+      header="Historial por día"
+      subheader="Salidas registradas ese día. Si un vehículo no salió antes de medianoche, aparece en el día siguiente hasta que se registre la salida."
+      styleClass="pp-card-shadow ion-margin-top"
+    >
+      <div class="pp-field ion-margin-bottom">
+        <label class="pp-field-label" for="fld-history-date">Día</label>
+        <input
+          id="fld-history-date"
+          type="date"
+          [(ngModel)]="historyDate"
+          (change)="onHistoryDateChange()"
+          class="pp-date-input"
+        />
+      </div>
+      @if (loadingHistory) {
+        <div class="pp-center"><ion-spinner name="crescent" color="primary"></ion-spinner></div>
+      } @else if (dailyHistory) {
+        <p class="pp-muted pp-history-meta">
+          Zona horaria informe: {{ dailyHistory.timezone }} · Fecha: {{ dailyHistory.date }}
+        </p>
+
+        <h3 class="pp-history-section-title">Salidas del día</h3>
+        @if (!dailyHistory.completed_exits.length) {
+          <p class="pp-muted">No hay salidas registradas en este día.</p>
+        } @else {
+          <p-table
+            [value]="dailyHistory.completed_exits"
+            styleClass="p-datatable-sm pp-table ion-margin-bottom"
+            [tableStyle]="{ 'min-width': '100%' }"
+          >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Placa</th>
+              <th>Modalidad</th>
+              <th>Ingreso</th>
+              <th>Salida</th>
+              <th>Cobrado</th>
+              <th style="width: 52px" class="pp-no-print-col"></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-s>
+            <tr>
+              <td><strong>{{ s.vehicle?.plate }}</strong></td>
+              <td><p-tag [value]="billingModeLabel(s.billing_mode)" severity="success"></p-tag></td>
+              <td>{{ s.entered_at | date : 'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ s.exited_at | date : 'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ s.amount_paid ?? s.amount_due }} COP</td>
+              <td>
+                <p-button
+                  icon="pi pi-print"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  aria-label="Imprimir factura"
+                  (onClick)="openReceiptForSale(s)"
+                />
+              </td>
+            </tr>
+          </ng-template>
+          </p-table>
+        }
+
+        <h3 class="pp-history-section-title">Sin salida ese día (sigue al día siguiente)</h3>
+        @if (!dailyHistory.open_stays.length) {
+          <p class="pp-muted">Ningún vehículo quedó dentro al terminar este día.</p>
+        } @else {
+          <p-table [value]="dailyHistory.open_stays" styleClass="p-datatable-sm pp-table" [tableStyle]="{ 'min-width': '100%' }">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Placa</th>
+                <th>Modalidad</th>
+                <th>Ingreso</th>
+                <th>Estado</th>
+                <th>Salida (si aplica)</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-s>
+              <tr>
+                <td><strong>{{ s.vehicle?.plate }}</strong></td>
+                <td><p-tag [value]="billingModeLabel(s.billing_mode)" severity="warn"></p-tag></td>
+                <td>{{ s.entered_at | date : 'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  @if (s.status === 'active') {
+                    <p-tag value="Dentro" severity="warn"></p-tag>
+                  } @else {
+                    <p-tag value="Salida después de este día" severity="info"></p-tag>
+                  }
+                </td>
+                <td>{{ s.exited_at ? (s.exited_at | date : 'dd/MM/yyyy HH:mm') : '—' }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        }
+      }
+    </p-card>
+
+    <app-sale-receipt-sheet
+      [isOpen]="ticketSheetOpen"
+      [receipt]="receiptForSheet"
+      [entryTicket]="entryTicketForSheet"
+      (closed)="onTicketSheetClosed()"
+    />
+  }
+</ion-content>
