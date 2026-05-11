@@ -13,7 +13,7 @@ return new class extends Migration
         Schema::create('push_devices', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->text('token');
+            $table->string('token', 255);
             $table->string('platform', 32);
             $table->timestamps();
 

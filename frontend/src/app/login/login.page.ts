@@ -10,8 +10,8 @@ import { AuthService } from '../services/auth.service';
   standalone: false,
 })
 export class LoginPage {
-  email = 'admin@parqueadero.local';
-  password = 'password';
+  email = '';
+  password = '';
   loading = false;
 
   constructor(

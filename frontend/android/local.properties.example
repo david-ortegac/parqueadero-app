@@ -1,6 +1,0 @@
-# Copia este archivo a local.properties y ajusta la ruta del Android SDK.
-# En Windows (Android Studio por defecto):
-# sdk.dir=C\:\\Users\\TU_USUARIO\\AppData\\Local\\Android\\Sdk
-# O define la variable de entorno ANDROID_HOME con la misma ruta.
-
-sdk.dir=

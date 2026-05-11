@@ -18,3 +18,6 @@ frontend/libpeerconnection.log
 frontend/testem.log
 frontend/typings
 frontend/android
+frontend/www
+frontend/.firebase
+frontend/.agents
