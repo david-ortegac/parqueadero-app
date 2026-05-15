@@ -5,9 +5,9 @@
 .pp-login-hero {
   background: linear-gradient(145deg, #0f2744 0%, #1e3a5f 45%, #2563eb 100%);
   color: #fff;
-  padding: 1.75rem 1.5rem 2.25rem;
+  padding: 1.75rem 1.5rem 2.5rem;
   border-radius: 0 0 24px 24px;
-  margin: -0.5rem -0.5rem 0;
+  margin: -0.5rem calc(-0.5rem - var(--ion-padding-start, 16px)) 0 calc(-0.5rem - var(--ion-padding-end, 16px));
   box-shadow: 0 8px 24px rgba(15, 39, 68, 0.2);
 }
 
@@ -39,7 +39,7 @@
 }
 
 .pp-login-card {
-  margin: -2rem 1rem 1rem;
+  margin: -1.5rem 0 1.25rem;
   position: relative;
   z-index: 1;
 }
@@ -51,7 +51,24 @@
 .pp-login-fields {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
+}
+
+.pp-login-field-gap {
+  margin-top: 1.25rem;
+}
+
+::ng-deep .pp-login-card .p-card-caption {
+  margin-bottom: 0.5rem;
+}
+
+::ng-deep .pp-login-card .p-card-body {
+  padding-top: 0.75rem;
+}
+
+::ng-deep .pp-login-fields .p-floatlabel {
+  width: 100%;
 }
 
 .pp-login-fields .w-full {

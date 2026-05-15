@@ -4,6 +4,7 @@ import { CardModule } from 'primeng/card';
 import { ChartModule } from 'primeng/chart';
 import { DividerModule } from 'primeng/divider';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ProgressBarModule } from 'primeng/progressbar';
@@ -21,6 +22,7 @@ import { TagModule } from 'primeng/tag';
     ChartModule,
     DividerModule,
     FloatLabelModule,
+    InputNumberModule,
     InputTextModule,
     PasswordModule,
     ProgressBarModule,
@@ -34,6 +36,7 @@ import { TagModule } from 'primeng/tag';
     ChartModule,
     DividerModule,
     FloatLabelModule,
+    InputNumberModule,
     InputTextModule,
     PasswordModule,
     ProgressBarModule,

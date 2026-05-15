@@ -110,11 +110,10 @@ export class Tab1Page implements OnInit, OnDestroy {
     this.chartOptions = {
       plugins: {
         legend: {
-          position: 'bottom',
-          labels: { usePointStyle: true, padding: 16 },
+          display: false,
         },
       },
-      cutout: '68%',
+      cutout: '72%',
       maintainAspectRatio: false,
     };
     this.load();

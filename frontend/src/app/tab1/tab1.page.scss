@@ -60,15 +60,17 @@
 
 .pp-legend {
   display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  margin-bottom: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .pp-legend-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .pp-dot {
@@ -79,20 +81,22 @@
 }
 
 .pp-dot--car {
-  background: var(--pp-chart-car);
+  background: var(--pp-chart-car, #2563eb);
 }
 
 .pp-dot--moto {
-  background: var(--pp-chart-moto);
+  background: var(--pp-chart-moto, #f97316);
 }
 
 .pp-legend-label {
-  flex: 1;
   font-size: 0.9rem;
   color: var(--ion-color-dark);
 }
 
 .pp-legend-pct {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ion-color-medium);
   font-variant-numeric: tabular-nums;
 }
 

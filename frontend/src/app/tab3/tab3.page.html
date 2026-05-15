@@ -11,6 +11,113 @@
     </p-card>
   }
 
+  @if (auth.hasRole('admin')) {
+    <p-card
+      header="Configuración del parqueadero"
+      subheader="Dirección y capacidad máxima de vehículos"
+      styleClass="pp-card-shadow ion-margin-top"
+    >
+      @if (loadingInfo) {
+        <div class="pp-center"><ion-spinner name="crescent" color="primary"></ion-spinner></div>
+      } @else {
+        <div class="pp-settings-stack">
+
+          <!-- Nombre -->
+          <div class="pp-field">
+            <label class="pp-field-label" for="fld-park-name">
+              <ion-icon name="business-outline" class="pp-field-icon"></ion-icon>
+              Nombre del parqueadero
+            </label>
+            <input
+              id="fld-park-name"
+              pInputText
+              [(ngModel)]="editName"
+              placeholder="Ej. Parqueadero Central"
+              autocomplete="off"
+              class="w-full"
+            />
+            <p class="pp-field-hint">Aparecerá en el encabezado de los tickets.</p>
+          </div>
+
+          <!-- Dirección -->
+          <div class="pp-field">
+            <label class="pp-field-label" for="fld-park-address">
+              <ion-icon name="location-outline" class="pp-field-icon"></ion-icon>
+              Dirección
+            </label>
+            <input
+              id="fld-park-address"
+              pInputText
+              [(ngModel)]="editAddress"
+              placeholder="Ej. Calle 10 # 5-32, Bogotá"
+              autocomplete="off"
+              class="w-full"
+            />
+            <p class="pp-field-hint">Se imprimirá en el ticket de ingreso y en el recibo de cobro.</p>
+          </div>
+
+          <div class="pp-capacity-row">
+            <!-- Capacidad carros -->
+            <div class="pp-field pp-capacity-field">
+              <label class="pp-field-label" for="fld-car-cap">
+                <ion-icon name="car-outline" class="pp-field-icon"></ion-icon>
+                Cupos — Carros
+              </label>
+              <p-inputnumber
+                inputId="fld-car-cap"
+                [(ngModel)]="editCarCapacity"
+                [min]="0"
+                [max]="9999"
+                [showButtons]="true"
+                buttonLayout="horizontal"
+                incrementButtonIcon="pi pi-plus"
+                decrementButtonIcon="pi pi-minus"
+                [allowEmpty]="true"
+                placeholder="Sin límite"
+                styleClass="w-full"
+              />
+              <p class="pp-field-hint">Déjalo vacío para no establecer límite.</p>
+            </div>
+
+            <!-- Capacidad motos -->
+            <div class="pp-field pp-capacity-field">
+              <label class="pp-field-label" for="fld-moto-cap">
+                <ion-icon name="bicycle-outline" class="pp-field-icon"></ion-icon>
+                Cupos — Motos
+              </label>
+              <p-inputnumber
+                inputId="fld-moto-cap"
+                [(ngModel)]="editMotoCapacity"
+                [min]="0"
+                [max]="9999"
+                [showButtons]="true"
+                buttonLayout="horizontal"
+                incrementButtonIcon="pi pi-plus"
+                decrementButtonIcon="pi pi-minus"
+                [allowEmpty]="true"
+                placeholder="Sin límite"
+                styleClass="w-full"
+              />
+              <p class="pp-field-hint">Déjalo vacío para no establecer límite.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="pp-settings-actions">
+          <p-button
+            label="Guardar cambios"
+            icon="pi pi-check"
+            [loading]="savingInfo"
+            [disabled]="savingInfo"
+            styleClass="w-full"
+            (onClick)="saveParkingInfo()"
+          />
+        </div>
+      }
+    </p-card>
+  }
+
   <p-card header="Notificaciones push" subheader="FCM en dispositivo nativo" styleClass="pp-card-shadow ion-margin-top">
     <p class="pp-push-msg">{{ pushStatus }}</p>
     <p-button label="Activar push (dispositivo)" icon="pi pi-bell" styleClass="w-full" (onClick)="setupPush()" />

@@ -194,4 +194,19 @@ export class ParkingApiService {
       body,
     );
   }
+
+  getAdminParkingInfo(): Observable<ParkingInfo> {
+    return this.http.get<ParkingInfo>(`${this.base}/admin/parking-info`);
+  }
+
+  patchAdminParkingInfo(body: Partial<ParkingInfo>): Observable<ParkingInfo> {
+    return this.http.patch<ParkingInfo>(`${this.base}/admin/parking-info`, body);
+  }
+}
+
+export interface ParkingInfo {
+  name: string | null;
+  address: string | null;
+  car_capacity: number | null;
+  motorcycle_capacity: number | null;
 }

@@ -4,7 +4,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="pp-login-content">
+<ion-content class="pp-login-content ion-padding">
   <div class="pp-login-hero">
     <div class="pp-login-brand">
       <span class="pp-login-brand-title">Parqueadero</span>
@@ -15,11 +15,11 @@
 
   <p-card header="Iniciar sesión" subheader="Credenciales del sistema" styleClass="pp-login-card pp-card-shadow">
     <div class="pp-login-fields">
-      <p-floatlabel>
+      <p-floatlabel variant="on">
         <input pInputText id="login-email" [(ngModel)]="email" type="email" autocomplete="email" class="w-full" />
         <label for="login-email">Correo</label>
       </p-floatlabel>
-      <p-floatlabel class="ion-margin-top">
+      <p-floatlabel variant="on" class="pp-login-field-gap">
         <p-password
           inputId="login-password"
           [(ngModel)]="password"

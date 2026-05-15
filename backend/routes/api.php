@@ -38,6 +38,9 @@ Route::prefix('v1')->group(function (): void {
 
             Route::get('/capacity', [CapacityConfigController::class, 'index']);
             Route::post('/capacity', [CapacityConfigController::class, 'store']);
+
+            Route::get('/parking-info', [\App\Http\Controllers\Api\Admin\ParkingConfigController::class, 'show']);
+            Route::patch('/parking-info', [\App\Http\Controllers\Api\Admin\ParkingConfigController::class, 'update']);
         });
 
         Route::middleware('role:admin,operator')->prefix('operator')->group(function (): void {

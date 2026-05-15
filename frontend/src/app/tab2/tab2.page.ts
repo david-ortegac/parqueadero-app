@@ -72,6 +72,7 @@ export class Tab2Page implements OnInit, OnDestroy {
   activeSessions: ParkingSession[] = [];
   /** Filtro por placa (sesiones activas, operador/admin). */
   activeSessionsPlateFilter = '';
+  expandedRows: { [key: string]: boolean } = {};
   vehicles: OwnerVehicle[] = [];
   loadingList = false;
 
@@ -451,6 +452,20 @@ export class Tab2Page implements OnInit, OnDestroy {
     queueMicrotask(() => {
       this.ownerParkingAccordionAllowClose = false;
     });
+  }
+
+  isRowExpanded(id: number): boolean {
+    return !!this.expandedRows[String(id)];
+  }
+
+  toggleRowExpansion(id: number): void {
+    const key = String(id);
+    if (this.expandedRows[key]) {
+      delete this.expandedRows[key];
+    } else {
+      this.expandedRows[key] = true;
+    }
+    this.expandedRows = { ...this.expandedRows };
   }
 
   ownerParkingAccordionGlyph(vehicleId: number): string {
