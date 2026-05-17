@@ -4,6 +4,7 @@ import { PushNotifications } from '@capacitor/push-notifications';
 import { Capacitor } from '@capacitor/core';
 import { AuthService } from '../services/auth.service';
 import { ParkingApiService, ParkingInfo } from '../services/parking-api.service';
+import { ThemeService } from '../services/theme.service';
 
 @Component({
   selector: 'app-tab3',
@@ -13,6 +14,15 @@ import { ParkingApiService, ParkingInfo } from '../services/parking-api.service'
 })
 export class Tab3Page implements OnInit {
   pushStatus = 'No inicializado';
+
+  displayRole(role: string): string {
+    const roles: Record<string, string> = {
+      admin: 'Administrador',
+      operator: 'Operario',
+      vehicle_owner: 'Usuario',
+    };
+    return roles[role] || role;
+  }
 
   loadingInfo = false;
   savingInfo = false;
@@ -26,6 +36,7 @@ export class Tab3Page implements OnInit {
     readonly auth: AuthService,
     private readonly api: ParkingApiService,
     private readonly toast: ToastController,
+    readonly theme: ThemeService,
   ) {}
 
   ngOnInit(): void {

@@ -20,11 +20,14 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Services\FCMService;
 
 final class ParkingOperatorController extends Controller
 {
     public function __construct(
         private readonly ParkingBillingService $billing,
+        private readonly FCMService $fcm,
     ) {}
 
     /**
@@ -194,6 +197,20 @@ final class ParkingOperatorController extends Controller
             $session->load($this->relationsForSessionVehicleWithOwner());
             $this->attachOwnersByDocumentForSessions(collect([$session]));
 
+            try {
+                $owner = $session->vehicle->owner ?? null;
+                if ($owner instanceof User) {
+                    $this->fcm->sendToUser(
+                        $owner,
+                        '🚗 Vehículo Ingresado',
+                        "Tu vehículo con placa {$session->vehicle->plate} acaba de ingresar al parqueadero.",
+                        ['session_id' => (string) $session->id]
+                    );
+                }
+            } catch (\Throwable $e) {
+                Log::error("Error al enviar push de ingreso: " . $e->getMessage());
+            }
+
             return response()->json([
                 'session' => $session,
             ], 201);
@@ -222,6 +239,21 @@ final class ParkingOperatorController extends Controller
 
         $session->load($this->relationsForSessionVehicleWithOwner());
         $this->attachOwnersByDocumentForSessions(collect([$session]));
+
+        try {
+            $owner = $session->vehicle->owner ?? null;
+            if ($owner instanceof User) {
+                $formattedAmount = number_format((float) $amountDue, 0, ',', '.');
+                $this->fcm->sendToUser(
+                    $owner,
+                    '💸 Salida del Parqueadero',
+                    "Tu vehículo con placa {$session->vehicle->plate} ha salido. Valor pagado: \${$formattedAmount}.",
+                    ['session_id' => (string) $session->id]
+                );
+            }
+        } catch (\Throwable $e) {
+            Log::error("Error al enviar push de salida: " . $e->getMessage());
+        }
 
         return response()->json($session);
     }
@@ -286,11 +318,13 @@ final class ParkingOperatorController extends Controller
             ->join('vehicles', 'vehicles.id', '=', 'parking_sessions.vehicle_id')
             ->selectRaw('vehicles.vehicle_class, sum(parking_sessions.amount_paid) as total')
             ->groupBy('vehicles.vehicle_class')
+            ->get()
             ->pluck('total', 'vehicle_class');
 
         $byMode = (clone $query)
             ->selectRaw('billing_mode, sum(amount_paid) as total')
             ->groupBy('billing_mode')
+            ->get()
             ->pluck('total', 'billing_mode');
 
         return response()->json([

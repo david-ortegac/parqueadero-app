@@ -1,13 +1,18 @@
 <ion-header class="ion-no-border">
   <ion-toolbar color="primary" class="pp-toolbar">
     <ion-title>Cuenta</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="theme.toggleDarkMode()">
+        <ion-icon slot="icon-only" [name]="theme.isDarkMode ? 'sunny-outline' : 'moon-outline'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding pp-page">
   @if (auth.getUser(); as u) {
     <p-card [header]="u.name" [subheader]="u.email" styleClass="pp-card-shadow">
-      <p class="pp-role">Rol: <strong>{{ u.role }}</strong></p>
+      <p class="pp-role">Rol: <strong>{{ displayRole(u.role) }}</strong></p>
     </p-card>
   }
 
@@ -117,6 +122,7 @@
       }
     </p-card>
   }
+
 
   <p-card header="Notificaciones push" subheader="FCM en dispositivo nativo" styleClass="pp-card-shadow ion-margin-top">
     <p class="pp-push-msg">{{ pushStatus }}</p>

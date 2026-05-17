@@ -42,6 +42,8 @@ import {
   sanitizeDocumentDigits,
 } from '../utils/numeric-document';
 
+import { ThemeService } from '../services/theme.service';
+
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
@@ -109,6 +111,7 @@ export class Tab2Page implements OnInit, OnDestroy {
     private readonly api: ParkingApiService,
     private readonly toast: ToastController,
     private readonly route: ActivatedRoute,
+    readonly theme: ThemeService,
   ) {}
 
   /** Tipado explícito para el modal (evita errores de narrowing en la plantilla). */

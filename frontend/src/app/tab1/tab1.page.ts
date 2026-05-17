@@ -23,6 +23,8 @@ import {
   Rate,
 } from '../services/parking-api.service';
 
+import { ThemeService } from '../services/theme.service';
+
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
@@ -113,6 +115,7 @@ export class Tab1Page implements OnInit, OnDestroy {
     private readonly toast: ToastController,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
+    readonly theme: ThemeService,
   ) {}
 
   ngOnInit(): void {

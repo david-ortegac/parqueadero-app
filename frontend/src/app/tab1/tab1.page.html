@@ -2,6 +2,9 @@
   <ion-toolbar color="primary" class="pp-toolbar">
     <ion-title>Inicio</ion-title>
     <ion-buttons slot="end">
+      <ion-button (click)="theme.toggleDarkMode()">
+        <ion-icon slot="icon-only" [name]="theme.isDarkMode ? 'sunny-outline' : 'moon-outline'"></ion-icon>
+      </ion-button>
       <span class="pp-brand-mark ion-padding-end">Parking</span>
     </ion-buttons>
   </ion-toolbar>

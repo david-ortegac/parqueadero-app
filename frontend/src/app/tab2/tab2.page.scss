@@ -455,7 +455,7 @@ ion-accordion.pp-easy-acc .pp-easy-acc-header::part(native) {
 .pp-easy-acc-panel {
   padding: 1rem 1rem 1.25rem;
   background: var(--ion-background-color, #fff);
-  border-top: 1px solid rgba(13, 148, 136, 0.15);
+  border-top: 1px solid rgb(255, 255, 255);
 }
 
 .ion-palette-dark ion-accordion.pp-easy-acc {
@@ -463,12 +463,12 @@ ion-accordion.pp-easy-acc .pp-easy-acc-header::part(native) {
 }
 
 .ion-palette-dark ion-accordion.pp-easy-acc .pp-easy-acc-header {
-  --background: rgba(13, 148, 136, 0.1);
+  --background: rgb(255, 255, 255);
 }
 
 ion-accordion.pp-easy-acc.accordion-expanded .pp-easy-acc-panel,
 ion-accordion.pp-easy-acc[expanded] .pp-easy-acc-panel {
-  border-top-color: rgba(13, 148, 136, 0.35);
+  border-top-color: rgb(255, 255, 255);
 }
 
 .pp-easy-acc-close {

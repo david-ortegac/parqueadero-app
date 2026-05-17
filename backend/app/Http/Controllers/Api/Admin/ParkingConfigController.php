@@ -10,24 +10,45 @@ use App\Models\CapacityConfig;
 use App\Models\ParkingSetting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Log;
 
 final class ParkingConfigController extends Controller
 {
     public function show(): JsonResponse
     {
-        $settings = ParkingSetting::query()->pluck('value', 'key');
-        
-        $carCapacity = CapacityConfig::query()
-            ->where('vehicle_class', VehicleClass::Car->value)
-            ->value('max_slots');
-            
-        $motoCapacity = CapacityConfig::query()
-            ->where('vehicle_class', VehicleClass::Motorcycle->value)
-            ->value('max_slots');
+        $name = null;
+        $address = null;
+        $carCapacity = null;
+        $motoCapacity = null;
+
+        try {
+            if (Schema::hasTable('parking_settings')) {
+                $settings = ParkingSetting::query()->pluck('value', 'key');
+                $name = $settings->get('parking_name');
+                $address = $settings->get('parking_address');
+            }
+        } catch (\Throwable $e) {
+            Log::warning("Error al consultar la tabla parking_settings: " . $e->getMessage());
+        }
+
+        try {
+            if (Schema::hasTable('capacity_configs')) {
+                $carCapacity = CapacityConfig::query()
+                    ->where('vehicle_class', VehicleClass::Car->value)
+                    ->value('max_slots');
+                    
+                $motoCapacity = CapacityConfig::query()
+                    ->where('vehicle_class', VehicleClass::Motorcycle->value)
+                    ->value('max_slots');
+            }
+        } catch (\Throwable $e) {
+            Log::warning("Error al consultar la tabla capacity_configs: " . $e->getMessage());
+        }
 
         return response()->json([
-            'name' => $settings->get('parking_name'),
-            'address' => $settings->get('parking_address'),
+            'name' => $name,
+            'address' => $address,
             'car_capacity' => $carCapacity,
             'motorcycle_capacity' => $motoCapacity,
         ]);
@@ -42,40 +63,48 @@ final class ParkingConfigController extends Controller
             'motorcycle_capacity' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        if (array_key_exists('name', $data)) {
-            ParkingSetting::query()->updateOrCreate(
-                ['key' => 'parking_name'],
-                ['value' => $data['name']]
-            );
-        }
-
-        if (array_key_exists('address', $data)) {
-            ParkingSetting::query()->updateOrCreate(
-                ['key' => 'parking_address'],
-                ['value' => $data['address']]
-            );
-        }
-
-        if (array_key_exists('car_capacity', $data)) {
-            if ($data['car_capacity'] === null) {
-                CapacityConfig::query()->where('vehicle_class', VehicleClass::Car->value)->delete();
-            } else {
-                CapacityConfig::query()->updateOrCreate(
-                    ['vehicle_class' => VehicleClass::Car->value],
-                    ['max_slots' => $data['car_capacity']]
+        try {
+            if (array_key_exists('name', $data)) {
+                ParkingSetting::query()->updateOrCreate(
+                    ['key' => 'parking_name'],
+                    ['value' => $data['name']]
                 );
             }
-        }
 
-        if (array_key_exists('motorcycle_capacity', $data)) {
-            if ($data['motorcycle_capacity'] === null) {
-                CapacityConfig::query()->where('vehicle_class', VehicleClass::Motorcycle->value)->delete();
-            } else {
-                CapacityConfig::query()->updateOrCreate(
-                    ['vehicle_class' => VehicleClass::Motorcycle->value],
-                    ['max_slots' => $data['motorcycle_capacity']]
+            if (array_key_exists('address', $data)) {
+                ParkingSetting::query()->updateOrCreate(
+                    ['key' => 'parking_address'],
+                    ['value' => $data['address']]
                 );
             }
+
+            if (array_key_exists('car_capacity', $data)) {
+                if ($data['car_capacity'] === null) {
+                    CapacityConfig::query()->where('vehicle_class', VehicleClass::Car->value)->delete();
+                } else {
+                    CapacityConfig::query()->updateOrCreate(
+                        ['vehicle_class' => VehicleClass::Car->value],
+                        ['max_slots' => $data['car_capacity']]
+                    );
+                }
+            }
+
+            if (array_key_exists('motorcycle_capacity', $data)) {
+                if ($data['motorcycle_capacity'] === null) {
+                    CapacityConfig::query()->where('vehicle_class', VehicleClass::Motorcycle->value)->delete();
+                } else {
+                    CapacityConfig::query()->updateOrCreate(
+                        ['vehicle_class' => VehicleClass::Motorcycle->value],
+                        ['max_slots' => $data['motorcycle_capacity']]
+                    );
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::error("Error al actualizar la configuración del parqueadero: " . $e->getMessage());
+            return response()->json([
+                'message' => 'No se pudo guardar la configuración. Asegúrate de haber ejecutado las migraciones en tu servidor de producción.',
+                'error' => $e->getMessage()
+            ], 500);
         }
 
         return $this->show();
