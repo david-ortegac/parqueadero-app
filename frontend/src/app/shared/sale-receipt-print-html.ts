@@ -63,8 +63,8 @@ const THERMAL_TICKET_CSS = `
       color: #444;
     }
     .barcode-block {
-      margin: 8px 0 4px;
-      padding: 2px 0;
+      margin: 12px 0 6px;
+      padding: 4px 0;
     }
     .barcode-block img {
       max-width: 100%;
@@ -74,8 +74,8 @@ const THERMAL_TICKET_CSS = `
       image-rendering: pixelated;
     }
     .qr-block {
-      margin: 8px 0 4px;
-      padding: 4px 0;
+      margin: 12px 0 6px;
+      padding: 6px 0;
     }
     .qr-block img {
       display: block;

@@ -44,6 +44,7 @@ Route::prefix('v1')->group(function (): void {
         });
 
         Route::middleware('role:admin,operator')->prefix('operator')->group(function (): void {
+            Route::get('/parking-info', [\App\Http\Controllers\Api\Admin\ParkingConfigController::class, 'show']);
             Route::get('/vehicle-owners', [VehicleOwnerActivationController::class, 'index']);
 
             Route::post('/check-in', [ParkingOperatorController::class, 'checkIn']);

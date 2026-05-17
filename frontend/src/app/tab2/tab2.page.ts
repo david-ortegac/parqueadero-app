@@ -18,6 +18,7 @@ import {
   OwnerActiveSession,
   OwnerVehicle,
   ParkingApiService,
+  ParkingInfo,
   ParkingSession,
 } from '../services/parking-api.service';
 import {
@@ -75,6 +76,8 @@ export class Tab2Page implements OnInit, OnDestroy {
   expandedRows: { [key: string]: boolean } = {};
   vehicles: OwnerVehicle[] = [];
   loadingList = false;
+
+  parkingInfo: ParkingInfo | null = null;
 
   /** YYYY-MM-DD (local) para el informe diario */
   historyDate = this.isoDateLocal(new Date());
@@ -161,7 +164,20 @@ export class Tab2Page implements OnInit, OnDestroy {
         this.applyOwnerPlateFromRoute();
       }
     });
+  }
+
+  ionViewWillEnter(): void {
     this.refresh();
+    this.loadParkingInfo();
+  }
+
+  loadParkingInfo(): void {
+    const role = this.auth.getUser()?.role;
+    if (role === 'admin' || role === 'operator') {
+      this.api.getOperatorParkingInfo().subscribe({
+        next: (info) => (this.parkingInfo = info),
+      });
+    }
   }
 
   ngOnDestroy(): void {
@@ -329,7 +345,7 @@ export class Tab2Page implements OnInit, OnDestroy {
         next: async (res) => {
           const t = await this.toast.create({ message: 'Ingreso registrado', duration: 2000, color: 'success' });
           await t.present();
-          this.ticketSheet = { mode: 'entry', data: buildEntryTicketFromSession(res.session) };
+          this.ticketSheet = { mode: 'entry', data: buildEntryTicketFromSession(res.session, this.parkingInfo) };
           this.ticketSheetOpen = true;
           this.plate = '';
           this.vehicleClass = 'car';
@@ -354,7 +370,7 @@ export class Tab2Page implements OnInit, OnDestroy {
 
   /** Reimprime el ticket de ingreso (ej. ticket perdido). */
   reprintEntryTicket(session: ParkingSession): void {
-    this.ticketSheet = { mode: 'entry', data: buildEntryTicketFromSession(session) };
+    this.ticketSheet = { mode: 'entry', data: buildEntryTicketFromSession(session, this.parkingInfo) };
     this.ticketSheetOpen = true;
   }
 
@@ -403,7 +419,7 @@ export class Tab2Page implements OnInit, OnDestroy {
   }
 
   openReceiptForSale(session: ParkingSession): void {
-    this.ticketSheet = { mode: 'sale', data: buildSaleReceiptFromSession(session) };
+    this.ticketSheet = { mode: 'sale', data: buildSaleReceiptFromSession(session, this.parkingInfo) };
     this.ticketSheetOpen = true;
   }
 
@@ -454,11 +470,11 @@ export class Tab2Page implements OnInit, OnDestroy {
     });
   }
 
-  isRowExpanded(id: number): boolean {
+  isRowExpanded(id: number | string): boolean {
     return !!this.expandedRows[String(id)];
   }
 
-  toggleRowExpansion(id: number): void {
+  toggleRowExpansion(id: number | string): void {
     const key = String(id);
     if (this.expandedRows[key]) {
       delete this.expandedRows[key];

@@ -55,7 +55,7 @@
 }
 
 .pp-r-barcode {
-  margin: 8px 0 4px;
+  margin: 16px 0 10px;
   text-align: center;
 
   img {
@@ -68,12 +68,12 @@
 }
 
 .pp-r-qr {
-  margin: 8px 0 4px;
+  margin: 16px 0 10px;
   text-align: center;
 
   img {
-    width: 120px;
-    height: 120px;
+    width: 130px;
+    height: 130px;
     display: block;
     margin: 0 auto;
     image-rendering: pixelated;

@@ -387,21 +387,28 @@
           >
           <ng-template pTemplate="header">
             <tr>
+              <th style="width: 3rem" class="pp-show-on-mobile-only"></th>
               <th>Placa</th>
-              <th>Documento</th>
-              <th>Propietario</th>
+              <th class="pp-hide-on-mobile">Documento</th>
+              <th class="pp-hide-on-mobile">Propietario</th>
               <th>Modalidad</th>
-              <th>Ingreso</th>
-              <th>Salida</th>
-              <th>Cobrado</th>
-              <th style="width: 52px" class="pp-no-print-col"></th>
+              <th class="pp-hide-on-mobile">Ingreso</th>
+              <th class="pp-hide-on-mobile">Salida</th>
+              <th class="pp-hide-on-mobile">Cobrado</th>
+              <th style="width: 52px" class="pp-no-print-col pp-hide-on-mobile"></th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-s>
-            <tr>
+            <tr (click)="toggleRowExpansion('ce-' + s.id)" class="pp-row-click" [class.pp-row-expanded]="isRowExpanded('ce-' + s.id)">
+              <td class="pp-show-on-mobile-only" style="width: 3rem;">
+                <button pButton pRipple type="button" class="p-button-text p-button-rounded p-button-plain"
+                  [icon]="isRowExpanded('ce-' + s.id) ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+                  (click)="$event.stopPropagation(); toggleRowExpansion('ce-' + s.id)"
+                ></button>
+              </td>
               <td><strong>{{ s.vehicle?.plate }}</strong></td>
-              <td class="pp-session-doc">{{ sessionDepositorDocument(s) }}</td>
-              <td>
+              <td class="pp-session-doc pp-hide-on-mobile">{{ sessionDepositorDocument(s) }}</td>
+              <td class="pp-hide-on-mobile">
                 @if (sessionOwnerAppName(s); as ownerNm) {
                   {{ ownerNm }}
                 } @else {
@@ -409,10 +416,10 @@
                 }
               </td>
               <td><p-tag [value]="billingModeLabel(s.billing_mode)" severity="success"></p-tag></td>
-              <td>{{ s.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</td>
-              <td>{{ s.exited_at | date : coDateTimeFormat : coTimezone : coLocale }}</td>
-              <td>{{ s.amount_paid ?? s.amount_due }} COP</td>
-              <td>
+              <td class="pp-hide-on-mobile">{{ s.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</td>
+              <td class="pp-hide-on-mobile">{{ s.exited_at | date : coDateTimeFormat : coTimezone : coLocale }}</td>
+              <td class="pp-hide-on-mobile">{{ s.amount_paid ?? s.amount_due }} COP</td>
+              <td class="pp-no-print-col pp-hide-on-mobile">
                 <p-button
                   icon="pi pi-print"
                   [rounded]="true"
@@ -423,6 +430,47 @@
                 />
               </td>
             </tr>
+            @if (isRowExpanded('ce-' + s.id)) {
+              <tr>
+                <td colspan="9" class="pp-expanded-cell">
+                  <div class="pp-row-expanded-content">
+                    <ul class="pp-owner-parking-list">
+                      <li>
+                        <span class="pp-owner-k">Documento</span>
+                        <span class="pp-owner-v pp-session-doc">{{ sessionDepositorDocument(s) }}</span>
+                      </li>
+                      <li>
+                        <span class="pp-owner-k">Propietario</span>
+                        <span class="pp-owner-v">
+                          @if (sessionOwnerAppName(s); as ownerNm) {
+                            {{ ownerNm }}
+                          } @else {
+                            <span class="pp-session-doc pp-muted">Cliente sin registro</span>
+                          }
+                        </span>
+                      </li>
+                      <li>
+                        <span class="pp-owner-k">Ingreso</span>
+                        <span class="pp-owner-v">{{ s.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</span>
+                      </li>
+                      <li>
+                        <span class="pp-owner-k">Salida</span>
+                        <span class="pp-owner-v">{{ s.exited_at | date : coDateTimeFormat : coTimezone : coLocale }}</span>
+                      </li>
+                      <li>
+                        <span class="pp-owner-k">Cobrado</span>
+                        <span class="pp-owner-v">{{ s.amount_paid ?? s.amount_due }} COP</span>
+                      </li>
+                      <li style="margin-top: 0.5rem;" class="pp-no-print-col">
+                        <div class="pp-active-actions" style="flex-direction: row; justify-content: flex-start;">
+                          <p-button label="Ticket" icon="pi pi-print" size="small" severity="secondary" [outlined]="true" (onClick)="openReceiptForSale(s)" />
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            }
           </ng-template>
           </p-table>
         }
@@ -434,20 +482,27 @@
           <p-table [value]="dailyHistory.open_stays" styleClass="p-datatable-sm pp-table" [tableStyle]="{ 'min-width': '100%' }">
             <ng-template pTemplate="header">
               <tr>
+                <th style="width: 3rem" class="pp-show-on-mobile-only"></th>
                 <th>Placa</th>
-                <th>Documento</th>
-                <th>Propietario</th>
+                <th class="pp-hide-on-mobile">Documento</th>
+                <th class="pp-hide-on-mobile">Propietario</th>
                 <th>Modalidad</th>
-                <th>Ingreso</th>
-                <th>Estado</th>
-                <th>Salida (si aplica)</th>
+                <th class="pp-hide-on-mobile">Ingreso</th>
+                <th class="pp-hide-on-mobile">Estado</th>
+                <th class="pp-hide-on-mobile">Salida (si aplica)</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-s>
-              <tr>
+              <tr (click)="toggleRowExpansion('os-' + s.id)" class="pp-row-click" [class.pp-row-expanded]="isRowExpanded('os-' + s.id)">
+                <td class="pp-show-on-mobile-only" style="width: 3rem;">
+                  <button pButton pRipple type="button" class="p-button-text p-button-rounded p-button-plain"
+                    [icon]="isRowExpanded('os-' + s.id) ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+                    (click)="$event.stopPropagation(); toggleRowExpansion('os-' + s.id)"
+                  ></button>
+                </td>
                 <td><strong>{{ s.vehicle?.plate }}</strong></td>
-                <td class="pp-session-doc">{{ sessionDepositorDocument(s) }}</td>
-                <td>
+                <td class="pp-session-doc pp-hide-on-mobile">{{ sessionDepositorDocument(s) }}</td>
+                <td class="pp-hide-on-mobile">
                   @if (sessionOwnerAppName(s); as ownerNm) {
                     {{ ownerNm }}
                   } @else {
@@ -455,16 +510,58 @@
                   }
                 </td>
                 <td><p-tag [value]="billingModeLabel(s.billing_mode)" severity="warn"></p-tag></td>
-                <td>{{ s.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</td>
-                <td>
+                <td class="pp-hide-on-mobile">{{ s.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</td>
+                <td class="pp-hide-on-mobile">
                   @if (s.status === 'active') {
                     <p-tag value="Dentro" severity="warn"></p-tag>
                   } @else {
                     <p-tag value="Salida después de este día" severity="info"></p-tag>
                   }
                 </td>
-                <td>{{ s.exited_at ? (s.exited_at | date : coDateTimeFormat : coTimezone : coLocale) : '—' }}</td>
+                <td class="pp-hide-on-mobile">{{ s.exited_at ? (s.exited_at | date : coDateTimeFormat : coTimezone : coLocale) : '—' }}</td>
               </tr>
+              @if (isRowExpanded('os-' + s.id)) {
+                <tr>
+                  <td colspan="8" class="pp-expanded-cell">
+                    <div class="pp-row-expanded-content">
+                      <ul class="pp-owner-parking-list">
+                        <li>
+                          <span class="pp-owner-k">Documento</span>
+                          <span class="pp-owner-v pp-session-doc">{{ sessionDepositorDocument(s) }}</span>
+                        </li>
+                        <li>
+                          <span class="pp-owner-k">Propietario</span>
+                          <span class="pp-owner-v">
+                            @if (sessionOwnerAppName(s); as ownerNm) {
+                              {{ ownerNm }}
+                            } @else {
+                              <span class="pp-session-doc pp-muted">Cliente sin registro</span>
+                            }
+                          </span>
+                        </li>
+                        <li>
+                          <span class="pp-owner-k">Ingreso</span>
+                          <span class="pp-owner-v">{{ s.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</span>
+                        </li>
+                        <li>
+                          <span class="pp-owner-k">Estado</span>
+                          <span class="pp-owner-v">
+                            @if (s.status === 'active') {
+                              <p-tag value="Dentro" severity="warn"></p-tag>
+                            } @else {
+                              <p-tag value="Salida después de este día" severity="info"></p-tag>
+                            }
+                          </span>
+                        </li>
+                        <li>
+                          <span class="pp-owner-k">Salida (si aplica)</span>
+                          <span class="pp-owner-v">{{ s.exited_at ? (s.exited_at | date : coDateTimeFormat : coTimezone : coLocale) : '—' }}</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+              }
             </ng-template>
           </p-table>
         }

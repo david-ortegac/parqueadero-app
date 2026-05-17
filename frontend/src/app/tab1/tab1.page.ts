@@ -63,6 +63,22 @@ export class Tab1Page implements OnInit, OnDestroy {
   /** Acordeón vehículos (una sección abierta a la vez). */
   ownerAccordionOpen: string | undefined = undefined;
 
+  expandedRows: { [key: string]: boolean } = {};
+
+  isRowExpanded(id: number | string): boolean {
+    return !!this.expandedRows[String(id)];
+  }
+
+  toggleRowExpansion(id: number | string): void {
+    const key = String(id);
+    if (this.expandedRows[key]) {
+      delete this.expandedRows[key];
+    } else {
+      this.expandedRows[key] = true;
+    }
+    this.expandedRows = { ...this.expandedRows };
+  }
+
   /** Acordeón tarifas admin (carros / motos). */
   ratesAccordionOpen: string | undefined = undefined;
 

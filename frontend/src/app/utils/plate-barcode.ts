@@ -13,12 +13,10 @@ export function getPlateBarcodeDataUrl(plateRaw: string): string | null {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     JsBarcode(svg, plate, {
       format: 'CODE128',
-      width: 1.15,
-      height: 42,
-      margin: 4,
-      displayValue: true,
-      fontSize: 11,
-      textMargin: 3,
+      width: 1.2,
+      height: 50,
+      margin: 10,
+      displayValue: false,
       background: '#ffffff',
       lineColor: '#000000',
     });

@@ -8,13 +8,21 @@
 </ion-header>
 
 <ion-content class="pp-login-content ion-padding">
-  <p-card header="Crear cuenta de propietario" subheader="Nombre completo, cédula, correo y contraseña" styleClass="pp-login-card pp-card-shadow">
+  <div class="pp-login-hero">
+    <div class="pp-login-brand">
+      <span class="pp-login-brand-title">Registro</span>
+      <span class="pp-login-brand-sub">Cuenta de propietario</span>
+    </div>
+    <p class="pp-login-tagline">Únete para ver el estado y cobrar por el tiempo de tus vehículos.</p>
+  </div>
+
+  <p-card header="Crear cuenta" subheader="Datos personales y de acceso" styleClass="pp-login-card pp-card-shadow">
     <div class="pp-login-fields">
-      <p-floatlabel>
+      <p-floatlabel variant="on">
         <input pInputText id="reg-name" [(ngModel)]="name" type="text" autocomplete="name" class="w-full" />
         <label for="reg-name">Nombre completo</label>
       </p-floatlabel>
-      <p-floatlabel class="ion-margin-top">
+      <p-floatlabel variant="on" class="pp-login-field-gap">
         <input
           pInputText
           id="reg-doc"
@@ -31,11 +39,11 @@
         />
         <label for="reg-doc">Cédula (solo números, máx. {{ documentMaxDigits }})</label>
       </p-floatlabel>
-      <p-floatlabel class="ion-margin-top">
+      <p-floatlabel variant="on" class="pp-login-field-gap">
         <input pInputText id="reg-email" [(ngModel)]="email" type="email" autocomplete="email" class="w-full" />
         <label for="reg-email">Correo</label>
       </p-floatlabel>
-      <p-floatlabel class="ion-margin-top">
+      <p-floatlabel variant="on" class="pp-login-field-gap">
         <p-password
           inputId="reg-password"
           [(ngModel)]="password"
@@ -47,7 +55,7 @@
         />
         <label for="reg-password">Contraseña</label>
       </p-floatlabel>
-      <p-floatlabel class="ion-margin-top">
+      <p-floatlabel variant="on" class="pp-login-field-gap">
         <p-password
           inputId="reg-password2"
           [(ngModel)]="passwordConfirm"

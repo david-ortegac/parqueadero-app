@@ -122,19 +122,44 @@
                 >
                   <ng-template pTemplate="header">
                     <tr>
+                      <th style="width: 3rem" class="pp-show-on-mobile-only"></th>
                       <th>Modalidad</th>
-                      <th>Ingreso</th>
-                      <th>Salida</th>
+                      <th class="pp-hide-on-mobile">Ingreso</th>
+                      <th class="pp-hide-on-mobile">Salida</th>
                       <th>Cobrado</th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-h>
-                    <tr>
+                    <tr (click)="toggleRowExpansion('oh-' + h.id)" class="pp-row-click" [class.pp-row-expanded]="isRowExpanded('oh-' + h.id)">
+                      <td class="pp-show-on-mobile-only" style="width: 3rem;">
+                        <button pButton pRipple type="button" class="p-button-text p-button-rounded p-button-plain"
+                          [icon]="isRowExpanded('oh-' + h.id) ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+                          (click)="$event.stopPropagation(); toggleRowExpansion('oh-' + h.id)"
+                        ></button>
+                      </td>
                       <td><p-tag [value]="billingModeLabel(h.billing_mode)" severity="secondary"></p-tag></td>
-                      <td>{{ h.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</td>
-                      <td>{{ h.exited_at ? (h.exited_at | date : coDateTimeFormat : coTimezone : coLocale) : '—' }}</td>
+                      <td class="pp-hide-on-mobile">{{ h.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</td>
+                      <td class="pp-hide-on-mobile">{{ h.exited_at ? (h.exited_at | date : coDateTimeFormat : coTimezone : coLocale) : '—' }}</td>
                       <td>{{ formatMoney(h.amount_paid ?? h.amount_due) }} COP</td>
                     </tr>
+                    @if (isRowExpanded('oh-' + h.id)) {
+                      <tr>
+                        <td colspan="5" class="pp-expanded-cell">
+                          <div class="pp-row-expanded-content">
+                            <ul class="pp-owner-parking-list">
+                              <li>
+                                <span class="pp-owner-k">Ingreso</span>
+                                <span class="pp-owner-v">{{ h.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</span>
+                              </li>
+                              <li>
+                                <span class="pp-owner-k">Salida</span>
+                                <span class="pp-owner-v">{{ h.exited_at ? (h.exited_at | date : coDateTimeFormat : coTimezone : coLocale) : '—' }}</span>
+                              </li>
+                            </ul>
+                          </div>
+                        </td>
+                      </tr>
+                    }
                   </ng-template>
                 </p-table>
               }
@@ -243,18 +268,25 @@
           <p-table [value]="vehicleOwners" styleClass="p-datatable-sm pp-table" [tableStyle]="{ 'min-width': '100%' }">
             <ng-template pTemplate="header">
               <tr>
+                <th style="width: 3rem" class="pp-show-on-mobile-only"></th>
                 <th>Nombre</th>
-                <th>Correo</th>
-                <th>Cédula</th>
+                <th class="pp-hide-on-mobile">Correo</th>
+                <th class="pp-hide-on-mobile">Cédula</th>
                 <th>Activo</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-o>
-              <tr>
+              <tr (click)="toggleRowExpansion('vo-' + o.id)" class="pp-row-click" [class.pp-row-expanded]="isRowExpanded('vo-' + o.id)">
+                <td class="pp-show-on-mobile-only" style="width: 3rem;">
+                  <button pButton pRipple type="button" class="p-button-text p-button-rounded p-button-plain"
+                    [icon]="isRowExpanded('vo-' + o.id) ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+                    (click)="$event.stopPropagation(); toggleRowExpansion('vo-' + o.id)"
+                  ></button>
+                </td>
                 <td>{{ o.name }}</td>
-                <td>{{ o.email }}</td>
-                <td>{{ o.document ?? '—' }}</td>
-                <td>
+                <td class="pp-hide-on-mobile">{{ o.email }}</td>
+                <td class="pp-hide-on-mobile">{{ o.document ?? '—' }}</td>
+                <td (click)="$event.stopPropagation()">
                   <ion-toggle
                     [checked]="o.is_active"
                     [disabled]="savingOwnerId === o.id || isOwnActiveVehicleOwnerRow(o)"
@@ -264,6 +296,24 @@
                   </ion-toggle>
                 </td>
               </tr>
+              @if (isRowExpanded('vo-' + o.id)) {
+                <tr>
+                  <td colspan="5" class="pp-expanded-cell">
+                    <div class="pp-row-expanded-content">
+                      <ul class="pp-owner-parking-list">
+                        <li>
+                          <span class="pp-owner-k">Correo</span>
+                          <span class="pp-owner-v">{{ o.email }}</span>
+                        </li>
+                        <li>
+                          <span class="pp-owner-k">Cédula</span>
+                          <span class="pp-owner-v">{{ o.document ?? '—' }}</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+              }
             </ng-template>
           </p-table>
         }

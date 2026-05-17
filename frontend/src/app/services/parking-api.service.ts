@@ -202,6 +202,10 @@ export class ParkingApiService {
   patchAdminParkingInfo(body: Partial<ParkingInfo>): Observable<ParkingInfo> {
     return this.http.patch<ParkingInfo>(`${this.base}/admin/parking-info`, body);
   }
+
+  getOperatorParkingInfo(): Observable<ParkingInfo> {
+    return this.http.get<ParkingInfo>(`${this.base}/operator/parking-info`);
+  }
 }
 
 export interface ParkingInfo {

@@ -1,6 +1,6 @@
 import { environment } from '../../environments/environment';
 import { labelBillingMode, labelVehicleClassShort } from '../constants/parking-billing.catalog';
-import { ParkingSession } from '../services/parking-api.service';
+import { ParkingInfo, ParkingSession } from '../services/parking-api.service';
 
 export interface SaleReceiptData {
   businessName: string;
@@ -62,7 +62,10 @@ export interface EntryTicketData {
   subscriptionCoverageLine?: string | null;
 }
 
-export function buildEntryTicketFromSession(session: ParkingSession): EntryTicketData {
+export function buildEntryTicketFromSession(
+  session: ParkingSession,
+  parkingInfo?: Partial<ParkingInfo> | null,
+): EntryTicketData {
   const v = session.vehicle;
   const due = Number.parseFloat(session.amount_due);
   const hasPeriod = Boolean(session.period_ends_at);
@@ -81,9 +84,9 @@ export function buildEntryTicketFromSession(session: ParkingSession): EntryTicke
   }
 
   return {
-    businessName: environment.receiptBusinessName || 'Parqueadero',
+    businessName: parkingInfo?.name || environment.receiptBusinessName || 'Parqueadero',
     nit: environment.receiptNit?.trim() || undefined,
-    address: environment.receiptAddress?.trim() || undefined,
+    address: parkingInfo?.address || environment.receiptAddress?.trim() || undefined,
     ticketNo: String(session.id),
     plate: (v?.plate ?? '—').toUpperCase(),
     vehicleClassLabel: labelVehicleClassShort(v?.vehicle_class ?? ''),
@@ -101,13 +104,16 @@ export type TicketSheetPayload =
   | { mode: 'sale'; data: SaleReceiptData }
   | { mode: 'entry'; data: EntryTicketData };
 
-export function buildSaleReceiptFromSession(session: ParkingSession): SaleReceiptData {
+export function buildSaleReceiptFromSession(
+  session: ParkingSession,
+  parkingInfo?: Partial<ParkingInfo> | null,
+): SaleReceiptData {
   const v = session.vehicle;
   const exited = session.exited_at ?? session.entered_at;
   return {
-    businessName: environment.receiptBusinessName || 'Parqueadero',
+    businessName: parkingInfo?.name || environment.receiptBusinessName || 'Parqueadero',
     nit: environment.receiptNit?.trim() || undefined,
-    address: environment.receiptAddress?.trim() || undefined,
+    address: parkingInfo?.address || environment.receiptAddress?.trim() || undefined,
     ticketNo: String(session.id),
     plate: (v?.plate ?? '—').toUpperCase(),
     vehicleClassLabel: labelVehicleClassShort(v?.vehicle_class ?? ''),
