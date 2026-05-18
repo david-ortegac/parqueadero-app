@@ -28,8 +28,9 @@
 
 .pp-chart-box {
   position: relative;
-  height: 240px;
-  margin-bottom: 1rem;
+  height: 220px;
+  max-width: 280px;
+  margin: 0 auto 1.5rem auto;
 }
 
 .pp-chart-center {
@@ -44,10 +45,12 @@
 }
 
 .pp-chart-total {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 2.3rem;
+  font-weight: 800;
   color: var(--ion-color-primary);
   line-height: 1.1;
+  letter-spacing: -0.03em;
+  transition: font-size 0.2s ease-in-out;
 }
 
 .pp-chart-sub {
@@ -56,6 +59,23 @@
   letter-spacing: 0.06em;
   color: var(--ion-color-medium);
   font-weight: 600;
+  transition: font-size 0.2s ease-in-out;
+}
+
+/* Full HD (FHD) / Desktop Screens */
+@media (min-width: 1200px) {
+  .pp-chart-box {
+    height: 300px;
+    max-width: 360px;
+  }
+
+  .pp-chart-total {
+    font-size: 3.2rem;
+  }
+
+  .pp-chart-sub {
+    font-size: 0.85rem;
+  }
 }
 
 .pp-legend {

@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
-  //apiUrl: 'https://parkingsoft.davidortega.dev/public/api/v1',
-  apiUrl: 'http://localhost:8000/api/v1',
+  apiUrl: 'https://parkingsoft.davidortega.dev/public/api/v1',
+  //apiUrl: 'http://localhost:8000/api/v1',
   /**
    * Origen de la PWA para QR / enlaces (sin barra final). Ajusta el puerto si no usas `ng serve` (4200).
    */

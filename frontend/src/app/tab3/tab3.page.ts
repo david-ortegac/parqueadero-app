@@ -118,8 +118,7 @@ export class Tab3Page implements OnInit {
       return;
     }
 
-    await PushNotifications.register();
-
+    // 1. Add listeners BEFORE registering to avoid missing early events
     await PushNotifications.addListener('registration', (token) => {
       this.pushStatus = 'Token registrado en el dispositivo';
       const platform = Capacitor.getPlatform() === 'ios' ? 'ios' : 'android';
@@ -134,6 +133,26 @@ export class Tab3Page implements OnInit {
     await PushNotifications.addListener('registrationError', async (err) => {
       this.pushStatus = `Error: ${err.error}`;
     });
+
+    // 2. Add real-time foreground notification handler for premium real-time feel!
+    await PushNotifications.addListener('pushNotificationReceived', async (notification) => {
+      this.pushStatus = `Recibido: ${notification.title}`;
+      const t = await this.toast.create({
+        header: notification.title,
+        message: notification.body,
+        duration: 5000,
+        color: 'success',
+        buttons: [{ text: 'OK', role: 'cancel' }]
+      });
+      await t.present();
+    });
+
+    await PushNotifications.addListener('pushNotificationActionPerformed', async (action) => {
+      console.log('Push action performed', action);
+    });
+
+    // 3. Finally trigger native registration
+    await PushNotifications.register();
   }
 
   logout(): void {

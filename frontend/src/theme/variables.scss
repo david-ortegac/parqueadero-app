@@ -58,4 +58,123 @@
   --ion-tab-bar-border-color: #334155;
   --ion-tab-bar-color: #94a3b8;
   --ion-tab-bar-color-selected: #0054e9;
+
+  /* --- Parqueadero Dark Mode Core Typography & Elements --- */
+  
+  /* Hardcoded text colors overridden for readability on dark backgrounds */
+  .pp-easy-acc-plate,
+  .pp-rate-price,
+  .pp-welcome-text,
+  .pp-owner-v,
+  .pp-legend-label,
+  .pp-section-title,
+  .pp-easy-acc-header .pp-easy-acc-plate,
+  .pp-owner-parking-amount strong,
+  .pp-chart-total,
+  h1, h2, h3, h4, h5, h6 {
+    color: #ffffff !important;
+  }
+
+  /* Secondary texts (subtitles, labels, metadata) */
+  .pp-easy-acc-sub,
+  .pp-easy-acc-meta-icon,
+  .pp-owner-k,
+  .pp-rate-meta,
+  .pp-rate-currency,
+  .pp-field-label,
+  .pp-chart-sub,
+  .pp-legend-pct,
+  .pp-stat-cap,
+  .pp-easy-acc-entry-k {
+    color: #94a3b8 !important; /* Elegant slate gray */
+  }
+
+  /* Specific teal accents */
+  .pp-easy-acc-entry {
+    color: #2dd4bf !important; /* Lighter high-contrast teal */
+  }
+
+  /* Stats cards grid background & text */
+  .pp-stat-cell {
+    background: rgba(255, 255, 255, 0.05) !important;
+  }
+  .pp-stat-num {
+    color: #60a5fa !important;
+  }
+
+  /* QR Code previews & special labels */
+  .pp-rate-cop-preview {
+    color: #60a5fa !important;
+  }
+
+  /* Inputs (Date and Number Inputs) */
+  .pp-date-input {
+    color: #ffffff !important;
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    box-shadow: none !important;
+    color-scheme: dark !important;
+
+    &::placeholder {
+      color: #64748b !important;
+    }
+
+    &:hover:not(:disabled) {
+      border-color: #475569 !important;
+      background: #334155 !important;
+    }
+
+    &:focus-visible {
+      border-color: #3b82f6 !important;
+      background: #0f172a !important;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3) !important;
+    }
+  }
+
+  /* native inputs inside rates toggles */
+  .pp-rate-toggle-item ion-toggle {
+    color: #ffffff !important;
+    --track-background: #334155 !important;
+    --track-background-checked: #3b82f6 !important;
+  }
+
+  /* Accordion Layouts (Fix white header backgrounds on dark mode) */
+  ion-accordion.pp-easy-acc {
+    background: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+
+    .pp-easy-acc-header {
+      --background: #022c22 !important; /* Elegant dark emerald background */
+    }
+
+    &.accordion-expanded, &[expanded] {
+      border-color: #0d9488 !important;
+      box-shadow: 0 6px 20px rgba(13, 148, 136, 0.25) !important;
+    }
+
+    .pp-easy-acc-panel {
+      background: #1e293b !important;
+      border-top-color: rgba(255, 255, 255, 0.08) !important;
+      color: #f8fafc !important;
+    }
+  }
+
+  /* Expandable panels inside PrimeNG DataTables */
+  .pp-expanded-cell {
+    background: #0f172a !important;
+  }
+  .pp-row-expanded-content {
+    background: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  /* PrimeNG Card overrides */
+  .p-card {
+    background: #1e293b !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
 }
+

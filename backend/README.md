@@ -1,59 +1,140 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🚗 Parqueadero App - Backend API (Laravel 12)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Bienvenido a la documentación oficial del backend de **Parqueadero App**. Este es un sistema robusto de gestión de parqueaderos construido con **Laravel 12**, diseñado para administrar ingresos, salidas, tarifas dinámicas, capacidades en tiempo real y notificaciones push para los clientes.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📋 Características Principales
+* **Control de Ingreso y Salida (Check-In / Check-Out):** Validación automática de placas colombianas (carros y motos) y cálculo automático de cobros.
+* **Tarifas Dinámicas:** Soporte de cobro por Minuto, Hora, Día, Semana y Mes.
+* **Gestión de Capacidad:** Control de cupos máximos permitidos por clase de vehículo (Carro / Moto).
+* **Notificaciones Push en Tiempo Real:** Integración con **Firebase Cloud Messaging (FCM)** para notificar a los clientes al instante cuando su vehículo ingresa o sale.
+* **Métricas de Ingresos y Reportes:** Resumen financiero diario y por rangos de fecha, segmentado por tipo de vehículo y tarifa.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🛠️ Requisitos del Entorno
+* **PHP:** ^8.2 o superior (Recomendado 8.3+)
+* **Extensión Sodium:** Requerida en PHP para firmas criptográficas de Firebase JWT.
+* **Gestor de BD:** SQLite (desarrollo local por defecto) o MySQL/PostgreSQL (producción).
+* **Composer** para la gestión de dependencias de PHP.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 🚀 Configuración en Desarrollo Local
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. **Instalar Dependencias:**
+   Si estás utilizando PHP 8.2 (como en XAMPP), asegúrate de tener la extensión `sodium` activa en tu `php.ini` (descomentando `;extension=sodium`) e instala las dependencias ignorando la alerta de versión de PHP:
+   ```bash
+   composer install --ignore-platform-req=php
+   ```
 
-## Laravel Sponsors
+2. **Configurar el archivo de Entorno:**
+   Copia el archivo de ejemplo y genera la clave de la aplicación:
+   ```bash
+   copy .env.example .env
+   php artisan key:generate
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+3. **Configurar la Base de Datos:**
+   Por defecto, el proyecto usa SQLite. Si no existe la base de datos, créala:
+   ```bash
+   # En Windows (PowerShell)
+   New-Item -ItemType File -Path database/database.sqlite -Force
+   ```
+   Luego, ejecuta las migraciones y seeders para poblar el sistema con datos de prueba iniciales:
+   ```bash
+   php artisan migrate --seed
+   ```
 
-### Premium Partners
+4. **Levantar Servidor Local:**
+   ```bash
+   php artisan serve
+   ```
+   La API estará disponible en `http://127.0.0.1:8000`.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## 🔔 Integración de Notificaciones Push (Firebase FCM)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Para enviar notificaciones push desde el backend hacia la aplicación Android/iOS:
 
-## Code of Conduct
+1. Genera la **Clave Privada de Cuenta de Servicio (JSON)** desde tu Firebase Console:
+   * Ajustes del Proyecto ➔ **Cuentas de servicio** ➔ **Generar nueva clave privada**.
+2. Guarda el archivo descargado en el backend como:
+   `backend/storage/app/firebase-service-account.json`.
+3. Registra la ruta en tu archivo `.env`:
+   ```env
+   FIREBASE_CREDENTIALS=storage/app/firebase-service-account.json
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## 📦 Comandos para Enviar a Producción (Deployment)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Cuando envíes la aplicación a un servidor de producción (como AWS, VPS, Forge, DigitalOcean, etc.), es fundamental optimizar la configuración y la base de datos para garantizar la máxima velocidad, seguridad y estabilidad.
 
-## License
+Sigue esta lista de comandos ordenados en tu flujo de despliegue:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 1. Descarga de Dependencias Optimizada (Sin dependencias de desarrollo)
+```bash
+composer install --no-dev --optimize-autoloader
+```
+*Esto elimina herramientas de testing o desarrollo y reestructura el autoload de clases para que responda a la velocidad máxima.*
+
+### 2. Ejecutar Migraciones de Base de Datos de Forma Segura
+```bash
+php artisan migrate --force
+```
+*El flag `--force` es obligatorio en producción para ejecutar las migraciones sin que la terminal interactiva te pida confirmación visual.*
+
+### 3. Caché de Configuración y Rutas (Crucial para el rendimiento de la API)
+Laravel debe leer la configuración de archivos cacheados en lugar de procesar los archivos `.env` y de rutas en cada solicitud HTTP. Ejecuta:
+```bash
+# Limpiar y crear caché de configuración, rutas y vistas en un solo comando moderno
+php artisan optimize
+```
+*Este comando almacena en caché las rutas de la API, las configuraciones del sistema y optimiza la carga general.*
+
+> [!WARNING]
+> Nunca uses variables `env()` directamente en tu código fuera de los archivos en la carpeta `config/`. Al cachear la configuración, `env()` retornará `null`. En su lugar, usa `config('services.firebase.credentials')`.
+
+### 4. Caché del Motor de Vistas (Blade) e Hilos de Eventos
+Si utilizas eventos o correos con plantillas Blade, asegúrate de cachearlos previamente:
+```bash
+php artisan view:cache
+php artisan event:cache
+```
+
+### 5. Configurar el Escuchador de Colas (Queue Worker)
+Las notificaciones push u otros procesos pesados se encolan para no retrasar la respuesta al usuario. En producción, debes tener un proceso en segundo plano (como *Supervisor*) corriendo el siguiente comando:
+```bash
+php artisan queue:work --queue=default --tries=3 --backoff=60
+```
+
+---
+
+## 🧹 Comandos de Mantenimiento y Actualizaciones en Producción
+
+Si realizas algún cambio en producción (como modificar el archivo `.env` o agregar nuevas rutas), debes limpiar y refrescar el sistema:
+
+* **Limpiar toda la caché acumulada:**
+  ```bash
+  php artisan optimize:clear
+  ```
+  *(Limpia caché de rutas, configuración, vistas, eventos y datos generales).*
+
+* **Volver a cachear todo optimizado tras una actualización:**
+  ```bash
+  php artisan optimize
+  ```
+
+* **Poner la aplicación en modo mantenimiento mientras actualizas:**
+  ```bash
+  php artisan down --secret="tu-clave-secreta-para-saltarte-el-bloqueo"
+  ```
+
+* **Volver a poner la aplicación en línea:**
+  ```bash
+  php artisan up
+  ```

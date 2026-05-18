@@ -11,7 +11,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "cap:sync": "npx cap sync android",
-    "cap:open:android": "npx cap open android",
+    "cap:open:android": "npm run cap:sync && npx cap open android",
     "build:android": "npm run build && npx cap sync android",
     "android:apk:debug": "npm run build:android && cd android && .\\gradlew.bat assembleDebug",
     "android:apk:release": "npm run build:android && cd android && .\\gradlew.bat assembleRelease"
