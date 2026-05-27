@@ -52,4 +52,4 @@ jobs:
         run: npm audit --audit-level=high || true
 
       - name: Production build
-        run: npm run build -- --configuration=production
+        run: npm run build:web -- --configuration=production
