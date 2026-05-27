@@ -69,9 +69,13 @@ final class AuthController extends Controller
             ]);
         }
 
-        if (User::query()->where('document', $document)->exists()) {
+        $duplicateMessage = 'No fue posible completar el registro. Verifique sus datos o contacte al administrador.';
+        if (
+            User::query()->where('email', $data['email'])->exists()
+            || User::query()->where('document', $document)->exists()
+        ) {
             throw ValidationException::withMessages([
-                'document' => ['Este documento ya está registrado.'],
+                'email' => [$duplicateMessage],
             ]);
         }
 

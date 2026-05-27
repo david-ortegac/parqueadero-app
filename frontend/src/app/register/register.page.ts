@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
+import { apiErrorMessage } from '../utils/api-error-message';
 import {
   DOCUMENT_MAX_DIGITS,
   mergePastedDigitsOnly,
@@ -91,13 +92,8 @@ export class RegisterPage {
         },
         error: async (err) => {
           this.loading = false;
-          const msg =
-            err.error?.errors?.document?.[0] ??
-            err.error?.errors?.email?.[0] ??
-            err.error?.message ??
-            'No se pudo registrar.';
           const t = await this.toast.create({
-            message: msg,
+            message: apiErrorMessage(err, 'No se pudo registrar.'),
             duration: 3500,
             color: 'danger',
           });

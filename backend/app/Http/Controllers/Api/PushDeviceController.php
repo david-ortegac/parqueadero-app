@@ -14,7 +14,7 @@ final class PushDeviceController extends Controller
     public function register(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'token' => ['required', 'string'],
+            'token' => ['required', 'string', 'max:512'],
             'platform' => ['required', 'in:ios,android,web'],
         ]);
 

@@ -66,7 +66,7 @@ final class OwnerVehicleController extends Controller
             'brand' => ['sometimes', 'nullable', 'string', 'max:255'],
             'color' => ['sometimes', 'nullable', 'string', 'max:255'],
             'cylinder_cc' => ['sometimes', 'nullable', 'string', 'max:32'],
-            'photo' => ['sometimes', 'image', 'max:4096'],
+            'photo' => ['sometimes', 'file', 'image', 'mimes:jpeg,jpg,png,webp', 'max:4096'],
         ]);
 
         if ($request->hasFile('photo')) {

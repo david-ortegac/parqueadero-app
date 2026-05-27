@@ -108,6 +108,17 @@ final class ParkingOperatorController extends Controller
             'owner_user_id' => ['nullable', 'exists:users,id'],
         ]);
 
+        if (! empty($data['owner_user_id'])) {
+            $owner = User::query()->find((int) $data['owner_user_id']);
+            if (
+                $owner === null
+                || $owner->role !== UserRole::VehicleOwner->value
+                || ! $owner->is_active
+            ) {
+                return response()->json(['message' => 'El propietario indicado no es válido o está inactivo.'], 422);
+            }
+        }
+
         $plateNormalized = ColombianPlateValidator::normalize($data['plate']);
         if (! ColombianPlateValidator::isValid($plateNormalized, $data['vehicle_class'])) {
             return response()->json([

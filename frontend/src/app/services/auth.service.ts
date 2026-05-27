@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { SessionUser } from '../models/session-user.model';
 
@@ -38,14 +38,43 @@ export class AuthService {
     return u !== null && roles.includes(u.role);
   }
 
+  /** Revalida token y rol con el servidor (usar en guards al entrar a rutas protegidas). */
+  refreshUserFromApi(): Observable<SessionUser | null> {
+    if (!this.getToken()) {
+      return of(null);
+    }
+    return this.http
+      .get<SessionUser & { is_active?: boolean }>(`${environment.apiUrl}/me`)
+      .pipe(
+        map((user) => {
+          if (user.is_active === false) {
+            this.clearLocal();
+            return null;
+          }
+          const sessionUser: SessionUser = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            document: user.document,
+            role: user.role,
+          };
+          this.persistUser(sessionUser);
+          return sessionUser;
+        }),
+        catchError(() => {
+          this.clearLocal();
+          return of(null);
+        }),
+      );
+  }
+
   login(email: string, password: string): Observable<{ token: string; user: SessionUser }> {
     return this.http
       .post<{ token: string; user: SessionUser }>(`${environment.apiUrl}/login`, { email, password })
       .pipe(
         tap((res) => {
           localStorage.setItem(TOKEN_KEY, res.token);
-          localStorage.setItem(USER_KEY, JSON.stringify(res.user));
-          this.userSubject.next(res.user);
+          this.persistUser(res.user);
         }),
       );
   }
@@ -83,6 +112,11 @@ export class AuthService {
     localStorage.removeItem(USER_KEY);
     this.userSubject.next(null);
     void this.router.navigate(['/login']);
+  }
+
+  private persistUser(user: SessionUser): void {
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    this.userSubject.next(user);
   }
 
   private readStoredUser(): SessionUser | null {

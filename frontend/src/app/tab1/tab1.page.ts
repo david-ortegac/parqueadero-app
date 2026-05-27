@@ -127,13 +127,24 @@ export class Tab1Page implements OnInit, OnDestroy {
       }
     });
     this.chartOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '68%',
+      spacing: 3,
+      borderWidth: 0,
       plugins: {
-        legend: {
-          display: false,
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx: { label?: string; parsed?: number }) => {
+              const value = ctx.parsed ?? 0;
+              const total = this.totalActive;
+              const pct = total > 0 ? Math.round((value / total) * 1000) / 10 : 0;
+              return `${ctx.label ?? ''}: ${value} (${pct}%)`;
+            },
+          },
         },
       },
-      cutout: '72%',
-      maintainAspectRatio: false,
     };
     this.load();
   }
@@ -210,8 +221,8 @@ export class Tab1Page implements OnInit, OnDestroy {
         datasets: [
           {
             data: [1],
-            backgroundColor: ['#e2e8f0'],
-            hoverBackgroundColor: ['#cbd5e1'],
+            backgroundColor: [OCCUPANCY_CHART_COLORS.empty.fill],
+            hoverBackgroundColor: [OCCUPANCY_CHART_COLORS.empty.hover],
           },
         ],
       };
@@ -286,6 +297,9 @@ export class Tab1Page implements OnInit, OnDestroy {
       }
       if (err.status === 403) {
         return apiMsg ?? 'No tienes permiso para ver el tablero (rol operador o administrador).';
+      }
+      if (err.status >= 500) {
+        return 'No se pudo cargar el tablero. Intente de nuevo más tarde.';
       }
       if (apiMsg) {
         return apiMsg;

@@ -64,6 +64,7 @@ export const BILLING_OPTIONS: { label: string; value: BillingModeId }[] = BILLIN
 export const OCCUPANCY_CHART_COLORS = {
   car: { fill: '#2563eb', hover: '#1d4ed8' },
   motorcycle: { fill: '#f97316', hover: '#ea580c' },
+  empty: { fill: '#e2e8f0', hover: '#cbd5e1' },
 } as const;
 
 export const OCCUPANCY_CHART_LABELS: [string, string] = ['Carros', 'Motos'];

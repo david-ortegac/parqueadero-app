@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
+import { apiErrorMessage } from '../utils/api-error-message';
 
 @Component({
   selector: 'app-login',
@@ -30,7 +31,7 @@ export class LoginPage {
       error: async (err) => {
         this.loading = false;
         const t = await this.toast.create({
-          message: err.error?.message ?? 'Error al iniciar sesión',
+          message: apiErrorMessage(err, 'Error al iniciar sesión'),
           duration: 3000,
           color: 'danger',
         });

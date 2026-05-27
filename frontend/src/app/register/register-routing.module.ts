@@ -1,11 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { GuestGuard } from '../guards/guest.guard';
 import { RegisterPage } from './register.page';
 
 const routes: Routes = [
   {
     path: '',
     component: RegisterPage,
+    canActivate: [GuestGuard],
   },
 ];
 

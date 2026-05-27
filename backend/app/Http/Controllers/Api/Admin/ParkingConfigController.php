@@ -102,8 +102,7 @@ final class ParkingConfigController extends Controller
         } catch (\Throwable $e) {
             Log::error("Error al actualizar la configuración del parqueadero: " . $e->getMessage());
             return response()->json([
-                'message' => 'No se pudo guardar la configuración. Asegúrate de haber ejecutado las migraciones en tu servidor de producción.',
-                'error' => $e->getMessage()
+                'message' => 'No se pudo guardar la configuración. Intente de nuevo o contacte al administrador.',
             ], 500);
         }
 

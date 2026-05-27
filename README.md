@@ -24,13 +24,15 @@ php artisan storage:link
 php artisan serve
 ```
 
-Usuarios de prueba (seeder):
+Usuarios de prueba (seeder, **solo entorno local**):
 
 | Rol            | Email                      | Contraseña |
 |----------------|----------------------------|------------|
 | Administrador  | `admin@parqueadero.local`   | `password` |
 | Operador       | `operador@parqueadero.local` | `password` |
 | Propietario    | `propietario@parqueadero.local` | `password` |
+
+> **Seguridad:** no ejecute `db:seed` en producción con contraseñas por defecto. En producción use `APP_DEBUG=false`, elimine cualquier `public/debug.php` y configure `SANCTUM_TOKEN_EXPIRATION` y `CORS_ALLOWED_ORIGINS` en `.env` (ver `backend/.env.example`).
 
 ### API (extracto)
 

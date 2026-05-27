@@ -47,4 +47,21 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Admin->value,
+            'is_active' => true,
+        ]);
+    }
+
+    public function vehicleOwner(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::VehicleOwner->value,
+            'is_active' => true,
+            'document' => fake()->unique()->numerify('##########'),
+        ]);
+    }
 }
