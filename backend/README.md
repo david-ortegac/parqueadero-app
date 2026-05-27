@@ -14,7 +14,7 @@ Bienvenido a la documentación oficial del backend de **Parqueadero App**. Este 
 ---
 
 ## 🛠️ Requisitos del Entorno
-* **PHP:** ^8.2 o superior (Recomendado 8.3+)
+* **PHP:** ^8.4 (requerido por `composer.lock`, Kreait Firebase y Symfony 8)
 * **Extensión Sodium:** Requerida en PHP para firmas criptográficas de Firebase JWT.
 * **Gestor de BD:** SQLite (desarrollo local por defecto) o MySQL/PostgreSQL (producción).
 * **Composer** para la gestión de dependencias de PHP.
@@ -24,9 +24,9 @@ Bienvenido a la documentación oficial del backend de **Parqueadero App**. Este 
 ## 🚀 Configuración en Desarrollo Local
 
 1. **Instalar Dependencias:**
-   Si estás utilizando PHP 8.2 (como en XAMPP), asegúrate de tener la extensión `sodium` activa en tu `php.ini` (descomentando `;extension=sodium`) e instala las dependencias ignorando la alerta de versión de PHP:
+   Activa la extensión `sodium` en `php.ini` si usas FCM. Con PHP 8.4+:
    ```bash
-   composer install --ignore-platform-req=php
+   composer install
    ```
 
 2. **Configurar el archivo de Entorno:**

@@ -9,7 +9,7 @@ Aplicación móvil/PWA con **Ionic + Angular** y API **Laravel 12** (Sanctum) pa
 
 ## Requisitos
 
-- PHP 8.2+ y Composer
+- PHP 8.4+ y Composer (alineado con `composer.lock` y Firebase/Kreait)
 - Node.js 20+ y npm
 - Extensión SQLite (por defecto el backend usa `database/database.sqlite`)
 
