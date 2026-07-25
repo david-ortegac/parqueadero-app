@@ -1,8 +1,8 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar color="primary" class="pp-toolbar">
+  <ion-toolbar class="pp-toolbar">
     <ion-title>Cuenta</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="theme.toggleDarkMode()">
+      <ion-button (click)="theme.toggleDarkMode()" [attr.aria-label]="theme.isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'">
         <ion-icon slot="icon-only" [name]="theme.isDarkMode ? 'sunny-outline' : 'moon-outline'"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -11,8 +11,17 @@
 
 <ion-content class="ion-padding pp-page">
   @if (auth.getUser(); as u) {
-    <p-card [header]="u.name" [subheader]="u.email" styleClass="pp-card-shadow">
-      <p class="pp-role">Rol: <strong>{{ displayRole(u.role) }}</strong></p>
+    <p-card styleClass="pp-card-shadow pp-profile-card">
+      <div class="pp-profile-head">
+        <div class="pp-profile-avatar" aria-hidden="true">
+          <ion-icon name="person-outline"></ion-icon>
+        </div>
+        <div class="pp-profile-meta">
+          <h1 class="pp-profile-name">{{ u.name }}</h1>
+          <p class="pp-profile-email">{{ u.email }}</p>
+          <span class="pp-role-tag">{{ displayRole(u.role) }}</span>
+        </div>
+      </div>
     </p-card>
   }
 
@@ -26,11 +35,9 @@
         <div class="pp-center"><ion-spinner name="crescent" color="primary"></ion-spinner></div>
       } @else {
         <div class="pp-settings-stack">
-
-          <!-- Nombre -->
           <div class="pp-field">
             <label class="pp-field-label" for="fld-park-name">
-              <ion-icon name="business-outline" class="pp-field-icon"></ion-icon>
+              <ion-icon name="business-outline" class="pp-field-icon" aria-hidden="true"></ion-icon>
               Nombre del parqueadero
             </label>
             <input
@@ -44,10 +51,9 @@
             <p class="pp-field-hint">Aparecerá en el encabezado de los tickets.</p>
           </div>
 
-          <!-- Dirección -->
           <div class="pp-field">
             <label class="pp-field-label" for="fld-park-address">
-              <ion-icon name="location-outline" class="pp-field-icon"></ion-icon>
+              <ion-icon name="location-outline" class="pp-field-icon" aria-hidden="true"></ion-icon>
               Dirección
             </label>
             <input
@@ -62,10 +68,9 @@
           </div>
 
           <div class="pp-capacity-row">
-            <!-- Capacidad carros -->
             <div class="pp-field pp-capacity-field">
               <label class="pp-field-label" for="fld-car-cap">
-                <ion-icon name="car-outline" class="pp-field-icon"></ion-icon>
+                <ion-icon name="car-outline" class="pp-field-icon" aria-hidden="true"></ion-icon>
                 Cupos — Carros
               </label>
               <p-inputnumber
@@ -81,13 +86,12 @@
                 placeholder="Sin límite"
                 styleClass="w-full"
               />
-              <p class="pp-field-hint">Déjalo vacío para no establecer límite.</p>
+              <p class="pp-field-hint">Vacío = sin límite.</p>
             </div>
 
-            <!-- Capacidad motos -->
             <div class="pp-field pp-capacity-field">
               <label class="pp-field-label" for="fld-moto-cap">
-                <ion-icon name="bicycle-outline" class="pp-field-icon"></ion-icon>
+                <ion-icon name="bicycle-outline" class="pp-field-icon" aria-hidden="true"></ion-icon>
                 Cupos — Motos
               </label>
               <p-inputnumber
@@ -103,10 +107,9 @@
                 placeholder="Sin límite"
                 styleClass="w-full"
               />
-              <p class="pp-field-hint">Déjalo vacío para no establecer límite.</p>
+              <p class="pp-field-hint">Vacío = sin límite.</p>
             </div>
           </div>
-
         </div>
 
         <div class="pp-settings-actions">
@@ -115,14 +118,13 @@
             icon="pi pi-check"
             [loading]="savingInfo"
             [disabled]="savingInfo"
-            styleClass="w-full"
+            styleClass="w-full pp-settings-save"
             (onClick)="saveParkingInfo()"
           />
         </div>
       }
     </p-card>
   }
-
 
   <p-card header="Notificaciones push" subheader="FCM en dispositivo nativo" styleClass="pp-card-shadow ion-margin-top">
     <p class="pp-push-msg">{{ pushStatus }}</p>
@@ -133,7 +135,7 @@
     label="Cerrar sesión"
     icon="pi pi-sign-out"
     severity="danger"
-    styleClass="w-full ion-margin-top"
+    styleClass="w-full ion-margin-top pp-logout-btn"
     [outlined]="true"
     (onClick)="logout()"
   />

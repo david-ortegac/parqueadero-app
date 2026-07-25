@@ -13,7 +13,9 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        if ($this->isFlatCpanelLayout()) {
+            $this->app->usePublicPath(base_path());
+        }
     }
 
     public function boot(): void
@@ -27,5 +29,12 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('auth-register', function (Request $request): Limit {
             return Limit::perMinute(5)->by($request->ip());
         });
+    }
+
+    private function isFlatCpanelLayout(): bool
+    {
+        return is_file(base_path('index.php'))
+            && is_file(base_path('artisan'))
+            && ! is_dir(base_path('public'));
     }
 }

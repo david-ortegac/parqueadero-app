@@ -41,6 +41,7 @@ import {
   preventNonDigitDocumentKeydown,
   sanitizeDocumentDigits,
 } from '../utils/numeric-document';
+import { formatMoney as formatMoneyUtil } from '../utils/format.utils';
 
 import { ThemeService } from '../services/theme.service';
 
@@ -576,15 +577,8 @@ export class Tab2Page implements OnInit, OnDestroy {
     return d && d.length > 0 ? d : '—';
   }
 
-  formatMoney(value: string | null | undefined): string {
-    if (value === null || value === undefined) {
-      return '—';
-    }
-    const n = Number(value);
-    if (Number.isNaN(n)) {
-      return String(value);
-    }
-    return new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(n);
+  formatMoney(value: string | number | null | undefined): string {
+    return formatMoneyUtil(value);
   }
 
   parkingElapsedLabel(enteredAt: string): string {

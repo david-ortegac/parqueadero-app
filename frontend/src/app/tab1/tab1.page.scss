@@ -11,10 +11,10 @@
 .pp-period {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-sm, 0.5rem);
   font-size: 0.875rem;
-  color: var(--ion-color-medium);
-  margin-bottom: 0.75rem;
+  color: var(--pp-muted-color, var(--ion-color-medium));
+  margin-bottom: var(--space-md, 0.75rem);
   font-weight: 500;
 }
 
@@ -23,7 +23,40 @@
 }
 
 .pp-card-shadow {
-  box-shadow: var(--pp-card-shadow, 0 4px 14px rgba(15, 39, 68, 0.08));
+  box-shadow: var(--pp-card-shadow);
+}
+
+.pp-owner-welcome-title {
+  font-family: var(--pp-font-display, Georgia, serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin: 0;
+  color: var(--pp-heading-color, var(--pp-foreground));
+  line-height: 1.2;
+}
+
+.pp-owner-welcome-sub {
+  margin: 0.25rem 0 0;
+  color: var(--pp-muted-color);
+  font-size: 0.9rem;
+}
+
+.pp-owner-home-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm, 0.5rem);
+  margin-top: var(--space-md, 1rem);
+}
+
+@media (max-width: 400px) {
+  .pp-owner-home-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pp-owner-action-btn {
+  width: 100%;
+  min-height: 44px;
 }
 
 .pp-chart-box {
@@ -99,18 +132,32 @@
   }
 }
 
+.pp-occupancy-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md, 1rem);
+}
+
 .pp-legend {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem 1.25rem;
-  max-width: 320px;
-  margin: 0 auto 1.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm, 0.5rem);
+  width: min(100%, 320px);
 }
 
 .pp-legend-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  background: rgba(37, 99, 235, 0.04);
+  border: 1px solid var(--pp-border, #e4ecfc);
 }
 
 .pp-dot {
@@ -130,14 +177,41 @@
 
 .pp-legend-label {
   font-size: 0.9rem;
-  color: var(--ion-color-dark);
+  color: var(--pp-heading-color, var(--ion-color-dark));
+  font-weight: 500;
+}
+
+.pp-legend-count {
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--pp-heading-color, var(--ion-color-dark));
 }
 
 .pp-legend-pct {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: var(--ion-color-medium);
+  color: var(--pp-muted-color, var(--ion-color-medium));
   font-variant-numeric: tabular-nums;
+  min-width: 3.25rem;
+  text-align: right;
+}
+
+.pp-bar-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--pp-muted-color, var(--ion-color-medium));
+  margin-bottom: 0.25rem;
+}
+
+.pp-bar-value {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--pp-heading-color, var(--ion-color-dark));
+  font-size: 0.8rem;
 }
 
 .pp-stat-grid {
@@ -164,12 +238,6 @@
   font-size: 0.7rem;
   color: var(--ion-color-medium);
   line-height: 1.2;
-}
-
-.pp-bar-label {
-  font-size: 0.75rem;
-  color: var(--ion-color-medium);
-  margin-bottom: 0.25rem;
 }
 
 ::ng-deep .pp-pbar {
@@ -314,31 +382,7 @@ ion-accordion.pp-rate-acc--moto .pp-easy-acc-plate {
 .pp-welcome-text {
   margin: 0;
   line-height: 1.5;
-  color: var(--ion-color-medium);
-}
-
-.pp-owner-home-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-@media (min-width: 480px) {
-  .pp-owner-home-actions {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-}
-
-::ng-deep .pp-owner-action-btn {
-  width: 100%;
-}
-
-@media (min-width: 480px) {
-  ::ng-deep .pp-owner-action-btn {
-    flex: 1;
-    min-width: 160px;
-  }
+  color: var(--pp-muted-color, var(--ion-color-medium));
 }
 
 .pp-owner-vehicle-block,

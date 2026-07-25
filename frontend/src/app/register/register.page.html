@@ -1,7 +1,7 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar color="primary" class="pp-toolbar">
+  <ion-toolbar class="pp-toolbar">
     <ion-buttons slot="start">
-      <ion-button fill="clear" (click)="goLogin()">Volver</ion-button>
+      <ion-button fill="clear" (click)="goLogin()" aria-label="Volver al inicio de sesión">Volver</ion-button>
     </ion-buttons>
     <ion-title>Registro</ion-title>
   </ion-toolbar>
@@ -10,13 +10,13 @@
 <ion-content class="pp-login-content ion-padding">
   <div class="pp-login-hero">
     <div class="pp-login-brand">
-      <span class="pp-login-brand-title">Registro</span>
+      <span class="pp-login-brand-title">Parqueadero</span>
       <span class="pp-login-brand-sub">Cuenta de propietario</span>
     </div>
-    <p class="pp-login-tagline">Únete para ver el estado y cobrar por el tiempo de tus vehículos.</p>
+    <p class="pp-login-tagline">Regístrate para consultar el estado y el cobro de tus vehículos.</p>
   </div>
 
-  <p-card header="Crear cuenta" subheader="Datos personales y de acceso" styleClass="pp-login-card pp-card-shadow">
+  <p-card header="Crear cuenta" subheader="Nombre, cédula, correo y contraseña" styleClass="pp-login-card pp-card-shadow">
     <div class="pp-login-fields">
       <p-floatlabel variant="on">
         <input pInputText id="reg-name" [(ngModel)]="name" type="text" autocomplete="name" class="w-full" />
@@ -69,15 +69,17 @@
       </p-floatlabel>
     </div>
     <p class="pp-register-hint ion-margin-top">
-      Un administrador u operador debe activar tu cuenta antes de poder iniciar sesión. Los vehículos ingresados con tu cédula quedarán vinculados al activarte.
+      Un administrador u operador debe activar tu cuenta antes de iniciar sesión. Los ingresos con tu cédula quedarán vinculados al activarte.
     </p>
-    <p-button
-      label="Registrarme"
-      icon="pi pi-user-plus"
-      styleClass="w-full ion-margin-top"
-      [loading]="loading"
-      [disabled]="loading"
-      (onClick)="submit()"
-    />
+    <div class="pp-login-actions">
+      <p-button
+        label="Registrarme"
+        icon="pi pi-user-plus"
+        styleClass="w-full ion-margin-top"
+        [loading]="loading"
+        [disabled]="loading"
+        (onClick)="submit()"
+      />
+    </div>
   </p-card>
 </ion-content>

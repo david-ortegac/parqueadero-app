@@ -1,11 +1,11 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar color="primary" class="pp-toolbar">
+  <ion-toolbar class="pp-toolbar">
     <ion-title>Parqueo</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="theme.toggleDarkMode()">
+      <ion-button (click)="theme.toggleDarkMode()" [attr.aria-label]="theme.isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'">
         <ion-icon slot="icon-only" [name]="theme.isDarkMode ? 'sunny-outline' : 'moon-outline'"></ion-icon>
       </ion-button>
-      <ion-button (click)="refresh()">
+      <ion-button (click)="refresh()" aria-label="Actualizar">
         <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -51,9 +51,9 @@
                   <p class="pp-easy-acc-sub">
                     {{ vehicleClassLabelShort(v.vehicle_class) }}
                     @if (v.active_session) {
-                      <span class="pp-owner-parking-badge pp-owner-parking-badge--in"> · En parqueo</span>
+                      <span class="pp-owner-parking-badge pp-owner-parking-badge--in">En parqueo</span>
                     } @else {
-                      <span class="pp-owner-parking-badge pp-owner-parking-badge--out"> · Sin parqueo activo</span>
+                      <span class="pp-owner-parking-badge pp-owner-parking-badge--out">Sin parqueo activo</span>
                     }
                   </p>
                   @if (v.active_session; as act) {
@@ -152,7 +152,11 @@
       }
     </p-card>
   } @else {
-    <p-card header="Nuevo ingreso" subheader="Registro operativo de entrada" styleClass="pp-card-shadow">
+    <p-card
+      header="Nuevo ingreso"
+      subheader="Registro operativo de entrada"
+      styleClass="pp-card-shadow pp-checkin-primary"
+    >
       <div class="pp-form-stack">
         <div class="pp-field">
           <label class="pp-field-label" for="fld-plate">Placa</label>
@@ -218,7 +222,7 @@
       <p-button
         label="Registrar ingreso"
         icon="pi pi-plus"
-        styleClass="w-full ion-margin-top"
+        styleClass="w-full ion-margin-top pp-checkin-submit"
         [disabled]="registerEntryDisabled"
         (onClick)="registerEntry()"
       />

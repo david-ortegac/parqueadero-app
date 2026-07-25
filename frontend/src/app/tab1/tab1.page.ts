@@ -7,13 +7,12 @@ import {
   groupRatesByVehicleClass,
   labelBillingMode as billingModeCatalogLabel,
   labelVehicleClassShort as vehicleClassCatalogShort,
-  OCCUPANCY_CHART_COLORS,
-  OCCUPANCY_CHART_LABELS,
   PARKING_DATETIME_FORMAT,
   PARKING_DISPLAY_LOCALE,
   PARKING_DISPLAY_TIMEZONE,
 } from '../constants/parking-billing.catalog';
 import { AuthService } from '../services/auth.service';
+import { DashboardService } from '../services/dashboard.service';
 import {
   OperatorVehicleOwnerRow,
   OwnerSessionHistoryRow,
@@ -22,8 +21,9 @@ import {
   DashboardResponse,
   Rate,
 } from '../services/parking-api.service';
-
 import { ThemeService } from '../services/theme.service';
+import { AccordionController } from '../utils/accordion.utils';
+import { formatCop, formatMoney as formatMoneyUtil } from '../utils/format.utils';
 
 @Component({
   selector: 'app-tab1',
@@ -63,7 +63,10 @@ export class Tab1Page implements OnInit, OnDestroy {
   ownerHistoryByVehicleId: Record<number, OwnerSessionHistoryRow[]> = {};
 
   /** Acordeón vehículos (una sección abierta a la vez). */
-  ownerAccordionOpen: string | undefined = undefined;
+  readonly ownerAccordion = new AccordionController();
+
+  /** Acordeón tarifas admin (carros / motos). */
+  readonly ratesAccordion = new AccordionController();
 
   expandedRows: { [key: string]: boolean } = {};
 
@@ -80,13 +83,6 @@ export class Tab1Page implements OnInit, OnDestroy {
     }
     this.expandedRows = { ...this.expandedRows };
   }
-
-  /** Acordeón tarifas admin (carros / motos). */
-  ratesAccordionOpen: string | undefined = undefined;
-
-  private ownerAccordionAllowClose = false;
-
-  private ratesAccordionAllowClose = false;
 
   private readonly destroy$ = new Subject<void>();
 
@@ -112,6 +108,7 @@ export class Tab1Page implements OnInit, OnDestroy {
   constructor(
     readonly auth: AuthService,
     private readonly api: ParkingApiService,
+    private readonly dashboardCharts: DashboardService,
     private readonly toast: ToastController,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
@@ -209,68 +206,26 @@ export class Tab1Page implements OnInit, OnDestroy {
   }
 
   private syncChart(): void {
-    if (!this.dashboard) {
-      return;
-    }
-    const c = this.dashboard.occupancy.car.active;
-    const m = this.dashboard.occupancy.motorcycle.active;
-    const total = c + m;
-    if (total === 0) {
-      this.chartData = {
-        labels: ['Sin vehículos'],
-        datasets: [
-          {
-            data: [1],
-            backgroundColor: [OCCUPANCY_CHART_COLORS.empty.fill],
-            hoverBackgroundColor: [OCCUPANCY_CHART_COLORS.empty.hover],
-          },
-        ],
-      };
-      return;
-    }
-    this.chartData = {
-      labels: [...OCCUPANCY_CHART_LABELS],
-      datasets: [
-        {
-          data: [c, m],
-          backgroundColor: [OCCUPANCY_CHART_COLORS.car.fill, OCCUPANCY_CHART_COLORS.motorcycle.fill],
-          hoverBackgroundColor: [
-            OCCUPANCY_CHART_COLORS.car.hover,
-            OCCUPANCY_CHART_COLORS.motorcycle.hover,
-          ],
-        },
-      ],
-    };
+    this.chartData = this.dashboardCharts.buildChartData(this.dashboard);
   }
 
   get totalActive(): number {
-    if (!this.dashboard) {
-      return 0;
-    }
-    return (
-      this.dashboard.occupancy.car.active + this.dashboard.occupancy.motorcycle.active
-    );
+    return this.dashboardCharts.totalActive(this.dashboard);
   }
 
   shareCar(): number {
-    if (!this.dashboard || this.totalActive === 0) {
-      return 0;
-    }
-    return Math.round((this.dashboard.occupancy.car.active / this.totalActive) * 1000) / 10;
+    return this.dashboardCharts.sharePercent(this.dashboard?.occupancy.car.active ?? 0, this.totalActive);
   }
 
   shareMoto(): number {
-    if (!this.dashboard || this.totalActive === 0) {
-      return 0;
-    }
-    return Math.round((this.dashboard.occupancy.motorcycle.active / this.totalActive) * 1000) / 10;
+    return this.dashboardCharts.sharePercent(
+      this.dashboard?.occupancy.motorcycle.active ?? 0,
+      this.totalActive,
+    );
   }
 
   pct(active: number, cap: number | null): number {
-    if (!cap || cap <= 0) {
-      return 0;
-    }
-    return Math.min(100, Math.round((active / cap) * 100));
+    return this.dashboardCharts.occupancyPct(active, cap);
   }
 
   /**
@@ -321,41 +276,27 @@ export class Tab1Page implements OnInit, OnDestroy {
   }
 
   private syncRatesAccordionOpenWithGroups(): void {
-    if (this.ratesAccordionOpen === undefined) {
-      return;
-    }
-    const groups = this.rateGroups;
-    if (!groups.some((g) => this.ratesAccordionKey(g.vehicleClass) === this.ratesAccordionOpen)) {
-      this.ratesAccordionOpen = undefined;
-    }
+    this.ratesAccordion.syncWithValues(this.rateGroups.map((g) => this.ratesAccordionKey(g.vehicleClass)));
   }
 
   ratesAccordionKey(vehicleClass: string): string {
     return `rates-${vehicleClass}`;
   }
 
+  get ratesAccordionOpen(): string | undefined {
+    return this.ratesAccordion.open;
+  }
+
   onRatesAccordionChange(ev: Event): void {
-    const next = (ev as CustomEvent<{ value: string | undefined }>).detail.value;
-    const prev = this.ratesAccordionOpen;
-    if (next === undefined && prev !== undefined && !this.ratesAccordionAllowClose) {
-      queueMicrotask(() => {
-        this.ratesAccordionOpen = prev;
-      });
-      return;
-    }
-    this.ratesAccordionOpen = next;
+    this.ratesAccordion.onChange(ev);
   }
 
   closeRatesAccordion(): void {
-    this.ratesAccordionAllowClose = true;
-    this.ratesAccordionOpen = undefined;
-    queueMicrotask(() => {
-      this.ratesAccordionAllowClose = false;
-    });
+    this.ratesAccordion.close();
   }
 
   ratesAccordionToggleGlyph(vehicleClass: string): string {
-    return this.ratesAccordionOpen === this.ratesAccordionKey(vehicleClass) ? '−' : '+';
+    return this.ratesAccordion.toggleGlyph(this.ratesAccordionKey(vehicleClass));
   }
 
   ratesVehicleIcon(vehicleClass: string): string {
@@ -480,42 +421,17 @@ export class Tab1Page implements OnInit, OnDestroy {
     });
   }
 
-  formatMoney(value: string | null): string {
-    if (value === null || value === undefined) {
-      return '—';
-    }
-    const n = Number(value);
-    if (Number.isNaN(n)) {
-      return String(value);
-    }
-    return new Intl.NumberFormat('es-CO', {
-      maximumFractionDigits: 0,
-    }).format(n);
+  formatMoney(value: string | number | null | undefined): string {
+    return formatMoneyUtil(value);
   }
 
   /** Precio de tarifa en pesos colombianos (símbolo y separadores es-CO). */
   formatRateMoneyCop(value: number | string | null | undefined): string {
-    if (value === null || value === undefined || value === '') {
-      return '—';
-    }
-    const n = typeof value === 'number' ? value : Number(value);
-    if (Number.isNaN(n)) {
-      return '—';
-    }
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(n);
+    return formatCop(value);
   }
 
   goToParkingTab(): void {
     void this.router.navigate(['/tabs/tab2']);
-  }
-
-  ownerAccordionKey(vehicleId: number): string {
-    return `owner-v-${vehicleId}`;
   }
 
   private normalizeOwnerPlateQuery(raw: string | null): string | null {
@@ -538,7 +454,7 @@ export class Tab1Page implements OnInit, OnDestroy {
     if (!v) {
       return;
     }
-    this.ownerAccordionOpen = this.ownerAccordionKey(v.id);
+    this.ownerAccordion.openSection(this.ownerAccordionKey(v.id));
     queueMicrotask(() => {
       document.getElementById(`pp-owner-veh-${v.id}`)?.scrollIntoView({
         behavior: 'smooth',
@@ -547,28 +463,24 @@ export class Tab1Page implements OnInit, OnDestroy {
     });
   }
 
+  ownerAccordionKey(vehicleId: number): string {
+    return `owner-v-${vehicleId}`;
+  }
+
+  get ownerAccordionOpen(): string | undefined {
+    return this.ownerAccordion.open;
+  }
+
   onOwnerAccordionChange(ev: Event): void {
-    const next = (ev as CustomEvent<{ value: string | undefined }>).detail.value;
-    const prev = this.ownerAccordionOpen;
-    if (next === undefined && prev !== undefined && !this.ownerAccordionAllowClose) {
-      queueMicrotask(() => {
-        this.ownerAccordionOpen = prev;
-      });
-      return;
-    }
-    this.ownerAccordionOpen = next;
+    this.ownerAccordion.onChange(ev);
   }
 
   closeOwnerVehicleAccordion(): void {
-    this.ownerAccordionAllowClose = true;
-    this.ownerAccordionOpen = undefined;
-    queueMicrotask(() => {
-      this.ownerAccordionAllowClose = false;
-    });
+    this.ownerAccordion.close();
   }
 
   ownerAccordionToggleGlyph(vehicleId: number): string {
-    return this.ownerAccordionOpen === this.ownerAccordionKey(vehicleId) ? '−' : '+';
+    return this.ownerAccordion.toggleGlyph(this.ownerAccordionKey(vehicleId));
   }
 
   loadOwnerVehicles(): void {
@@ -577,12 +489,7 @@ export class Tab1Page implements OnInit, OnDestroy {
       next: (list) => {
         this.ownerVehicles = list;
         this.syncOwnerEditDrafts();
-        if (
-          this.ownerAccordionOpen !== undefined &&
-          !list.some((x) => this.ownerAccordionKey(x.id) === this.ownerAccordionOpen)
-        ) {
-          this.ownerAccordionOpen = undefined;
-        }
+        this.ownerAccordion.syncWithValues(list.map((x) => this.ownerAccordionKey(x.id)));
         this.loadingOwnerVehicles = false;
         this.applyOwnerPlateQueryToAccordion();
       },

@@ -1,5 +1,6 @@
 .pp-register-hint {
   font-size: 0.875rem;
-  color: var(--ion-color-medium-shade, #666);
+  color: var(--pp-muted-color, var(--ion-color-medium-shade, #64748b));
   line-height: 1.45;
+  margin: var(--space-md, 1rem) 0 0;
 }

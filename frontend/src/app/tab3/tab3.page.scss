@@ -1,23 +1,67 @@
 .pp-card-shadow {
-  box-shadow: var(--pp-card-shadow, 0 4px 14px rgba(15, 39, 68, 0.08));
+  box-shadow: var(--pp-card-shadow);
 }
 
-.pp-role {
+.pp-profile-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md, 1rem);
+}
+
+.pp-profile-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--ion-color-primary);
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 1.75rem;
+  }
+}
+
+.pp-profile-name {
   margin: 0;
-  color: var(--ion-color-medium);
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-family: var(--pp-font-body);
+  color: var(--pp-heading-color, var(--pp-foreground));
+  line-height: 1.25;
+}
+
+.pp-profile-email {
+  margin: 0.15rem 0 0.5rem;
+  font-size: 0.9rem;
+  color: var(--pp-muted-color, var(--ion-color-medium));
+  word-break: break-all;
+}
+
+.pp-role-tag {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(5, 150, 105, 0.12);
+  color: #047857;
 }
 
 .pp-push-msg {
   margin: 0 0 1rem;
   font-size: 0.9rem;
-  color: var(--ion-color-medium);
+  color: var(--pp-muted-color, var(--ion-color-medium));
 }
 
 .pp-page ::ng-deep .w-full {
   width: 100%;
 }
 
-/* Settings form */
 .pp-settings-stack {
   display: flex;
   flex-direction: column;
@@ -36,7 +80,7 @@
   gap: 0.35rem;
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--ion-color-medium);
+  color: var(--pp-muted-color, var(--ion-color-medium));
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -49,18 +93,18 @@
 .pp-field-hint {
   margin: 0;
   font-size: 0.75rem;
-  color: var(--ion-color-medium);
+  color: var(--pp-muted-color, var(--ion-color-medium));
   line-height: 1.35;
 }
 
 ::ng-deep .pp-field .p-inputtext {
   border-radius: 8px;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   width: 100%;
 }
 
 ::ng-deep .pp-field .p-inputtext:focus {
-  box-shadow: 0 0 0 3px rgba(var(--ion-color-primary-rgb, 15, 39, 68), 0.15);
+  box-shadow: 0 0 0 3px rgba(var(--ion-color-primary-rgb, 37, 99, 235), 0.2);
   border-color: var(--ion-color-primary);
 }
 
@@ -93,9 +137,26 @@
 .pp-settings-actions {
   margin-top: 1.25rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(15, 39, 68, 0.08);
+  border-top: 1px solid var(--pp-border, rgba(15, 39, 68, 0.08));
 }
 
-.ion-palette-dark .pp-settings-actions {
-  border-top-color: rgba(255, 255, 255, 0.07);
+::ng-deep .pp-settings-save,
+::ng-deep .pp-logout-btn {
+  min-height: 44px;
+}
+
+.ion-palette-dark {
+  .pp-role-tag {
+    background: rgba(45, 212, 191, 0.15);
+    color: #2dd4bf;
+  }
+
+  .pp-profile-avatar {
+    background: rgba(96, 165, 250, 0.15);
+    color: #60a5fa;
+  }
+
+  .pp-settings-actions {
+    border-top-color: rgba(255, 255, 255, 0.07);
+  }
 }

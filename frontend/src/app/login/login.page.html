@@ -1,5 +1,5 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar color="primary" class="pp-toolbar">
+  <ion-toolbar class="pp-toolbar">
     <ion-title>Acceso</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -13,7 +13,7 @@
     <p class="pp-login-tagline">Gestión de ocupación, cobros y usuarios en un solo lugar.</p>
   </div>
 
-  <p-card header="Iniciar sesión" subheader="Credenciales del sistema" styleClass="pp-login-card pp-card-shadow">
+  <p-card header="Iniciar sesión" subheader="Usa tu correo y contraseña del sistema" styleClass="pp-login-card pp-card-shadow">
     <div class="pp-login-fields">
       <p-floatlabel variant="on">
         <input pInputText id="login-email" [(ngModel)]="email" type="email" autocomplete="email" class="w-full" />
@@ -32,21 +32,23 @@
         <label for="login-password">Contraseña</label>
       </p-floatlabel>
     </div>
-    <p-button
-      label="Entrar"
-      icon="pi pi-sign-in"
-      styleClass="w-full ion-margin-top"
-      [loading]="loading"
-      [disabled]="loading"
-      (onClick)="submit()"
-    />
-    <p-button
-      label="Registrarme como propietario"
-      icon="pi pi-user-plus"
-      severity="secondary"
-      styleClass="w-full ion-margin-top"
-      [outlined]="true"
-      routerLink="/register"
-    />
+    <div class="pp-login-actions">
+      <p-button
+        label="Entrar"
+        icon="pi pi-sign-in"
+        styleClass="w-full ion-margin-top"
+        [loading]="loading"
+        [disabled]="loading"
+        (onClick)="submit()"
+      />
+      <p-button
+        label="Registrarme como propietario"
+        icon="pi pi-user-plus"
+        severity="secondary"
+        styleClass="w-full ion-margin-top"
+        [outlined]="true"
+        routerLink="/register"
+      />
+    </div>
   </p-card>
 </ion-content>

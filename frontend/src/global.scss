@@ -1,44 +1,31 @@
 /*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
+ * App Global CSS — Parqueadero Ops SaaS
  */
 
-/* Core CSS required for Ionic components to work properly */
-@import "@ionic/angular/css/core.css";
+@import '@ionic/angular/css/core.css';
+@import '@ionic/angular/css/normalize.css';
+@import '@ionic/angular/css/structure.css';
+@import '@ionic/angular/css/typography.css';
+@import '@ionic/angular/css/display.css';
+@import '@ionic/angular/css/padding.css';
+@import '@ionic/angular/css/float-elements.css';
+@import '@ionic/angular/css/text-alignment.css';
+@import '@ionic/angular/css/text-transformation.css';
+@import '@ionic/angular/css/flex-utils.css';
+@import '@ionic/angular/css/palettes/dark.class.css';
 
-/* Basic CSS for apps built with Ionic */
-@import "@ionic/angular/css/normalize.css";
-@import "@ionic/angular/css/structure.css";
-@import "@ionic/angular/css/typography.css";
-@import "@ionic/angular/css/display.css";
+:root {
+  --pp-heading-color: var(--pp-foreground, #0f172a);
+  --pp-muted-color: var(--pp-muted, #64748b);
+}
 
-/* Optional CSS utils that can be commented out */
-@import "@ionic/angular/css/padding.css";
-@import "@ionic/angular/css/float-elements.css";
-@import "@ionic/angular/css/text-alignment.css";
-@import "@ionic/angular/css/text-transformation.css";
-@import "@ionic/angular/css/flex-utils.css";
-
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-@import "@ionic/angular/css/palettes/dark.class.css";
-/* @import "@ionic/angular/css/palettes/dark.system.css"; */
-
-/* --- Parqueadero: layout global --- */
 body {
   background: var(--pp-page-bg);
+  color: var(--pp-foreground);
+  font-family: var(--pp-font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
 ion-content.pp-page {
@@ -48,6 +35,7 @@ ion-content.pp-page {
 .pp-toolbar ion-title {
   font-weight: 600;
   letter-spacing: 0.02em;
+  font-family: var(--pp-font-body);
 }
 
 .pp-brand-mark {
@@ -61,11 +49,58 @@ ion-content.pp-page {
 .pp-card {
   border-radius: var(--pp-card-radius);
   box-shadow: var(--pp-card-shadow);
-  margin: 0 0 1rem;
+  margin: 0 0 var(--space-md);
+}
+
+.pp-card-shadow {
+  box-shadow: var(--pp-card-shadow);
 }
 
 .pp-tab-bar {
   box-shadow: 0 -2px 12px rgba(15, 39, 68, 0.06);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.pp-tab-bar ion-tab-button {
+  min-height: 48px;
+}
+
+.pp-muted {
+  color: var(--pp-muted-color);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.pp-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--pp-heading-color);
+  margin: var(--space-md) 0 var(--space-sm);
+  font-family: var(--pp-font-body);
+}
+
+/* Focus rings */
+:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+button,
+a,
+ion-button,
+.p-button {
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* --- Shared Auth Layout (Login / Register) --- */
@@ -74,24 +109,27 @@ ion-content.pp-page {
 }
 
 .pp-login-hero {
-  background: linear-gradient(145deg, #0f2744 0%, #1e3a5f 45%, #2563eb 100%);
+  background: linear-gradient(145deg, #0f2744 0%, #1e3a5f 42%, #2563eb 100%);
   color: #fff;
-  padding: 1.75rem 1.5rem 2.5rem;
+  padding: var(--space-xl) var(--space-lg) var(--space-2xl);
   border-radius: 0 0 24px 24px;
-  margin: -0.5rem calc(-0.5rem - var(--ion-padding-start, 16px)) 0 calc(-0.5rem - var(--ion-padding-end, 16px));
-  box-shadow: 0 8px 24px rgba(15, 39, 68, 0.2);
+  margin: -0.5rem calc(-0.5rem - var(--ion-padding-start, 16px)) 0
+    calc(-0.5rem - var(--ion-padding-end, 16px));
+  box-shadow: var(--shadow-lg);
 }
 
 .pp-login-brand {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-xs);
 }
 
 .pp-login-brand-title {
-  font-size: 1.65rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-family: var(--pp-font-display);
+  font-size: 1.85rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
 }
 
 .pp-login-brand-sub {
@@ -100,17 +138,19 @@ ion-content.pp-page {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   opacity: 0.85;
+  font-family: var(--pp-font-body);
 }
 
 .pp-login-tagline {
-  margin: 1rem 0 0;
-  font-size: 0.9rem;
+  margin: var(--space-md) 0 0;
+  font-size: 0.95rem;
   line-height: 1.45;
   opacity: 0.92;
+  max-width: 28ch;
 }
 
 .pp-login-card {
-  margin: -1.5rem 0 1.25rem;
+  margin: -1.5rem 0 var(--space-lg);
   position: relative;
   z-index: 1;
 }
@@ -118,8 +158,8 @@ ion-content.pp-page {
 .pp-login-fields {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding-top: 0.25rem;
+  gap: var(--space-sm);
+  padding-top: var(--space-xs);
 }
 
 .pp-login-field-gap {
@@ -127,7 +167,7 @@ ion-content.pp-page {
 }
 
 .pp-login-card .p-card-caption {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-sm);
 }
 
 .pp-login-card .p-card-body {
@@ -147,6 +187,48 @@ ion-content.pp-page {
   width: 100%;
 }
 
-.pp-card-shadow {
-  box-shadow: var(--pp-card-shadow, 0 4px 14px rgba(15, 39, 68, 0.08));
+.pp-login-actions .p-button,
+.pp-login-card .p-button {
+  min-height: 44px;
+}
+
+/* KPI grid (ocupación / dashboard) */
+.pp-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.pp-kpi-cell {
+  background: rgba(37, 99, 235, 0.06);
+  border-radius: 12px;
+  padding: var(--space-sm) var(--space-md);
+  text-align: center;
+  border: 1px solid var(--pp-border);
+}
+
+.pp-kpi-value {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.pp-kpi-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--pp-muted-color);
+  margin-top: 0.15rem;
+}
+
+@media (max-width: 380px) {
+  .pp-kpi-grid {
+    grid-template-columns: 1fr;
+  }
 }

@@ -12,6 +12,7 @@
 /.vscode
 /.zed
 /auth.json
+/build
 /node_modules
 /public/build
 /public/hot
@@ -27,3 +28,4 @@ Thumbs.db
 /storage/app/firebase-service-account.json
 *.zip
 *.tar.gz
+parkingsoft-api-production.tar.gz

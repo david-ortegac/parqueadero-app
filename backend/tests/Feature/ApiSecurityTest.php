@@ -14,9 +14,22 @@ final class ApiSecurityTest extends TestCase
 {
     use RefreshDatabase;
 
+    private const ADMIN_RATES_ENDPOINT = '/api/v1/admin/rates';
+
     public function test_unauthenticated_admin_routes_return_401(): void
     {
-        $this->getJson('/api/v1/admin/rates')->assertUnauthorized();
+        $this->getJson(self::ADMIN_RATES_ENDPOINT)->assertUnauthorized();
+    }
+
+    public function test_unauthenticated_api_route_returns_json_for_browser_request(): void
+    {
+        $this->get(self::ADMIN_RATES_ENDPOINT, [
+            'Accept' => 'text/html,application/xhtml+xml',
+        ])
+            ->assertUnauthorized()
+            ->assertJson([
+                'message' => 'Unauthenticated.',
+            ]);
     }
 
     public function test_vehicle_owner_cannot_access_admin_rates(): void
@@ -29,7 +42,7 @@ final class ApiSecurityTest extends TestCase
 
         Sanctum::actingAs($owner);
 
-        $this->getJson('/api/v1/admin/rates')->assertForbidden();
+        $this->getJson(self::ADMIN_RATES_ENDPOINT)->assertForbidden();
     }
 
     public function test_operator_cannot_access_admin_rates(): void
@@ -41,7 +54,7 @@ final class ApiSecurityTest extends TestCase
 
         Sanctum::actingAs($operator);
 
-        $this->getJson('/api/v1/admin/rates')->assertForbidden();
+        $this->getJson(self::ADMIN_RATES_ENDPOINT)->assertForbidden();
     }
 
     public function test_admin_can_access_admin_rates(): void
@@ -53,7 +66,7 @@ final class ApiSecurityTest extends TestCase
 
         Sanctum::actingAs($admin);
 
-        $this->getJson('/api/v1/admin/rates')->assertOk();
+        $this->getJson(self::ADMIN_RATES_ENDPOINT)->assertOk();
     }
 
     public function test_vehicle_owner_cannot_access_operator_dashboard(): void

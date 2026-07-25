@@ -72,6 +72,51 @@ Para enviar notificaciones push desde el backend hacia la aplicación Android/iO
 
 ## 📦 Comandos para Enviar a Producción (Deployment)
 
+### Deploy a cPanel (mismo flujo que carwash)
+
+1. Empaqueta con `vendor/` (`composer --no-dev`), **sin** `.env`
+2. Sube el `.tar.gz` con **API token** de cPanel (`Fileman::upload_files`) — evita el límite PHP de upload
+3. Sube `cron-deploy-pending.sh` + flag `.deploy-pending`
+4. El **Cron** del servidor extrae, protege `.env`, corre `post-deploy.sh` y limpia
+
+```bash
+cd backend
+php artisan deploy:cpanel --dry-run
+php artisan deploy:cpanel
+```
+
+`.env` **local**:
+
+```env
+CPANEL_HOST=davidortega.dev
+CPANEL_USER=davidort
+CPANEL_PORT=2083
+CPANEL_REMOTE_DIR=/home/davidort/parkingsoft
+CPANEL_API_TOKEN=tu_token_de_cpanel
+```
+
+**Primera vez — Cron en cPanel** (cada minuto):
+
+```bash
+/bin/bash -c 'test -f /home/davidort/parkingsoft/cron-deploy-pending.sh && exec /bin/bash /home/davidort/parkingsoft/cron-deploy-pending.sh'
+```
+
+Logs: `/home/davidort/parkingsoft/storage/logs/deploy-cron.log`
+
+**Document root (recomendado):** en cPanel → Domains → `parkingsoft.davidortega.dev` → Document Root =
+
+`/home/davidort/parkingsoft/public`
+
+Con eso la API queda en `https://parkingsoft.davidortega.dev/api/v1` (sin `/public` en la URL) y se evita el bucle `ERR_TOO_MANY_REDIRECTS` de `/public`.
+
+Si el document root sigue en `/home/davidort/parkingsoft`, el `.htaccess` de la raíz reescribe a `public/` y `/api/v1` también funciona.
+
+Opciones:
+
+- `--skip-build` — reutiliza `parkingsoft-api-production.tar.gz`
+- `--skip-flag` — solo sube el tar (sin disparar Cron)
+- `--skip-restore` — no restaura `composer install` (dev) en local tras el build
+
 Cuando envíes la aplicación a un servidor de producción (como AWS, VPS, Forge, DigitalOcean, etc.), es fundamental optimizar la configuración y la base de datos para garantizar la máxima velocidad, seguridad y estabilidad.
 
 Sigue esta lista de comandos ordenados en tu flujo de despliegue:

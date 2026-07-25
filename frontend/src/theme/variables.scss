@@ -1,26 +1,45 @@
-// Tema inspirado en dashboard tipo “Parking Solutions”: azul oscuro + grises claros
+// Parqueadero — Ops SaaS (ui-ux-pro-max): azul eléctrico + verde CTA + slate
 
 :root {
-  /** Fondo de página */
-  --pp-page-bg: #eef2f6;
-  --pp-card-shadow: 0 4px 14px rgba(15, 39, 68, 0.08);
+  --pp-font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --pp-font-display: 'Calistoga', Georgia, serif;
+  --pp-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --pp-page-bg: #f8fafc;
+  --pp-foreground: #0f172a;
+  --pp-muted: #64748b;
+  --pp-border: #e4ecfc;
+  --pp-surface: #ffffff;
+  --pp-card-shadow: 0 4px 6px rgba(15, 39, 68, 0.08);
   --pp-card-radius: 14px;
 
-  /** Texto del input “Precio” en tarifas (tab Inicio, admin). Cambia el hex aquí si lo necesitas. */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  --shadow-sm: 0 1px 2px rgba(15, 39, 68, 0.05);
+  --shadow-md: 0 4px 6px rgba(15, 39, 68, 0.1);
+  --shadow-lg: 0 10px 15px rgba(15, 39, 68, 0.1);
+
   --pp-rate-input-text: var(--ion-color-secondary);
 
-  /** Segmentos gráfico ocupación */
   --pp-chart-car: #2563eb;
   --pp-chart-moto: #f97316;
   --pp-chart-empty: #e2e8f0;
 
-  /** Ionic — primario azul oscuro */
-  --ion-color-primary: #0f2744;
-  --ion-color-primary-rgb: 15, 39, 68;
+  --pp-accent: #059669;
+  --pp-accent-rgb: 5, 150, 105;
+
+  /** Ionic — primary Ops blue */
+  --ion-color-primary: #2563eb;
+  --ion-color-primary-rgb: 37, 99, 235;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #0d223a;
-  --ion-color-primary-tint: #273d57;
+  --ion-color-primary-shade: #2057ce;
+  --ion-color-primary-tint: #3b73ed;
 
   --ion-color-secondary: #3b82f6;
   --ion-color-secondary-rgb: 59, 130, 246;
@@ -36,32 +55,58 @@
   --ion-color-tertiary-shade: #58657a;
   --ion-color-tertiary-tint: #748196;
 
-  --ion-color-success: #22c55e;
-  --ion-color-warning: #eab308;
-  --ion-color-danger: #ef4444;
+  --ion-color-success: #059669;
+  --ion-color-success-rgb: 5, 150, 105;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #04845c;
+  --ion-color-success-tint: #1ea578;
 
-  --ion-toolbar-background: var(--ion-color-primary);
-  --ion-toolbar-color: var(--ion-color-primary-contrast);
+  --ion-color-warning: #eab308;
+  --ion-color-danger: #dc2626;
+
+  --ion-background-color: var(--pp-page-bg);
+  --ion-text-color: var(--pp-foreground);
+
+  --ion-toolbar-background: #0f2744;
+  --ion-toolbar-color: #ffffff;
 
   --ion-tab-bar-background: #ffffff;
-  --ion-tab-bar-border-color: rgba(15, 39, 68, 0.08);
+  --ion-tab-bar-border-color: var(--pp-border);
   --ion-tab-bar-color: #64748b;
-  --ion-tab-bar-color-selected: #0054e9;
+  --ion-tab-bar-color-selected: #2563eb;
 }
 
 .ion-palette-dark {
   --pp-page-bg: #0f172a;
+  --pp-foreground: #f8fafc;
+  --pp-muted: #94a3b8;
+  --pp-border: #334155;
+  --pp-surface: #1e293b;
+  --pp-card-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
   --pp-rate-input-text: #60a5fa;
+  --pp-chart-empty: #334155;
 
-  /** Fix Tab Bar for dark mode */
+  --ion-background-color: var(--pp-page-bg);
+  --ion-text-color: var(--pp-foreground);
+  --ion-toolbar-background: #0b1220;
+  --ion-toolbar-color: #f8fafc;
+
   --ion-tab-bar-background: #1e293b;
   --ion-tab-bar-border-color: #334155;
   --ion-tab-bar-color: #94a3b8;
-  --ion-tab-bar-color-selected: #0054e9;
+  --ion-tab-bar-color-selected: #60a5fa;
 
-  /* --- Parqueadero Dark Mode Core Typography & Elements --- */
-  
-  /* Hardcoded text colors overridden for readability on dark backgrounds */
+  --pp-easy-acc-bg: #1e293b;
+  --pp-easy-acc-header-bg: #0f3d36;
+  --pp-easy-acc-border: rgba(255, 255, 255, 0.08);
+  --pp-easy-acc-expanded: #0d9488;
+  --pp-stat-cell-bg: rgba(255, 255, 255, 0.05);
+  --pp-heading-color: #ffffff;
+  --pp-muted-color: #94a3b8;
+  --pp-accent-text: #2dd4bf;
+  --pp-stat-num-color: #60a5fa;
+
   .pp-easy-acc-plate,
   .pp-rate-price,
   .pp-welcome-text,
@@ -71,11 +116,16 @@
   .pp-easy-acc-header .pp-easy-acc-plate,
   .pp-owner-parking-amount strong,
   .pp-chart-total,
-  h1, h2, h3, h4, h5, h6 {
-    color: #ffffff !important;
+  .pp-kpi-value,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--pp-heading-color);
   }
 
-  /* Secondary texts (subtitles, labels, metadata) */
   .pp-easy-acc-sub,
   .pp-easy-acc-meta-icon,
   .pp-owner-k,
@@ -85,96 +135,94 @@
   .pp-chart-sub,
   .pp-legend-pct,
   .pp-stat-cap,
-  .pp-easy-acc-entry-k {
-    color: #94a3b8 !important; /* Elegant slate gray */
+  .pp-easy-acc-entry-k,
+  .pp-muted,
+  .pp-kpi-label {
+    color: var(--pp-muted-color);
   }
 
-  /* Specific teal accents */
   .pp-easy-acc-entry {
-    color: #2dd4bf !important; /* Lighter high-contrast teal */
+    color: var(--pp-accent-text);
   }
 
-  /* Stats cards grid background & text */
-  .pp-stat-cell {
-    background: rgba(255, 255, 255, 0.05) !important;
-  }
-  .pp-stat-num {
-    color: #60a5fa !important;
+  .pp-stat-cell,
+  .pp-kpi-cell {
+    background: var(--pp-stat-cell-bg);
   }
 
-  /* QR Code previews & special labels */
+  .pp-stat-num,
+  .pp-kpi-value {
+    color: var(--pp-stat-num-color);
+  }
+
   .pp-rate-cop-preview {
-    color: #60a5fa !important;
+    color: var(--pp-stat-num-color);
   }
 
-  /* Inputs (Date and Number Inputs) */
   .pp-date-input {
-    color: #ffffff !important;
-    background: #1e293b !important;
-    border-color: #334155 !important;
-    box-shadow: none !important;
-    color-scheme: dark !important;
+    color: #ffffff;
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: none;
+    color-scheme: dark;
 
     &::placeholder {
-      color: #64748b !important;
+      color: #64748b;
     }
 
     &:hover:not(:disabled) {
-      border-color: #475569 !important;
-      background: #334155 !important;
+      border-color: #475569;
+      background: #334155;
     }
 
     &:focus-visible {
-      border-color: #3b82f6 !important;
-      background: #0f172a !important;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3) !important;
+      border-color: #3b82f6;
+      background: #0f172a;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
     }
   }
 
-  /* native inputs inside rates toggles */
   .pp-rate-toggle-item ion-toggle {
-    color: #ffffff !important;
-    --track-background: #334155 !important;
-    --track-background-checked: #3b82f6 !important;
+    color: #ffffff;
+    --track-background: #334155;
+    --track-background-checked: #3b82f6;
   }
 
-  /* Accordion Layouts (Fix white header backgrounds on dark mode) */
   ion-accordion.pp-easy-acc {
-    background: #1e293b !important;
-    border-color: rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+    background: var(--pp-easy-acc-bg);
+    border-color: var(--pp-easy-acc-border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 
     .pp-easy-acc-header {
-      --background: #022c22 !important; /* Elegant dark emerald background */
+      --background: var(--pp-easy-acc-header-bg);
     }
 
-    &.accordion-expanded, &[expanded] {
-      border-color: #0d9488 !important;
-      box-shadow: 0 6px 20px rgba(13, 148, 136, 0.25) !important;
+    &.accordion-expanded,
+    &[expanded] {
+      border-color: var(--pp-easy-acc-expanded);
+      box-shadow: 0 6px 20px rgba(13, 148, 136, 0.25);
     }
 
     .pp-easy-acc-panel {
-      background: #1e293b !important;
-      border-top-color: rgba(255, 255, 255, 0.08) !important;
-      color: #f8fafc !important;
+      background: var(--pp-easy-acc-bg);
+      border-top-color: var(--pp-easy-acc-border);
+      color: #f8fafc;
     }
   }
 
-  /* Expandable panels inside PrimeNG DataTables */
   .pp-expanded-cell {
-    background: #0f172a !important;
-  }
-  .pp-row-expanded-content {
-    background: #1e293b !important;
-    border-color: rgba(255, 255, 255, 0.08) !important;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+    background: #0f172a;
   }
 
-  /* PrimeNG Card overrides */
+  .pp-row-expanded-content {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
   .p-card {
-    background: #1e293b !important;
-    color: #ffffff !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: var(--pp-surface);
+    color: var(--pp-foreground);
+    border: 1px solid var(--pp-border);
   }
 }
-

@@ -1,0 +1,12 @@
+# cPanel: document root = /home/davidort/parkingsoft → reenvía a public/
+# Nota: /public y /public/ entran en bucle a nivel nginx; usa / o /api/v1.
+# Solución definitiva: document root = .../parkingsoft/public
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^$ public/ [L]
+    RewriteRule ^((?!public/).*)$ public/$1 [L,NC]
+</IfModule>
+
+<Files .env>
+    Require all denied
+</Files>

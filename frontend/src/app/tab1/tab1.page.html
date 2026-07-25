@@ -1,8 +1,8 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar color="primary" class="pp-toolbar">
+  <ion-toolbar class="pp-toolbar">
     <ion-title>Inicio</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="theme.toggleDarkMode()">
+      <ion-button (click)="theme.toggleDarkMode()" [attr.aria-label]="theme.isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'">
         <ion-icon slot="icon-only" [name]="theme.isDarkMode ? 'sunny-outline' : 'moon-outline'"></ion-icon>
       </ion-button>
       <span class="pp-brand-mark ion-padding-end">Parking</span>
@@ -12,11 +12,11 @@
 
 <ion-content class="ion-padding pp-page">
   @if (auth.getUser()?.role === 'vehicle_owner') {
-    <p-card
-      [header]="'Hola, ' + (auth.getUser()?.name ?? '')"
-      subheader="Propietario: gestiona tus vehículos y consulta el historial"
-      styleClass="pp-card-shadow"
-    >
+    <p-card styleClass="pp-card-shadow pp-owner-welcome">
+      <div class="pp-owner-welcome-head">
+        <h1 class="pp-owner-welcome-title">Hola, {{ auth.getUser()?.name ?? '' }}</h1>
+        <p class="pp-owner-welcome-sub">Gestiona tus vehículos y consulta el historial</p>
+      </div>
       <div class="pp-owner-home-actions">
         <p-button label="Ver mis vehículos" icon="pi pi-car" styleClass="pp-owner-action-btn" (onClick)="goToParkingTab()" />
         <p-button
@@ -29,8 +29,8 @@
         />
       </div>
       <p class="pp-welcome-text ion-margin-top">
-        En <strong>Parqueo</strong> verás el tiempo dentro del parqueadero, la modalidad elegida al ingresar, la tarifa y el
-        cobro calculado (actualiza si es por minuto).
+        En <strong>Parqueo</strong> verás el tiempo dentro del parqueadero, la modalidad al ingresar, la tarifa y el cobro
+        calculado.
       </p>
     </p-card>
 
@@ -193,36 +193,56 @@
     </section>
 
     @if (dashboard) {
+      <div class="pp-kpi-grid" role="group" aria-label="Resumen de ocupación">
+        <div class="pp-kpi-cell">
+          <span class="pp-kpi-value">{{ totalActive }}</span>
+          <span class="pp-kpi-label">Dentro</span>
+        </div>
+        <div class="pp-kpi-cell">
+          <span class="pp-kpi-value">{{ dashboard.occupancy.car.active }}</span>
+          <span class="pp-kpi-label">Carros</span>
+        </div>
+        <div class="pp-kpi-cell">
+          <span class="pp-kpi-value">{{ dashboard.occupancy.motorcycle.active }}</span>
+          <span class="pp-kpi-label">Motos</span>
+        </div>
+      </div>
+
       <p-card
         header="Ocupación por tipo"
-        subheader="Distribución actual en el parqueadero"
-        styleClass="pp-card-shadow"
+        subheader="Distribución actual · valores también en texto"
+        styleClass="pp-card-shadow pp-occupancy-card"
       >
-        <div class="pp-chart-box">
-          <p-chart
-            type="doughnut"
-            [data]="chartData"
-            [options]="chartOptions"
-            styleClass="pp-occupancy-chart"
-            height="220"
-          ></p-chart>
-          <div class="pp-chart-center">
-            <span class="pp-chart-total" [class.pp-chart-total--empty]="totalActive === 0">{{ totalActive }}</span>
-            <span class="pp-chart-sub">{{ totalActive === 0 ? 'Sin ocupación' : 'Total dentro' }}</span>
+        <div class="pp-occupancy-layout">
+          <div class="pp-chart-box">
+            <p-chart
+              type="doughnut"
+              [data]="chartData"
+              [options]="chartOptions"
+              styleClass="pp-occupancy-chart"
+              height="220"
+              aria-label="Gráfico de ocupación por tipo de vehículo"
+            ></p-chart>
+            <div class="pp-chart-center">
+              <span class="pp-chart-total" [class.pp-chart-total--empty]="totalActive === 0">{{ totalActive }}</span>
+              <span class="pp-chart-sub">{{ totalActive === 0 ? 'Sin ocupación' : 'Total dentro' }}</span>
+            </div>
           </div>
-        </div>
 
-        <div class="pp-legend">
-          <div class="pp-legend-row">
-            <span class="pp-dot pp-dot--car"></span>
-            <span class="pp-legend-label">Carros</span>
-            <strong class="pp-legend-pct">{{ shareCar() }}%</strong>
-          </div>
-          <div class="pp-legend-row">
-            <span class="pp-dot pp-dot--moto"></span>
-            <span class="pp-legend-label">Motos</span>
-            <strong class="pp-legend-pct">{{ shareMoto() }}%</strong>
-          </div>
+          <ul class="pp-legend" aria-label="Leyenda de ocupación">
+            <li class="pp-legend-row">
+              <span class="pp-dot pp-dot--car" aria-hidden="true"></span>
+              <span class="pp-legend-label">Carros</span>
+              <span class="pp-legend-count">{{ dashboard.occupancy.car.active }}</span>
+              <strong class="pp-legend-pct">{{ shareCar() }}%</strong>
+            </li>
+            <li class="pp-legend-row">
+              <span class="pp-dot pp-dot--moto" aria-hidden="true"></span>
+              <span class="pp-legend-label">Motos</span>
+              <span class="pp-legend-count">{{ dashboard.occupancy.motorcycle.active }}</span>
+              <strong class="pp-legend-pct">{{ shareMoto() }}%</strong>
+            </li>
+          </ul>
         </div>
 
         <p-divider />
@@ -230,27 +250,41 @@
         <div class="pp-stat-grid">
           <div class="pp-stat-cell">
             <span class="pp-stat-num">{{ dashboard.occupancy.car.active }}</span>
-            <span class="pp-stat-cap">de {{ dashboard.occupancy.car.capacity ?? '—' }} carros</span>
+            <span class="pp-stat-cap">de {{ dashboard.occupancy.car.capacity ?? '—' }} cupos carros</span>
           </div>
           <div class="pp-stat-cell">
             <span class="pp-stat-num">{{ dashboard.occupancy.motorcycle.active }}</span>
-            <span class="pp-stat-cap">de {{ dashboard.occupancy.motorcycle.capacity ?? '—' }} motos</span>
+            <span class="pp-stat-cap">de {{ dashboard.occupancy.motorcycle.capacity ?? '—' }} cupos motos</span>
           </div>
         </div>
 
         <div class="pp-bars ion-margin-top">
-          <div class="pp-bar-label">Cupos carros</div>
-          <p-progressBar
-            [value]="pct(dashboard.occupancy.car.active, dashboard.occupancy.car.capacity)"
-            [showValue]="false"
-            styleClass="pp-pbar"
-          ></p-progressBar>
-          <div class="pp-bar-label ion-margin-top">Cupos motos</div>
-          <p-progressBar
-            [value]="pct(dashboard.occupancy.motorcycle.active, dashboard.occupancy.motorcycle.capacity)"
-            [showValue]="false"
-            styleClass="pp-pbar pp-pbar--warn"
-          ></p-progressBar>
+          <div class="pp-bar-row">
+            <div class="pp-bar-label">
+              Cupos carros
+              <span class="pp-bar-value">
+                {{ pct(dashboard.occupancy.car.active, dashboard.occupancy.car.capacity) }}%
+              </span>
+            </div>
+            <p-progressBar
+              [value]="pct(dashboard.occupancy.car.active, dashboard.occupancy.car.capacity)"
+              [showValue]="false"
+              styleClass="pp-pbar"
+            ></p-progressBar>
+          </div>
+          <div class="pp-bar-row ion-margin-top">
+            <div class="pp-bar-label">
+              Cupos motos
+              <span class="pp-bar-value">
+                {{ pct(dashboard.occupancy.motorcycle.active, dashboard.occupancy.motorcycle.capacity) }}%
+              </span>
+            </div>
+            <p-progressBar
+              [value]="pct(dashboard.occupancy.motorcycle.active, dashboard.occupancy.motorcycle.capacity)"
+              [showValue]="false"
+              styleClass="pp-pbar pp-pbar--warn"
+            ></p-progressBar>
+          </div>
         </div>
       </p-card>
     }

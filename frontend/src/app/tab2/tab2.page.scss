@@ -1,14 +1,14 @@
 .pp-form-stack {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-md, 1rem);
 }
 
 .pp-field-label {
   display: block;
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--ion-color-medium);
+  color: var(--pp-muted-color, var(--ion-color-medium));
   margin-bottom: 0.35rem;
 }
 
@@ -83,15 +83,18 @@
 
 .pp-card-shadow {
   box-shadow: var(--pp-card-shadow, 0 4px 20px rgba(15, 39, 68, 0.04));
-  border-radius: 12px;
-  border: 1px solid rgba(15, 39, 68, 0.06);
-  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  animation: slideUpFade 0.5s ease-out forwards;
+  border-radius: var(--pp-card-radius, 14px);
+  border: 1px solid var(--pp-border, rgba(15, 39, 68, 0.06));
+  transition: box-shadow 0.2s ease;
 }
 
-.pp-card-shadow:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(15, 39, 68, 0.08);
+.pp-checkin-primary {
+  border-color: rgba(37, 99, 235, 0.2);
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(15, 39, 68, 0.1));
+}
+
+::ng-deep .pp-checkin-submit {
+  min-height: 44px;
 }
 
 .ion-palette-dark .pp-card-shadow {
@@ -315,15 +318,24 @@
 }
 
 .pp-owner-parking-badge {
-  font-weight: 600;
+  display: inline-block;
+  margin-top: 0.25rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .pp-owner-parking-badge--in {
-  color: #0d9488;
+  color: #047857;
+  background: rgba(5, 150, 105, 0.12);
 }
 
 .pp-owner-parking-badge--out {
-  color: #94a3b8;
+  color: #64748b;
+  background: rgba(100, 116, 139, 0.12);
 }
 
 .pp-easy-acc-group {

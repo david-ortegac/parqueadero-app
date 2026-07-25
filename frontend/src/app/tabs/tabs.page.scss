@@ -1,1 +1,23 @@
+ion-tabs {
+  background: var(--pp-page-bg);
+}
 
+.pp-tab-bar {
+  --background: var(--ion-tab-bar-background);
+  --border: var(--ion-tab-bar-border-color);
+  --color: var(--ion-tab-bar-color);
+  --color-selected: var(--ion-tab-bar-color-selected);
+  box-shadow: 0 -2px 12px rgba(15, 39, 68, 0.06);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.pp-tab-bar ion-tab-button {
+  min-height: 52px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.pp-tab-bar ion-icon {
+  font-size: 1.35rem;
+  margin-bottom: 2px;
+}

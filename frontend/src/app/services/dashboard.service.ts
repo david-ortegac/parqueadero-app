@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { OCCUPANCY_CHART_COLORS, OCCUPANCY_CHART_LABELS } from '../constants/parking-billing.catalog';
-import { DashboardResponse } from '../models/parking.models';
+import { DashboardResponse } from './parking-api.service';
 
 export interface OccupancyChartData {
   labels: string[];
@@ -13,17 +13,6 @@ export interface OccupancyChartData {
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
-  readonly chartOptions: Record<string, unknown> = {
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: { usePointStyle: true, padding: 16 },
-      },
-    },
-    cutout: '68%',
-    maintainAspectRatio: false,
-  };
-
   buildChartData(dashboard: DashboardResponse | null): OccupancyChartData {
     if (!dashboard) {
       return { labels: [], datasets: [{ data: [], backgroundColor: [], hoverBackgroundColor: [] }] };
@@ -33,7 +22,13 @@ export class DashboardService {
     if (c + m === 0) {
       return {
         labels: ['Sin vehículos'],
-        datasets: [{ data: [1], backgroundColor: ['#e2e8f0'], hoverBackgroundColor: ['#cbd5e1'] }],
+        datasets: [
+          {
+            data: [1],
+            backgroundColor: [OCCUPANCY_CHART_COLORS.empty.fill],
+            hoverBackgroundColor: [OCCUPANCY_CHART_COLORS.empty.hover],
+          },
+        ],
       };
     }
     return {
@@ -42,7 +37,10 @@ export class DashboardService {
         {
           data: [c, m],
           backgroundColor: [OCCUPANCY_CHART_COLORS.car.fill, OCCUPANCY_CHART_COLORS.motorcycle.fill],
-          hoverBackgroundColor: [OCCUPANCY_CHART_COLORS.car.hover, OCCUPANCY_CHART_COLORS.motorcycle.hover],
+          hoverBackgroundColor: [
+            OCCUPANCY_CHART_COLORS.car.hover,
+            OCCUPANCY_CHART_COLORS.motorcycle.hover,
+          ],
         },
       ],
     };

@@ -41,7 +41,8 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            // Layout plano cPanel (sin /public): servir uploads en /media
+            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').(is_dir(base_path('public')) ? '/storage' : '/media'),
             'visibility' => 'public',
             'throw' => false,
             'report' => false,
@@ -74,7 +75,9 @@ return [
     */
 
     'links' => [
-        public_path('storage') => storage_path('app/public'),
+        // Con Document Root = app root (sin carpeta public/), no se puede
+        // enlazar public_path('storage') porque chocaría con storage/.
+        (is_dir(base_path('public')) ? public_path('storage') : base_path('media')) => storage_path('app/public'),
     ],
 
 ];
