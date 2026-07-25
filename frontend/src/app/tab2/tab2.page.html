@@ -92,7 +92,7 @@
                         </span>
                       }
                     </li>
-                    @if (s.billing_mode === 'week' || s.billing_mode === 'month') {
+                    @if (isPrepaidBillingMode(s.billing_mode)) {
                       <li>
                         <span class="pp-owner-k">Días de cobertura del período</span>
                         <span class="pp-owner-v pp-owner-parking-amount">
@@ -111,6 +111,17 @@
                           }}</strong>
                         </span>
                       </li>
+                      @if (prepaidPeriodStatus(s.period_ends_at); as st) {
+                        <li>
+                          <span class="pp-owner-k">Estado</span>
+                          <span class="pp-owner-v">
+                            <p-tag
+                              [value]="st === 'activo' ? 'Activo' : 'Vencido'"
+                              [severity]="st === 'activo' ? 'success' : 'danger'"
+                            />
+                          </span>
+                        </li>
+                      }
                     }
                     <li class="pp-owner-parking-amount-row">
                       <span class="pp-owner-k">Cobro a este momento</span>
@@ -228,7 +239,7 @@
       />
     </p-card>
 
-    <p-card header="Sesiones activas" subheader="Vehículos dentro del parqueadero en este momento" styleClass="pp-card-shadow ion-margin-top">
+    <p-card header="Sesiones activas" subheader="Vehículos dentro del parqueadero. Abre el acordeón para ver detalle, ticket y cobro." styleClass="pp-card-shadow ion-margin-top">
       @if (loadingList) {
         <div class="pp-center"><ion-spinner name="crescent" color="primary"></ion-spinner></div>
       } @else if (!activeSessions.length) {
@@ -240,6 +251,7 @@
             id="fld-active-plate-filter"
             pInputText
             [(ngModel)]="activeSessionsPlateFilter"
+            (ngModelChange)="onActiveSessionsFilterChange()"
             placeholder="Ej. ABC o 123"
             autocomplete="off"
             autocapitalize="characters"
@@ -249,114 +261,138 @@
         @if (!filteredActiveSessions.length) {
           <p class="pp-muted">Ninguna sesión coincide con el filtro.</p>
         } @else {
-        <p-table
-          [value]="filteredActiveSessions"
-          styleClass="p-datatable-sm pp-table"
-          [tableStyle]="{ 'min-width': '100%' }"
-        >
-          <ng-template pTemplate="header">
-            <tr>
-              <th style="width: 3rem" class="pp-show-on-mobile-only"></th>
-              <th>Placa</th>
-              <th class="pp-hide-on-mobile">Documento</th>
-              <th class="pp-hide-on-mobile">Propietario</th>
-              <th>Modalidad</th>
-              <th class="pp-hide-on-mobile">Ingreso</th>
-              <th class="pp-hide-on-mobile">Prepago</th>
-              <th class="pp-active-actions-col pp-hide-on-mobile">Acciones</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-s>
-            <tr (click)="toggleRowExpansion(s.id)" class="pp-row-click" [class.pp-row-expanded]="isRowExpanded(s.id)">
-              <td class="pp-show-on-mobile-only" style="width: 3rem;">
-                <button pButton pRipple type="button" class="p-button-text p-button-rounded p-button-plain"
-                  [icon]="isRowExpanded(s.id) ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
-                  (click)="$event.stopPropagation(); toggleRowExpansion(s.id)"
-                ></button>
-              </td>
-              <td><strong>{{ s.vehicle?.plate }}</strong></td>
-              <td class="pp-session-doc pp-hide-on-mobile">{{ sessionDepositorDocument(s) }}</td>
-              <td class="pp-hide-on-mobile">
-                @if (sessionOwnerAppName(s); as ownerNm) {
-                  {{ ownerNm }}
-                } @else {
-                  <span class="pp-session-doc pp-muted">Cliente sin registro</span>
-                }
-              </td>
-              <td><p-tag [value]="billingModeLabel(s.billing_mode)" severity="info"></p-tag></td>
-              <td class="pp-hide-on-mobile">{{ s.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</td>
-              <td class="pp-hide-on-mobile">
-                @if (s.billing_mode === 'week' || s.billing_mode === 'month') {
-                  @if (s.subscription_period_days !== null) {
-                    {{ s.subscription_period_days }} días
-                  } @else if (s.period_ends_at) {
-                    Hasta {{ s.period_ends_at | date : coDateTimeFormat : coTimezone : coLocale }}
-                  } @else {
-                    —
-                  }
-                } @else {
-                  —
-                }
-              </td>
-              <td class="pp-active-actions-cell pp-hide-on-mobile" (click)="$event.stopPropagation()">
-                <div class="pp-active-actions">
-                  <p-button label="Ticket" icon="pi pi-print" size="small" severity="secondary" [outlined]="true" (onClick)="reprintEntryTicket(s)" />
-                  <p-button label="Salida / cobro" icon="pi pi-wallet" size="small" (onClick)="checkout(s)" />
-                </div>
-              </td>
-            </tr>
-            @if (isRowExpanded(s.id)) {
-              <tr>
-                <td colspan="8" class="pp-expanded-cell">
-                  <div class="pp-row-expanded-content">
-                    <ul class="pp-owner-parking-list">
-                      <li>
-                        <span class="pp-owner-k">Documento</span>
-                        <span class="pp-owner-v pp-session-doc">{{ sessionDepositorDocument(s) }}</span>
-                      </li>
-                      <li>
-                        <span class="pp-owner-k">Propietario</span>
-                        <span class="pp-owner-v">
-                          @if (sessionOwnerAppName(s); as ownerNm) {
-                            {{ ownerNm }}
-                          } @else {
-                            <span class="pp-session-doc pp-muted">Cliente sin registro</span>
-                          }
-                        </span>
-                      </li>
-                      <li>
-                        <span class="pp-owner-k">Ingreso</span>
-                        <span class="pp-owner-v">{{ s.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</span>
-                      </li>
+          <ion-accordion-group
+            class="pp-easy-acc-group"
+            [value]="activeSessionsAccordionOpen"
+            (ionChange)="onActiveSessionsAccordionChange($event)"
+          >
+            @for (s of filteredActiveSessions; track s.id) {
+              <ion-accordion
+                [value]="activeSessionAccordionKey(s.id)"
+                class="pp-easy-acc"
+                [attr.id]="'pp-active-session-' + s.id"
+              >
+                <span slot="toggle-icon" class="pp-easy-acc-toggle-slot-hidden" aria-hidden="true"></span>
+                <ion-item slot="header" lines="none" button detail="false" class="pp-easy-acc-header">
+                  <div class="pp-easy-acc-toggle-box" aria-hidden="true">
+                    <span class="pp-easy-acc-toggle-glyph">{{ activeSessionAccordionGlyph(s.id) }}</span>
+                  </div>
+                  <ion-icon class="pp-easy-acc-meta-icon" name="car-outline" aria-hidden="true"></ion-icon>
+                  <ion-label class="pp-easy-acc-label">
+                    <h2 class="pp-easy-acc-plate">{{ s.vehicle?.plate }}</h2>
+                    <p class="pp-easy-acc-sub">
+                      {{ billingModeLabel(s.billing_mode) }}
+                      @if (s.vehicle?.vehicle_class) {
+                        · {{ vehicleClassLabelShort(s.vehicle!.vehicle_class) }}
+                      }
+                    </p>
+                    @if (isPrepaidBillingMode(s.billing_mode) && prepaidPeriodStatus(s.period_ends_at); as st) {
+                      <p class="pp-easy-acc-entry" [class.pp-easy-acc-entry--expired]="st === 'vencido'">
+                        <span class="pp-easy-acc-entry-k">{{ st === 'vencido' ? 'Venció' : 'Hasta' }}</span>
+                        @if (s.period_ends_at) {
+                          {{ s.period_ends_at | date : coDateTimeFormat : coTimezone : coLocale }}
+                        }
+                        <p-tag
+                          [value]="st === 'activo' ? 'Activo' : 'Vencido'"
+                          [severity]="st === 'activo' ? 'success' : 'danger'"
+                          styleClass="pp-acc-status-tag"
+                        />
+                      </p>
+                    } @else {
+                      <p class="pp-easy-acc-entry">
+                        <span class="pp-easy-acc-entry-k">Ingreso</span>
+                        {{ s.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}
+                        <span class="pp-easy-acc-entry-tz">(Colombia)</span>
+                      </p>
+                    }
+                  </ion-label>
+                </ion-item>
+                <div slot="content" class="pp-easy-acc-panel">
+                  <ul class="pp-owner-parking-list">
+                    <li>
+                      <span class="pp-owner-k">Documento</span>
+                      <span class="pp-owner-v pp-session-doc">{{ sessionDepositorDocument(s) }}</span>
+                    </li>
+                    <li>
+                      <span class="pp-owner-k">Propietario</span>
+                      <span class="pp-owner-v">
+                        @if (sessionOwnerAppName(s); as ownerNm) {
+                          {{ ownerNm }}
+                        } @else {
+                          <span class="pp-session-doc pp-muted">Cliente sin registro</span>
+                        }
+                      </span>
+                    </li>
+                    <li>
+                      <span class="pp-owner-k">Modalidad</span>
+                      <span class="pp-owner-v">
+                        <p-tag [value]="billingModeLabel(s.billing_mode)" severity="info" />
+                      </span>
+                    </li>
+                    <li>
+                      <span class="pp-owner-k">Ingreso</span>
+                      <span class="pp-owner-v">{{ s.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</span>
+                    </li>
+                    @if (isPrepaidBillingMode(s.billing_mode)) {
                       <li>
                         <span class="pp-owner-k">Prepago</span>
                         <span class="pp-owner-v">
-                          @if (s.billing_mode === 'week' || s.billing_mode === 'month') {
-                            @if (s.subscription_period_days !== null) {
-                              {{ s.subscription_period_days }} días
-                            } @else if (s.period_ends_at) {
-                              Hasta {{ s.period_ends_at | date : coDateTimeFormat : coTimezone : coLocale }}
-                            } @else {
-                              —
-                            }
+                          @if (s.subscription_period_days !== null) {
+                            {{ s.subscription_period_days }} días
                           } @else {
                             —
                           }
                         </span>
                       </li>
-                      <li style="margin-top: 0.5rem;">
-                        <div class="pp-active-actions" style="flex-direction: row; justify-content: flex-start;">
-                          <p-button label="Ticket" icon="pi pi-print" size="small" severity="secondary" [outlined]="true" (onClick)="reprintEntryTicket(s)" />
-                          <p-button label="Salida / cobro" icon="pi pi-wallet" size="small" (onClick)="checkout(s)" />
-                        </div>
-                      </li>
-                    </ul>
+                      @if (prepaidPeriodStatus(s.period_ends_at); as st) {
+                        <li>
+                          <span class="pp-owner-k">Estado</span>
+                          <span class="pp-owner-v">
+                            <p-tag
+                              [value]="st === 'activo' ? 'Activo' : 'Vencido'"
+                              [severity]="st === 'activo' ? 'success' : 'danger'"
+                            />
+                          </span>
+                        </li>
+                        @if (s.period_ends_at) {
+                          <li>
+                            <span class="pp-owner-k">{{ st === 'vencido' ? 'Fecha de vencimiento' : 'Período hasta' }}</span>
+                            <span
+                              class="pp-owner-v"
+                              [class.pp-period-end--expired]="st === 'vencido'"
+                            >
+                              {{ s.period_ends_at | date : coDateTimeFormat : coTimezone : coLocale }}
+                            </span>
+                          </li>
+                        }
+                      }
+                    }
+                  </ul>
+                  <div class="pp-active-actions pp-active-actions--acc">
+                    <p-button
+                      label="Ticket"
+                      icon="pi pi-print"
+                      size="small"
+                      severity="secondary"
+                      [outlined]="true"
+                      (onClick)="reprintEntryTicket(s)"
+                    />
+                    <p-button label="Salida / cobro" icon="pi pi-wallet" size="small" (onClick)="checkout(s)" />
                   </div>
-                </td>
-              </tr>
+                  <ion-button
+                    class="pp-easy-acc-close"
+                    fill="outline"
+                    size="small"
+                    expand="block"
+                    color="medium"
+                    (click)="closeActiveSessionAccordion()"
+                  >
+                    Cerrar
+                  </ion-button>
+                </div>
+              </ion-accordion>
             }
-          </ng-template>
-        </p-table>
+          </ion-accordion-group>
         }
       }
     </p-card>

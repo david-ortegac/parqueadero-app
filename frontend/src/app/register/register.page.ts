@@ -99,8 +99,4 @@ export class RegisterPage {
         },
       });
   }
-
-  goLogin(): void {
-    void this.router.navigate(['/login']);
-  }
 }

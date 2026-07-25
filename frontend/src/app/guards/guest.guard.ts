@@ -13,7 +13,7 @@ export class GuestGuard implements CanActivate {
 
   canActivate(): boolean | UrlTree {
     if (this.auth.isLoggedIn()) {
-      return this.router.createUrlTree(['/tabs/tab1']);
+      return this.router.createUrlTree(['/inicio']);
     }
     return true;
   }

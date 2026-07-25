@@ -42,6 +42,7 @@ import {
   sanitizeDocumentDigits,
 } from '../utils/numeric-document';
 import { formatMoney as formatMoneyUtil } from '../utils/format.utils';
+import { AccordionController } from '../utils/accordion.utils';
 
 import { ThemeService } from '../services/theme.service';
 
@@ -82,6 +83,8 @@ export class Tab2Page implements OnInit, OnDestroy {
   activeSessions: ParkingSession[] = [];
   /** Filtro por placa (sesiones activas, operador/admin). */
   activeSessionsPlateFilter = '';
+  /** Acordeón de sesiones activas (mismo patrón que propietarios en Inicio). */
+  readonly activeSessionsAccordion = new AccordionController();
   expandedRows: { [key: string]: boolean } = {};
   vehicles: OwnerVehicle[] = [];
   loadingList = false;
@@ -248,6 +251,7 @@ export class Tab2Page implements OnInit, OnDestroy {
       this.api.getActiveSessions().subscribe({
         next: (s) => {
           this.activeSessions = s;
+          this.activeSessionsAccordion.syncWithValues(s.map((x) => this.activeSessionAccordionKey(x.id)));
           this.loadingList = false;
         },
         error: async () => {
@@ -452,6 +456,32 @@ export class Tab2Page implements OnInit, OnDestroy {
     return `park-v-${vehicleId}`;
   }
 
+  activeSessionAccordionKey(sessionId: number): string {
+    return `active-s-${sessionId}`;
+  }
+
+  get activeSessionsAccordionOpen(): string | undefined {
+    return this.activeSessionsAccordion.open;
+  }
+
+  onActiveSessionsAccordionChange(ev: Event): void {
+    this.activeSessionsAccordion.onChange(ev);
+  }
+
+  closeActiveSessionAccordion(): void {
+    this.activeSessionsAccordion.close();
+  }
+
+  activeSessionAccordionGlyph(sessionId: number): string {
+    return this.activeSessionsAccordion.toggleGlyph(this.activeSessionAccordionKey(sessionId));
+  }
+
+  onActiveSessionsFilterChange(): void {
+    this.activeSessionsAccordion.syncWithValues(
+      this.filteredActiveSessions.map((s) => this.activeSessionAccordionKey(s.id)),
+    );
+  }
+
   onOwnerParkingAccordionChange(ev: Event): void {
     const next = (ev as CustomEvent<{ value: string | undefined }>).detail.value;
     const prev = this.ownerParkingAccordionOpen;
@@ -525,6 +555,22 @@ export class Tab2Page implements OnInit, OnDestroy {
       return s.amount_due_live;
     }
     return s.amount_due;
+  }
+
+  /** Semana o mes prepago. */
+  isPrepaidBillingMode(billingMode: string): boolean {
+    return billingMode === 'week' || billingMode === 'month';
+  }
+
+  /**
+   * Estado del período prepago según `period_ends_at`.
+   * `null` si no aplica (no prepago o sin fecha límite).
+   */
+  prepaidPeriodStatus(periodEndsAt: string | null | undefined): 'activo' | 'vencido' | null {
+    if (!periodEndsAt) {
+      return null;
+    }
+    return new Date(periodEndsAt).getTime() < Date.now() ? 'vencido' : 'activo';
   }
 
   /** Importe y moneda formateados (es-CO) para la fila «Valor del parqueo seleccionado». */

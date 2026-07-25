@@ -1,5 +1,5 @@
 /*
- * App Global CSS — Parqueadero Ops SaaS
+ * App Global CSS — Parqueadero Ops SaaS (ui-ux-pro-max)
  */
 
 @import '@ionic/angular/css/core.css';
@@ -16,25 +16,37 @@
 
 :root {
   --pp-heading-color: var(--pp-foreground, #0f172a);
-  --pp-muted-color: var(--pp-muted, #64748b);
+  --pp-muted-color: var(--pp-muted, #475569);
 }
 
 body {
-  background: var(--pp-page-bg);
+  background:
+    radial-gradient(1200px 480px at 10% -10%, rgba(37, 99, 235, 0.08), transparent 55%),
+    radial-gradient(900px 420px at 100% 0%, rgba(5, 150, 105, 0.06), transparent 50%),
+    var(--pp-page-bg);
   color: var(--pp-foreground);
   font-family: var(--pp-font-body);
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.ion-palette-dark body,
+html.ion-palette-dark body,
+body.ion-palette-dark {
+  background:
+    radial-gradient(1000px 420px at 0% 0%, rgba(37, 99, 235, 0.18), transparent 50%),
+    var(--pp-page-bg);
 }
 
 ion-content.pp-page {
-  --background: var(--pp-page-bg);
+  --background: transparent;
 }
 
 .pp-toolbar ion-title {
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   font-family: var(--pp-font-body);
 }
 
@@ -43,26 +55,146 @@ ion-content.pp-page {
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .pp-card {
-  border-radius: var(--pp-card-radius);
-  box-shadow: var(--pp-card-shadow);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(13, 148, 136, 0.05);
   margin: 0 0 var(--space-md);
 }
 
 .pp-card-shadow {
-  box-shadow: var(--pp-card-shadow);
+  box-shadow: 0 2px 10px rgba(13, 148, 136, 0.05);
+}
+
+.p-card.pp-card-shadow,
+.p-card.pp-login-card {
+  border: 1px solid rgba(13, 148, 136, 0.15);
+  border-radius: 12px;
+  background: var(--pp-surface, #fff);
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(13, 148, 136, 0.05);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+}
+
+.p-card.pp-card-shadow:hover,
+.p-card.pp-login-card:hover {
+  border-color: rgba(13, 148, 136, 0.3);
+  box-shadow: 0 6px 15px rgba(13, 148, 136, 0.1);
+  transform: translateY(-2px);
+}
+
+.p-card.pp-card-shadow .p-card-body,
+.p-card.pp-login-card .p-card-body {
+  padding: 0;
+}
+
+.p-card.pp-card-shadow .p-card-caption,
+.p-card.pp-login-card .p-card-caption {
+  margin: 0;
+  padding: 0.95rem 1rem 0.85rem;
+  background: #ecfdf5;
+  border-bottom: 1px solid rgba(13, 148, 136, 0.15);
+}
+
+.p-card.pp-inicio-card .p-card-caption,
+.p-card.pp-bento-card .p-card-caption {
+  text-align: center;
+}
+
+.p-card .p-card-title {
+  font-family: var(--pp-font-body);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #334155;
+  font-size: 1.05rem;
+}
+
+.p-card.pp-inicio-card .p-card-title,
+.p-card.pp-bento-card .p-card-title,
+.p-card.pp-inicio-card .p-card-subtitle,
+.p-card.pp-bento-card .p-card-subtitle {
+  text-align: center;
+  width: 100%;
+}
+
+.p-card .p-card-subtitle {
+  color: #64748b;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  font-weight: 500;
+  margin-top: 0.2rem;
+}
+
+/* Contenido de card alineado al panel del acordeón */
+.p-card.pp-card-shadow .p-card-content,
+.p-card.pp-login-card .p-card-content {
+  padding: 1rem 1rem 1.25rem;
+  background: var(--pp-surface, #fff);
+}
+
+.p-card.pp-card-shadow .p-card-footer,
+.p-card.pp-login-card .p-card-footer {
+  padding: 0 1rem 1rem;
+  background: var(--pp-surface, #fff);
+}
+
+.ion-palette-dark .p-card.pp-card-shadow,
+.ion-palette-dark .p-card.pp-login-card,
+html.ion-palette-dark .p-card.pp-card-shadow,
+html.ion-palette-dark .p-card.pp-login-card {
+  background: var(--pp-surface, #1e293b);
+  border-color: var(--pp-easy-acc-border, rgba(255, 255, 255, 0.08));
+}
+
+.ion-palette-dark .p-card.pp-card-shadow .p-card-caption,
+.ion-palette-dark .p-card.pp-login-card .p-card-caption,
+html.ion-palette-dark .p-card.pp-card-shadow .p-card-caption,
+html.ion-palette-dark .p-card.pp-login-card .p-card-caption {
+  background: var(--pp-easy-acc-header-bg, #0f3d36);
+  border-bottom-color: var(--pp-easy-acc-border, rgba(255, 255, 255, 0.08));
+}
+
+.ion-palette-dark .p-card .p-card-title,
+html.ion-palette-dark .p-card .p-card-title {
+  color: #f8fafc;
+}
+
+.ion-palette-dark .p-card .p-card-subtitle,
+html.ion-palette-dark .p-card .p-card-subtitle {
+  color: #94a3b8;
+}
+
+.ion-palette-dark .p-card.pp-card-shadow .p-card-content,
+.ion-palette-dark .p-card.pp-login-card .p-card-content,
+html.ion-palette-dark .p-card.pp-card-shadow .p-card-content,
+html.ion-palette-dark .p-card.pp-login-card .p-card-content {
+  background: var(--pp-surface, #1e293b);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .p-card.pp-card-shadow,
+  .p-card.pp-login-card,
+  .p-card.pp-card-shadow:hover,
+  .p-card.pp-login-card:hover {
+    transition: none;
+    transform: none;
+  }
 }
 
 .pp-tab-bar {
-  box-shadow: 0 -2px 12px rgba(15, 39, 68, 0.06);
+  box-shadow: 0 -4px 20px rgba(15, 39, 68, 0.07);
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 .pp-tab-bar ion-tab-button {
-  min-height: 48px;
+  min-height: 52px;
+  cursor: pointer;
+  transition: color var(--pp-motion-fast) var(--pp-ease);
 }
 
 .pp-muted {
@@ -72,11 +204,24 @@ ion-content.pp-page {
 }
 
 .pp-section-title {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 700;
   color: var(--pp-heading-color);
   margin: var(--space-md) 0 var(--space-sm);
   font-family: var(--pp-font-body);
+  letter-spacing: -0.015em;
+}
+
+.pp-session-doc,
+.pp-plate-mono,
+td strong {
+  font-variant-numeric: tabular-nums;
+}
+
+td strong {
+  font-family: var(--pp-font-mono);
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
 }
 
 /* Focus rings */
@@ -88,8 +233,24 @@ ion-content.pp-page {
 button,
 a,
 ion-button,
-.p-button {
-  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+ion-tab-button,
+.p-button,
+.pp-row-click {
+  cursor: pointer;
+  transition:
+    background-color var(--pp-motion) var(--pp-ease),
+    color var(--pp-motion) var(--pp-ease),
+    box-shadow var(--pp-motion) var(--pp-ease),
+    border-color var(--pp-motion) var(--pp-ease),
+    opacity var(--pp-motion-fast) var(--pp-ease);
+}
+
+.p-button:not(:disabled):hover {
+  filter: brightness(1.03);
+}
+
+.p-button:not(:disabled):active {
+  transform: translateY(1px);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -101,56 +262,78 @@ ion-button,
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+
+  .p-button:not(:disabled):active {
+    transform: none;
+  }
 }
 
 /* --- Shared Auth Layout (Login / Register) --- */
 .pp-login-content {
-  --background: var(--pp-page-bg);
+  --background: transparent;
+  overscroll-behavior: contain;
 }
 
 .pp-login-hero {
-  background: linear-gradient(145deg, #0f2744 0%, #1e3a5f 42%, #2563eb 100%);
+  background:
+    linear-gradient(145deg, rgba(15, 39, 68, 0.97) 0%, rgba(30, 58, 95, 0.94) 46%, rgba(37, 99, 235, 0.9) 100%),
+    radial-gradient(circle at 88% 12%, rgba(5, 150, 105, 0.4), transparent 42%);
   color: #fff;
-  padding: var(--space-xl) var(--space-lg) var(--space-2xl);
-  border-radius: 0 0 24px 24px;
+  padding: var(--space-xl) var(--space-lg) calc(var(--space-2xl) + 0.5rem);
+  border-radius: 0 0 28px 28px;
   margin: -0.5rem calc(-0.5rem - var(--ion-padding-start, 16px)) 0
     calc(-0.5rem - var(--ion-padding-end, 16px));
   box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.pp-login-hero::after {
+  content: '';
+  position: absolute;
+  inset: auto -20% -40% 40%;
+  height: 180px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12), transparent 70%);
+  pointer-events: none;
 }
 
 .pp-login-brand {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
+  position: relative;
+  z-index: 1;
 }
 
 .pp-login-brand-title {
   font-family: var(--pp-font-display);
-  font-size: 1.85rem;
+  font-size: clamp(1.9rem, 5vw, 2.35rem);
   font-weight: 400;
-  letter-spacing: -0.01em;
-  line-height: 1.15;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
 .pp-login-brand-sub {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  opacity: 0.85;
+  opacity: 0.88;
   font-family: var(--pp-font-body);
 }
 
 .pp-login-tagline {
   margin: var(--space-md) 0 0;
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.45;
-  opacity: 0.92;
-  max-width: 28ch;
+  opacity: 0.94;
+  max-width: 32ch;
+  position: relative;
+  z-index: 1;
 }
 
 .pp-login-card {
-  margin: -1.5rem 0 var(--space-lg);
+  margin: -1.75rem 0 var(--space-lg);
   position: relative;
   z-index: 1;
 }
@@ -167,11 +350,7 @@ ion-button,
 }
 
 .pp-login-card .p-card-caption {
-  margin-bottom: var(--space-sm);
-}
-
-.pp-login-card .p-card-body {
-  padding-top: 0.75rem;
+  /* caption ya lleva padding en estilos globales pp-easy-acc */
 }
 
 .pp-login-fields .p-floatlabel {
@@ -189,7 +368,8 @@ ion-button,
 
 .pp-login-actions .p-button,
 .pp-login-card .p-button {
-  min-height: 44px;
+  min-height: 48px;
+  font-weight: 600;
 }
 
 /* KPI grid (ocupación / dashboard) */
@@ -201,30 +381,86 @@ ion-button,
 }
 
 .pp-kpi-cell {
-  background: rgba(37, 99, 235, 0.06);
-  border-radius: 12px;
-  padding: var(--space-sm) var(--space-md);
+  background: var(--pp-surface);
+  border-radius: 14px;
+  padding: var(--space-md) var(--space-sm);
   text-align: center;
   border: 1px solid var(--pp-border);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--pp-motion) var(--pp-ease), box-shadow var(--pp-motion) var(--pp-ease);
+}
+
+.pp-kpi-cell:hover {
+  border-color: rgba(var(--ion-color-primary-rgb), 0.35);
+  box-shadow: var(--shadow-md);
 }
 
 .pp-kpi-value {
   display: block;
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--ion-color-primary);
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
+  font-family: var(--pp-font-body);
 }
 
 .pp-kpi-label {
   display: block;
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pp-muted-color);
+  margin-top: 0.2rem;
+}
+
+/* Data tables */
+.pp-table.p-datatable .p-datatable-thead > tr > th {
+  background: color-mix(in srgb, var(--pp-surface) 88%, var(--ion-color-primary) 12%);
+  color: var(--pp-heading-color);
+  font-size: 0.72rem;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--pp-border);
+}
+
+.pp-table.p-datatable .p-datatable-tbody > tr {
+  transition: background-color var(--pp-motion-fast) var(--pp-ease);
+}
+
+.pp-table.p-datatable .p-datatable-tbody > tr:hover {
+  background: color-mix(in srgb, var(--pp-surface) 86%, var(--ion-color-primary) 14%);
+}
+
+.pp-table.p-datatable .p-datatable-tbody > tr.pp-row-expanded {
+  background: color-mix(in srgb, var(--pp-surface) 82%, var(--ion-color-primary) 18%);
+}
+
+/* Field labels */
+.pp-field-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   color: var(--pp-muted-color);
-  margin-top: 0.15rem;
+  margin-bottom: 0.35rem;
+}
+
+.pp-field input.p-inputtext,
+.pp-date-input {
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--pp-border);
+  transition: border-color var(--pp-motion-fast) var(--pp-ease), box-shadow var(--pp-motion-fast) var(--pp-ease);
+}
+
+.pp-field input.p-inputtext:focus-visible,
+.pp-date-input:focus-visible {
+  border-color: var(--ion-color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--ion-color-primary-rgb), 0.22);
+  outline: none;
 }
 
 @media (max-width: 380px) {

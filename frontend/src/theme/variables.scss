@@ -1,17 +1,18 @@
-// Parqueadero — Ops SaaS (ui-ux-pro-max): azul eléctrico + verde CTA + slate
+// Parqueadero — Ops SaaS (ui-ux-pro-max adaptado)
+// Primary azul operativo + verde éxito + rojo incidente
 
 :root {
-  --pp-font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --pp-font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --pp-font-display: 'Calistoga', Georgia, serif;
   --pp-font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  --pp-page-bg: #f8fafc;
+  --pp-page-bg: #f1f5f9;
   --pp-foreground: #0f172a;
-  --pp-muted: #64748b;
-  --pp-border: #e4ecfc;
+  --pp-muted: #475569;
+  --pp-border: #e2e8f0;
   --pp-surface: #ffffff;
-  --pp-card-shadow: 0 4px 6px rgba(15, 39, 68, 0.08);
-  --pp-card-radius: 14px;
+  --pp-card-shadow: 0 1px 2px rgba(15, 39, 68, 0.04), 0 8px 24px rgba(15, 39, 68, 0.06);
+  --pp-card-radius: 16px;
 
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
@@ -21,8 +22,12 @@
   --space-2xl: 3rem;
 
   --shadow-sm: 0 1px 2px rgba(15, 39, 68, 0.05);
-  --shadow-md: 0 4px 6px rgba(15, 39, 68, 0.1);
-  --shadow-lg: 0 10px 15px rgba(15, 39, 68, 0.1);
+  --shadow-md: 0 4px 12px rgba(15, 39, 68, 0.08);
+  --shadow-lg: 0 12px 28px rgba(15, 39, 68, 0.12);
+
+  --pp-motion-fast: 150ms;
+  --pp-motion: 200ms;
+  --pp-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
   --pp-rate-input-text: var(--ion-color-secondary);
 
@@ -32,6 +37,11 @@
 
   --pp-accent: #059669;
   --pp-accent-rgb: 5, 150, 105;
+
+  --pp-status-activo-bg: #ecfdf5;
+  --pp-status-activo-fg: #047857;
+  --pp-status-vencido-bg: #fef2f2;
+  --pp-status-vencido-fg: #b91c1c;
 
   /** Ionic — primary Ops blue */
   --ion-color-primary: #2563eb;
@@ -64,6 +74,10 @@
 
   --ion-color-warning: #eab308;
   --ion-color-danger: #dc2626;
+  --ion-color-danger-rgb: 220, 38, 38;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-shade: #c11f1f;
+  --ion-color-danger-tint: #e03c3c;
 
   --ion-background-color: var(--pp-page-bg);
   --ion-text-color: var(--pp-foreground);
@@ -78,22 +92,27 @@
 }
 
 .ion-palette-dark {
-  --pp-page-bg: #0f172a;
+  --pp-page-bg: #0b1220;
   --pp-foreground: #f8fafc;
   --pp-muted: #94a3b8;
   --pp-border: #334155;
   --pp-surface: #1e293b;
-  --pp-card-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  --pp-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   --pp-rate-input-text: #60a5fa;
   --pp-chart-empty: #334155;
 
+  --pp-status-activo-bg: rgba(5, 150, 105, 0.18);
+  --pp-status-activo-fg: #34d399;
+  --pp-status-vencido-bg: rgba(220, 38, 38, 0.18);
+  --pp-status-vencido-fg: #f87171;
+
   --ion-background-color: var(--pp-page-bg);
   --ion-text-color: var(--pp-foreground);
-  --ion-toolbar-background: #0b1220;
+  --ion-toolbar-background: #071018;
   --ion-toolbar-color: #f8fafc;
 
-  --ion-tab-bar-background: #1e293b;
-  --ion-tab-bar-border-color: #334155;
+  --ion-tab-bar-background: #111827;
+  --ion-tab-bar-border-color: #1f2937;
   --ion-tab-bar-color: #94a3b8;
   --ion-tab-bar-color-selected: #60a5fa;
 

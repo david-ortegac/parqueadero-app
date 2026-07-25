@@ -23,11 +23,11 @@ export function resolvePublicAppOrigin(): string {
   return '';
 }
 
-/** Ruta Parqueo (tab 2) con placa en query: filtro sesiones activas o acordeón del propietario. */
+/** Ruta pública de consulta por placa (QR del ticket / vista inicial). */
 export function buildOwnerProfilePlateUrl(plateRaw: string): string {
   const plate = plateRaw.trim().toUpperCase().replace(/\s+/g, '');
   const origin = resolvePublicAppOrigin();
-  const path = '/tabs/tab2';
+  const path = '/consulta';
   const qs = plate.length > 0 ? `?plate=${encodeURIComponent(plate)}` : '';
   return `${origin}${path}${qs}`;
 }

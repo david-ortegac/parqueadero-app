@@ -17,11 +17,11 @@ export class RoleGuard implements CanActivate {
       return true;
     }
     if (!this.auth.isLoggedIn()) {
-      return this.router.createUrlTree(['/login']);
+      return this.router.createUrlTree(['/consulta']);
     }
     if (this.auth.hasRole(...allowed)) {
       return true;
     }
-    return this.router.createUrlTree(['/tabs/tab1']);
+    return this.router.createUrlTree(['/inicio']);
   }
 }

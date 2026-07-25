@@ -25,7 +25,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(outgoing).pipe(
       catchError((err: unknown) => {
-        if (err instanceof HttpErrorResponse && err.status === 401 && !req.url.includes('/v1/login')) {
+        if (err instanceof HttpErrorResponse && err.status === 401 && !req.url.includes('/v1/login') && !req.url.includes('/public/')) {
           auth.invalidateSession();
         }
         return throwError(() => err);

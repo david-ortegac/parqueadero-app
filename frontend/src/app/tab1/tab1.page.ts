@@ -76,6 +76,9 @@ export class Tab1Page implements OnInit, OnDestroy {
   /** Acordeón tarifas admin (carros / motos). */
   readonly ratesAccordion = new AccordionController();
 
+  /** Acordeón de cuentas de propietarios para admin y operador. */
+  readonly vehicleOwnersAccordion = new AccordionController();
+
   expandedRows: { [key: string]: boolean } = {};
 
   isRowExpanded(id: number | string): boolean {
@@ -124,9 +127,12 @@ export class Tab1Page implements OnInit, OnDestroy {
     this.chartOptions = {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '68%',
-      spacing: 3,
+      cutout: '72%',
+      spacing: 2,
       borderWidth: 0,
+      layout: {
+        padding: 0,
+      },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -372,6 +378,9 @@ export class Tab1Page implements OnInit, OnDestroy {
     this.api.getOperatorVehicleOwners().subscribe({
       next: (rows) => {
         this.vehicleOwners = rows;
+        this.vehicleOwnersAccordion.syncWithValues(
+          rows.map((owner) => this.vehicleOwnerAccordionKey(owner.id)),
+        );
         this.loadingOwners = false;
       },
       error: () => {
@@ -384,6 +393,26 @@ export class Tab1Page implements OnInit, OnDestroy {
   isOwnActiveVehicleOwnerRow(owner: OperatorVehicleOwnerRow): boolean {
     const u = this.auth.getUser();
     return u !== null && u.id === owner.id && owner.is_active;
+  }
+
+  vehicleOwnerAccordionKey(ownerId: number): string {
+    return `vehicle-owner-${ownerId}`;
+  }
+
+  get vehicleOwnersAccordionOpen(): string | undefined {
+    return this.vehicleOwnersAccordion.open;
+  }
+
+  onVehicleOwnersAccordionChange(event: Event): void {
+    this.vehicleOwnersAccordion.onChange(event);
+  }
+
+  closeVehicleOwnersAccordion(): void {
+    this.vehicleOwnersAccordion.close();
+  }
+
+  vehicleOwnerAccordionToggleGlyph(ownerId: number): string {
+    return this.vehicleOwnersAccordion.toggleGlyph(this.vehicleOwnerAccordionKey(ownerId));
   }
 
   async setVehicleOwnerActive(owner: OperatorVehicleOwnerRow, isActive: boolean): Promise<void> {
@@ -429,7 +458,7 @@ export class Tab1Page implements OnInit, OnDestroy {
   }
 
   goToParkingTab(): void {
-    void this.router.navigate(['/tabs/tab2']);
+    void this.router.navigate(['/parqueo']);
   }
 
   private normalizeOwnerPlateQuery(raw: string | null): string | null {

@@ -29,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('auth-register', function (Request $request): Limit {
             return Limit::perMinute(5)->by($request->ip());
         });
+
+        RateLimiter::for('public-plate-lookup', function (Request $request): Limit {
+            return Limit::perMinute(30)->by($request->ip());
+        });
     }
 
     private function isFlatCpanelLayout(): bool

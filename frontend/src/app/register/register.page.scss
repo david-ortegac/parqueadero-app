@@ -1,6 +1,27 @@
+@use '../shared/styles/auth-shell';
+
+.pp-auth--register .pp-auth-visual--compact {
+  padding-bottom: 0.25rem;
+}
+
+.pp-auth--register .pp-auth-visual-copy {
+  display: block;
+  margin-top: 0.5rem;
+}
+
 .pp-register-hint {
   font-size: 0.875rem;
-  color: var(--pp-muted-color, var(--ion-color-medium-shade, #64748b));
+  color: var(--pp-auth-muted, var(--pp-muted, #64748b));
   line-height: 1.45;
-  margin: var(--space-md, 1rem) 0 0;
+  margin: 1rem 0 0;
+  padding: 0.75rem 0.85rem;
+  border-radius: 14px;
+  background: rgba(37, 99, 235, 0.06);
+  border: 1px solid rgba(37, 99, 235, 0.12);
+}
+
+@media (min-width: 900px) {
+  .pp-auth--register .pp-auth-visual-copy {
+    color: rgba(255, 255, 255, 0.88);
+  }
 }

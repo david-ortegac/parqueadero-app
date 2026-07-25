@@ -10,12 +10,13 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding pp-page">
+<ion-content class="ion-padding pp-page pp-inicio">
   @if (auth.getUser()?.role === 'vehicle_owner') {
-    <p-card styleClass="pp-card-shadow pp-owner-welcome">
+    <p-card styleClass="pp-card-shadow pp-inicio-card pp-bento-card pp-owner-welcome pp-bento-tile--hero">
       <div class="pp-owner-welcome-head">
+        <p class="pp-owner-welcome-kicker">Tu cuenta</p>
         <h1 class="pp-owner-welcome-title">Hola, {{ auth.getUser()?.name ?? '' }}</h1>
-        <p class="pp-owner-welcome-sub">Gestiona tus vehículos y consulta el historial</p>
+        <p class="pp-owner-welcome-sub">Vehículos, tiempo en patio y cobros en un solo lugar.</p>
       </div>
       <div class="pp-owner-home-actions">
         <p-button label="Ver mis vehículos" icon="pi pi-car" styleClass="pp-owner-action-btn" (onClick)="goToParkingTab()" />
@@ -28,13 +29,9 @@
           (onClick)="openOwnerHistory()"
         />
       </div>
-      <p class="pp-welcome-text ion-margin-top">
-        En <strong>Parqueo</strong> verás el tiempo dentro del parqueadero, la modalidad al ingresar, la tarifa y el cobro
-        calculado.
-      </p>
     </p-card>
 
-    <p-card header="Mis vehículos" subheader="Placa en cada fila. Abre el acordeón para editar marca, color y cilindraje." styleClass="pp-card-shadow ion-margin-top pp-owner-vehicles-card">
+    <p-card header="Mis vehículos" subheader="Abre una placa para editar marca, color y cilindraje." styleClass="pp-card-shadow pp-inicio-card pp-bento-card ion-margin-top pp-owner-vehicles-card">
       @if (loadingOwnerVehicles) {
         <div class="pp-loading">
           <ion-spinner name="crescent" color="primary"></ion-spinner>
@@ -61,6 +58,20 @@
                   <ion-label class="pp-easy-acc-label">
                     <h2 class="pp-easy-acc-plate">{{ v.plate }}</h2>
                     <p class="pp-easy-acc-sub">{{ vehicleClassLabelShort(v.vehicle_class) }}</p>
+                    @if (ed.brand || ed.color || ed.cylinder_cc) {
+                      <p class="pp-easy-acc-entry">
+                        <span class="pp-easy-acc-entry-k">Datos del vehículo</span>
+                        {{ ed.brand || '—' }}
+                        @if (ed.color) {
+                          · {{ ed.color }}
+                        }
+                        @if (ed.cylinder_cc) {
+                          · {{ ed.cylinder_cc }} cc
+                        }
+                      </p>
+                    } @else {
+                      <p class="pp-easy-acc-entry pp-easy-acc-entry--muted">Sin marca, color ni cilindraje</p>
+                    }
                   </ion-label>
                 </ion-item>
                 <div slot="content" class="pp-easy-acc-panel">
@@ -106,7 +117,7 @@
     </p-card>
 
     @if (ownerHistoryVisible) {
-      <p-card header="Historial de parqueo" subheader="Sesiones cerradas (solo consulta)" styleClass="pp-card-shadow ion-margin-top" id="owner-history">
+      <p-card header="Historial de parqueo" subheader="Sesiones cerradas" styleClass="pp-card-shadow pp-inicio-card pp-bento-card ion-margin-top" id="owner-history">
         @if (ownerHistoryLoading) {
           <div class="pp-loading">
             <ion-spinner name="crescent" color="primary"></ion-spinner>
@@ -187,120 +198,140 @@
       </ion-button>
     </div>
   } @else {
-    <section class="pp-period">
-      <i class="pi pi-calendar pp-period-icon" aria-hidden="true"></i>
-      <span>Resumen · {{ periodLabel }}</span>
-    </section>
+    <section class="pp-bento" aria-label="Resumen operativo">
+      <header class="pp-bento-head">
+        <p class="pp-period">
+          <i class="pi pi-calendar pp-period-icon" aria-hidden="true"></i>
+          <span>Resumen · {{ periodLabel }}</span>
+        </p>
+      </header>
 
-    @if (dashboard) {
-      <div class="pp-kpi-grid" role="group" aria-label="Resumen de ocupación">
-        <div class="pp-kpi-cell">
-          <span class="pp-kpi-value">{{ totalActive }}</span>
-          <span class="pp-kpi-label">Dentro</span>
+      @if (dashboard) {
+        <div class="pp-bento-kpis" role="group" aria-label="Resumen de ocupación">
+          <article class="pp-bento-tile pp-bento-tile--metric pp-bento-tile--primary">
+            <span class="pp-bento-tile-icon" aria-hidden="true">
+              <ion-icon name="grid-outline"></ion-icon>
+            </span>
+            <span class="pp-kpi-value">{{ totalActive }}</span>
+            <span class="pp-kpi-label">Dentro</span>
+          </article>
+          <article class="pp-bento-tile pp-bento-tile--metric pp-bento-tile--car">
+            <span class="pp-bento-tile-icon" aria-hidden="true">
+              <ion-icon name="car-outline"></ion-icon>
+            </span>
+            <span class="pp-kpi-value">{{ dashboard.occupancy.car.active }}</span>
+            <span class="pp-kpi-label">Carros</span>
+          </article>
+          <article class="pp-bento-tile pp-bento-tile--metric pp-bento-tile--moto">
+            <span class="pp-bento-tile-icon" aria-hidden="true">
+              <ion-icon name="bicycle-outline"></ion-icon>
+            </span>
+            <span class="pp-kpi-value">{{ dashboard.occupancy.motorcycle.active }}</span>
+            <span class="pp-kpi-label">Motos</span>
+          </article>
         </div>
-        <div class="pp-kpi-cell">
-          <span class="pp-kpi-value">{{ dashboard.occupancy.car.active }}</span>
-          <span class="pp-kpi-label">Carros</span>
-        </div>
-        <div class="pp-kpi-cell">
-          <span class="pp-kpi-value">{{ dashboard.occupancy.motorcycle.active }}</span>
-          <span class="pp-kpi-label">Motos</span>
-        </div>
-      </div>
 
-      <p-card
-        header="Ocupación por tipo"
-        subheader="Distribución actual · valores también en texto"
-        styleClass="pp-card-shadow pp-occupancy-card"
-      >
-        <div class="pp-occupancy-layout">
-          <div class="pp-chart-box">
-            <p-chart
-              type="doughnut"
-              [data]="chartData"
-              [options]="chartOptions"
-              styleClass="pp-occupancy-chart"
-              height="220"
-              aria-label="Gráfico de ocupación por tipo de vehículo"
-            ></p-chart>
-            <div class="pp-chart-center">
-              <span class="pp-chart-total" [class.pp-chart-total--empty]="totalActive === 0">{{ totalActive }}</span>
-              <span class="pp-chart-sub">{{ totalActive === 0 ? 'Sin ocupación' : 'Total dentro' }}</span>
+        <div class="pp-bento-row">
+          <p-card
+            header="Ocupación e ingresos"
+            subheader="Distribución actual por tipo y ventas saldadas"
+            styleClass="pp-card-shadow pp-inicio-card pp-bento-card pp-occupancy-card"
+          >
+            <div class="pp-occupancy-layout">
+              <div class="pp-chart-box">
+                <div class="pp-chart-ring">
+                  <p-chart
+                    type="doughnut"
+                    [data]="chartData"
+                    [options]="chartOptions"
+                    styleClass="pp-occupancy-chart"
+                    aria-label="Gráfico de ocupación por tipo de vehículo"
+                  ></p-chart>
+                  <div class="pp-chart-center" aria-hidden="true">
+                    <span class="pp-chart-total" [class.pp-chart-total--empty]="totalActive === 0">{{ totalActive }}</span>
+                    <span class="pp-chart-sub">{{ totalActive === 0 ? 'Sin ocupación' : 'Total dentro' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <ul class="pp-legend" aria-label="Leyenda de ocupación">
+                <li class="pp-legend-row">
+                  <span class="pp-dot pp-dot--car" aria-hidden="true"></span>
+                  <span class="pp-legend-label">Carros</span>
+                  <span class="pp-legend-count">{{ dashboard.occupancy.car.active }}</span>
+                  <strong class="pp-legend-pct">{{ shareCar() }}%</strong>
+                </li>
+                <li class="pp-legend-row">
+                  <span class="pp-dot pp-dot--moto" aria-hidden="true"></span>
+                  <span class="pp-legend-label">Motos</span>
+                  <span class="pp-legend-count">{{ dashboard.occupancy.motorcycle.active }}</span>
+                  <strong class="pp-legend-pct">{{ shareMoto() }}%</strong>
+                </li>
+              </ul>
             </div>
-          </div>
 
-          <ul class="pp-legend" aria-label="Leyenda de ocupación">
-            <li class="pp-legend-row">
-              <span class="pp-dot pp-dot--car" aria-hidden="true"></span>
-              <span class="pp-legend-label">Carros</span>
-              <span class="pp-legend-count">{{ dashboard.occupancy.car.active }}</span>
-              <strong class="pp-legend-pct">{{ shareCar() }}%</strong>
-            </li>
-            <li class="pp-legend-row">
-              <span class="pp-dot pp-dot--moto" aria-hidden="true"></span>
-              <span class="pp-legend-label">Motos</span>
-              <span class="pp-legend-count">{{ dashboard.occupancy.motorcycle.active }}</span>
-              <strong class="pp-legend-pct">{{ shareMoto() }}%</strong>
-            </li>
-          </ul>
-        </div>
+            <p-divider />
 
-        <p-divider />
-
-        <div class="pp-stat-grid">
-          <div class="pp-stat-cell">
-            <span class="pp-stat-num">{{ dashboard.occupancy.car.active }}</span>
-            <span class="pp-stat-cap">de {{ dashboard.occupancy.car.capacity ?? '—' }} cupos carros</span>
-          </div>
-          <div class="pp-stat-cell">
-            <span class="pp-stat-num">{{ dashboard.occupancy.motorcycle.active }}</span>
-            <span class="pp-stat-cap">de {{ dashboard.occupancy.motorcycle.capacity ?? '—' }} cupos motos</span>
-          </div>
-        </div>
-
-        <div class="pp-bars ion-margin-top">
-          <div class="pp-bar-row">
-            <div class="pp-bar-label">
-              Cupos carros
-              <span class="pp-bar-value">
-                {{ pct(dashboard.occupancy.car.active, dashboard.occupancy.car.capacity) }}%
-              </span>
+            <div class="pp-stat-grid">
+              <div class="pp-stat-cell">
+                <span class="pp-stat-num">{{ dashboard.occupancy.car.active }}</span>
+                <span class="pp-stat-cap">de {{ dashboard.occupancy.car.capacity ?? '—' }} cupos carros</span>
+              </div>
+              <div class="pp-stat-cell">
+                <span class="pp-stat-num">{{ dashboard.occupancy.motorcycle.active }}</span>
+                <span class="pp-stat-cap">de {{ dashboard.occupancy.motorcycle.capacity ?? '—' }} cupos motos</span>
+              </div>
             </div>
-            <p-progressBar
-              [value]="pct(dashboard.occupancy.car.active, dashboard.occupancy.car.capacity)"
-              [showValue]="false"
-              styleClass="pp-pbar"
-            ></p-progressBar>
-          </div>
-          <div class="pp-bar-row ion-margin-top">
-            <div class="pp-bar-label">
-              Cupos motos
-              <span class="pp-bar-value">
-                {{ pct(dashboard.occupancy.motorcycle.active, dashboard.occupancy.motorcycle.capacity) }}%
-              </span>
+
+            <div class="pp-bars ion-margin-top">
+              <div class="pp-bar-row">
+                <div class="pp-bar-label">
+                  Cupos carros
+                  <span class="pp-bar-value">
+                    {{ pct(dashboard.occupancy.car.active, dashboard.occupancy.car.capacity) }}%
+                  </span>
+                </div>
+                <p-progressBar
+                  [value]="pct(dashboard.occupancy.car.active, dashboard.occupancy.car.capacity)"
+                  [showValue]="false"
+                  styleClass="pp-pbar"
+                ></p-progressBar>
+              </div>
+              <div class="pp-bar-row ion-margin-top">
+                <div class="pp-bar-label">
+                  Cupos motos
+                  <span class="pp-bar-value">
+                    {{ pct(dashboard.occupancy.motorcycle.active, dashboard.occupancy.motorcycle.capacity) }}%
+                  </span>
+                </div>
+                <p-progressBar
+                  [value]="pct(dashboard.occupancy.motorcycle.active, dashboard.occupancy.motorcycle.capacity)"
+                  [showValue]="false"
+                  styleClass="pp-pbar pp-pbar--warn"
+                ></p-progressBar>
+              </div>
             </div>
-            <p-progressBar
-              [value]="pct(dashboard.occupancy.motorcycle.active, dashboard.occupancy.motorcycle.capacity)"
-              [showValue]="false"
-              styleClass="pp-pbar pp-pbar--warn"
-            ></p-progressBar>
-          </div>
+
+            @if (revenueTotal !== null) {
+              <p-divider />
+              <div class="pp-revenue-inline">
+                <span class="pp-revenue-inline-label">
+                  <ion-icon name="cash-outline" aria-hidden="true"></ion-icon>
+                  Ingresos · histórico acumulado
+                </span>
+                <p class="pp-money">{{ formatMoney(revenueTotal) }} <span class="pp-currency">COP</span></p>
+              </div>
+            }
+          </p-card>
         </div>
-      </p-card>
-    }
+      }
 
-    @if (revenueTotal !== null) {
-      <p-card header="Ingresos acumulados" subheader="Ventas saldadas (histórico)" styleClass="pp-card-shadow ion-margin-top">
-        <p class="pp-money">{{ formatMoney(revenueTotal) }} <span class="pp-currency">COP</span></p>
-      </p-card>
-    }
-
-    @if (auth.getUser()?.role === 'admin' || auth.getUser()?.role === 'operator') {
-      <p-card
-        header="Propietarios de vehículo"
-        subheader="Activa las cuentas creadas en Registrarme; se vinculan vehículos cuyo documento de ingreso coincida con la cédula"
-        styleClass="pp-card-shadow ion-margin-top"
-      >
+      @if (auth.getUser()?.role === 'admin' || auth.getUser()?.role === 'operator') {
+        <p-card
+          header="Propietarios"
+          subheader="Activa cuentas; se vinculan por cédula al ingresar"
+          styleClass="pp-card-shadow pp-inicio-card pp-bento-card"
+        >
         @if (loadingOwners) {
           <div class="pp-loading">
             <ion-spinner name="crescent" color="primary"></ion-spinner>
@@ -308,67 +339,71 @@
         } @else if (!vehicleOwners.length) {
           <p class="pp-muted">Aún no hay propietarios registrados en la app.</p>
         } @else {
-          <p-table [value]="vehicleOwners" styleClass="p-datatable-sm pp-table" [tableStyle]="{ 'min-width': '100%' }">
-            <ng-template pTemplate="header">
-              <tr>
-                <th style="width: 3rem" class="pp-show-on-mobile-only"></th>
-                <th>Nombre</th>
-                <th class="pp-hide-on-mobile">Correo</th>
-                <th class="pp-hide-on-mobile">Cédula</th>
-                <th>Activo</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-o>
-              <tr (click)="toggleRowExpansion('vo-' + o.id)" class="pp-row-click" [class.pp-row-expanded]="isRowExpanded('vo-' + o.id)">
-                <td class="pp-show-on-mobile-only" style="width: 3rem;">
-                  <button pButton pRipple type="button" class="p-button-text p-button-rounded p-button-plain"
-                    [icon]="isRowExpanded('vo-' + o.id) ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
-                    (click)="$event.stopPropagation(); toggleRowExpansion('vo-' + o.id)"
-                  ></button>
-                </td>
-                <td>{{ o.name }}</td>
-                <td class="pp-hide-on-mobile">{{ o.email }}</td>
-                <td class="pp-hide-on-mobile">{{ o.document ?? '—' }}</td>
-                <td (click)="$event.stopPropagation()">
+          <ion-accordion-group
+            class="pp-easy-acc-group"
+            [value]="vehicleOwnersAccordionOpen"
+            (ionChange)="onVehicleOwnersAccordionChange($event)"
+          >
+            @for (o of vehicleOwners; track o.id) {
+              <ion-accordion [value]="vehicleOwnerAccordionKey(o.id)" class="pp-easy-acc">
+                <span slot="toggle-icon" class="pp-easy-acc-toggle-slot-hidden" aria-hidden="true"></span>
+                <ion-item slot="header" lines="none" button detail="false" class="pp-easy-acc-header">
+                  <div class="pp-easy-acc-toggle-box" aria-hidden="true">
+                    <span class="pp-easy-acc-toggle-glyph">{{ vehicleOwnerAccordionToggleGlyph(o.id) }}</span>
+                  </div>
+                  <ion-icon class="pp-easy-acc-meta-icon" name="person-outline" aria-hidden="true"></ion-icon>
+                  <ion-label class="pp-easy-acc-label">
+                    <h2 class="pp-easy-acc-plate pp-vehicle-owner-name">{{ o.name }}</h2>
+                    <p class="pp-easy-acc-sub">{{ o.email }}</p>
+                    <p
+                      class="pp-easy-acc-entry"
+                      [class.pp-vehicle-owner-status--inactive]="!o.is_active"
+                    >
+                      {{ o.is_active ? 'Cuenta activa' : 'Cuenta inactiva' }}
+                    </p>
+                  </ion-label>
+                </ion-item>
+                <div slot="content" class="pp-easy-acc-panel">
+                  <dl class="pp-vehicle-owner-details">
+                    <div>
+                      <dt>Correo</dt>
+                      <dd>{{ o.email }}</dd>
+                    </div>
+                    <div>
+                      <dt>Cédula</dt>
+                      <dd>{{ o.document ?? '—' }}</dd>
+                    </div>
+                  </dl>
                   <ion-toggle
                     [checked]="o.is_active"
                     [disabled]="savingOwnerId === o.id || isOwnActiveVehicleOwnerRow(o)"
                     (ionChange)="setVehicleOwnerActive(o, $event.detail.checked)"
                   >
-                    Activo
+                    Cuenta activa
                   </ion-toggle>
-                </td>
-              </tr>
-              @if (isRowExpanded('vo-' + o.id)) {
-                <tr>
-                  <td colspan="5" class="pp-expanded-cell">
-                    <div class="pp-row-expanded-content">
-                      <ul class="pp-owner-parking-list">
-                        <li>
-                          <span class="pp-owner-k">Correo</span>
-                          <span class="pp-owner-v">{{ o.email }}</span>
-                        </li>
-                        <li>
-                          <span class="pp-owner-k">Cédula</span>
-                          <span class="pp-owner-v">{{ o.document ?? '—' }}</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
-              }
-            </ng-template>
-          </p-table>
+                  <ion-button
+                    class="pp-easy-acc-close"
+                    fill="outline"
+                    size="small"
+                    expand="block"
+                    color="medium"
+                    (click)="closeVehicleOwnersAccordion()"
+                  >
+                    Cerrar
+                  </ion-button>
+                </div>
+              </ion-accordion>
+            }
+          </ion-accordion-group>
         }
       </p-card>
     }
 
     @if (auth.getUser()?.role === 'admin' && rates.length) {
-      <h3 class="pp-section-title">Cobros por tipo de vehículo</h3>
       <p-card
-        header="Tarifas centralizadas"
-        subheader="Carros y motos: mismo orden de modalidades (minuto → mes). Los cambios aplican a nuevos cobros."
-        styleClass="pp-card-shadow pp-admin-rates-card"
+        header="Cobros por tipo"
+        subheader="Mismo orden de modalidades · aplica a nuevos ingresos"
+        styleClass="pp-card-shadow pp-inicio-card pp-bento-card pp-admin-rates-card"
       >
         <ion-accordion-group
           class="pp-easy-acc-group"
@@ -464,5 +499,6 @@
         </ion-accordion-group>
       </p-card>
     }
+    </section>
   }
 </ion-content>

@@ -1,5 +1,5 @@
 ion-tabs {
-  background: var(--pp-page-bg);
+  background: transparent;
 }
 
 .pp-tab-bar {
@@ -7,17 +7,37 @@ ion-tabs {
   --border: var(--ion-tab-bar-border-color);
   --color: var(--ion-tab-bar-color);
   --color-selected: var(--ion-tab-bar-color-selected);
-  box-shadow: 0 -2px 12px rgba(15, 39, 68, 0.06);
+  box-shadow: 0 -4px 20px rgba(15, 39, 68, 0.08);
   padding-bottom: env(safe-area-inset-bottom, 0);
+  border-top: 1px solid var(--ion-tab-bar-border-color);
 }
 
 .pp-tab-bar ion-tab-button {
-  min-height: 52px;
-  font-size: 0.7rem;
-  font-weight: 600;
+  position: relative;
+  min-height: 56px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.pp-tab-bar ion-tab-button.tab-selected::before,
+.pp-tab-bar ion-tab-button[aria-selected='true']::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 22%;
+  right: 22%;
+  height: 3px;
+  border-radius: 0 0 4px 4px;
+  background: var(--ion-tab-bar-color-selected);
 }
 
 .pp-tab-bar ion-icon {
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   margin-bottom: 2px;
+}
+
+.ion-palette-dark .pp-tab-bar {
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.35);
 }

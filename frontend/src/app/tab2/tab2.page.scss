@@ -82,15 +82,11 @@
 }
 
 .pp-card-shadow {
-  box-shadow: var(--pp-card-shadow, 0 4px 20px rgba(15, 39, 68, 0.04));
-  border-radius: var(--pp-card-radius, 14px);
-  border: 1px solid var(--pp-border, rgba(15, 39, 68, 0.06));
-  transition: box-shadow 0.2s ease;
+  /* Estilos globales en global.scss (alineados a pp-easy-acc) */
 }
 
 .pp-checkin-primary {
-  border-color: rgba(37, 99, 235, 0.2);
-  box-shadow: var(--shadow-md, 0 4px 6px rgba(15, 39, 68, 0.1));
+  border-color: rgba(13, 148, 136, 0.28) !important;
 }
 
 ::ng-deep .pp-checkin-submit {
@@ -98,12 +94,11 @@
 }
 
 .ion-palette-dark .pp-card-shadow {
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  /* dark tokens en global.scss */
 }
 
 .ion-palette-dark .pp-card-shadow:hover {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  /* dark tokens en global.scss */
 }
 
 ::ng-deep .pp-table .p-datatable-tbody > tr {
@@ -168,6 +163,60 @@
 
 ::ng-deep .pp-table .p-datatable-tbody > tr > td {
   vertical-align: middle;
+}
+
+.pp-prepago-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.pp-modality-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+}
+
+.pp-period-end-mobile {
+  display: block;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: var(--pp-muted-color, #475569);
+}
+
+.pp-period-end-mobile--expired {
+  color: var(--pp-status-vencido-fg, #b91c1c);
+  font-weight: 700;
+}
+
+.pp-period-end {
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--pp-muted-color, #475569);
+}
+
+.pp-period-end--expired {
+  color: var(--pp-status-vencido-fg, #b91c1c);
+  font-weight: 700;
+}
+
+@media (min-width: 768px) {
+  .pp-period-end-mobile {
+    display: none !important;
+  }
+}
+
+/* Estado prepago solo en la fila compacta móvil (en desktop va en columna Prepago). */
+:host ::ng-deep .pp-status-tag-mobile {
+  display: inline-flex;
+}
+
+@media (min-width: 768px) {
+  :host ::ng-deep .pp-status-tag-mobile {
+    display: none !important;
+  }
 }
 
 .pp-hide-on-mobile {
@@ -314,7 +363,7 @@
 }
 
 .pp-owner-parking-main-card ::ng-deep .p-card-body {
-  padding-top: 0.5rem;
+  /* padding unificado vía global.scss */
 }
 
 .pp-owner-parking-badge {
@@ -462,6 +511,34 @@ ion-accordion.pp-easy-acc .pp-easy-acc-header::part(native) {
   color: #94a3b8;
   font-weight: 500;
   font-size: 0.78rem;
+}
+
+.pp-easy-acc-entry--expired {
+  color: var(--pp-status-vencido-fg, #b91c1c);
+}
+
+.pp-easy-acc-entry--expired .pp-easy-acc-entry-k {
+  color: inherit;
+}
+
+:host ::ng-deep .pp-acc-status-tag {
+  margin-left: 0.35rem;
+  vertical-align: middle;
+}
+
+.pp-active-actions--acc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0.5rem;
+  align-items: stretch;
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+.pp-active-actions--acc .p-button {
+  flex: 1 1 auto;
+  min-height: 44px;
 }
 
 .pp-easy-acc-panel {

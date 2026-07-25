@@ -18,20 +18,37 @@ export class LoginPage {
   email = '';
   password = '';
   loading = false;
+  errorMessage: string | null = null;
+
+  get canSubmit(): boolean {
+    return this.email.trim().length > 0 && this.password.length > 0;
+  }
+
+  clearError(): void {
+    if (this.errorMessage !== null) {
+      this.errorMessage = null;
+    }
+  }
 
   async submit(): Promise<void> {
+    if (this.loading || !this.canSubmit) {
+      return;
+    }
     this.loading = true;
-    this.auth.login(this.email, this.password).subscribe({
+    this.errorMessage = null;
+    this.auth.login(this.email.trim(), this.password).subscribe({
       next: async () => {
         this.loading = false;
-        await this.router.navigate(['/tabs/tab1']);
+        await this.router.navigate(['/inicio']);
       },
       error: async (err) => {
         this.loading = false;
+        this.errorMessage = apiErrorMessage(err, 'No se pudo iniciar sesión. Revisa correo y contraseña.');
         const t = await this.toast.create({
-          message: apiErrorMessage(err, 'Error al iniciar sesión'),
-          duration: 3000,
+          message: this.errorMessage,
+          duration: 3200,
           color: 'danger',
+          position: 'top',
         });
         await t.present();
       },

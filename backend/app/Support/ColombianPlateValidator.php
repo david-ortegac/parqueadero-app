@@ -46,6 +46,13 @@ final class ColombianPlateValidator
         return false;
     }
 
+    /** Valida formato de placa colombiana sin conocer la clase del vehículo. */
+    public static function isValidAnyClass(string $normalizedPlate): bool
+    {
+        return self::isValid($normalizedPlate, 'car')
+            || self::isValid($normalizedPlate, 'motorcycle');
+    }
+
     public static function messageFor(string $vehicleClass): string
     {
         return match ($vehicleClass) {

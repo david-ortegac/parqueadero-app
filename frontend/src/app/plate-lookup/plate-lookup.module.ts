@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
-import { RegisterPage } from './register.page';
-import { RegisterPageRoutingModule } from './register-routing.module';
+import { PlateLookupPage } from './plate-lookup.page';
+import { PlateLookupPageRoutingModule } from './plate-lookup-routing.module';
 import { PrimeNgResourcesModule } from '../shared/prime-ng-resources.module';
 
 @NgModule({
@@ -14,8 +14,8 @@ import { PrimeNgResourcesModule } from '../shared/prime-ng-resources.module';
     RouterModule,
     IonicModule,
     PrimeNgResourcesModule,
-    RegisterPageRoutingModule,
+    PlateLookupPageRoutingModule,
   ],
-  declarations: [RegisterPage],
+  declarations: [PlateLookupPage],
 })
-export class RegisterPageModule {}
+export class PlateLookupPageModule {}

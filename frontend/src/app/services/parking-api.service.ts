@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { PublicPlateLookup, PublicOccupancy } from './public-plate-lookup.model';
 
 export interface Rate {
   id: number;
@@ -205,6 +206,19 @@ export class ParkingApiService {
 
   getOperatorParkingInfo(): Observable<ParkingInfo> {
     return this.http.get<ParkingInfo>(`${this.base}/operator/parking-info`);
+  }
+
+  /** Consulta pública de sesión activa por placa (sin autenticación). */
+  lookupPublicSessionByPlate(plate: string): Observable<PublicPlateLookup> {
+    const normalized = plate.trim().toUpperCase().replace(/\s+/g, '');
+    return this.http.get<PublicPlateLookup>(
+      `${this.base}/public/sessions/by-plate/${encodeURIComponent(normalized)}`,
+    );
+  }
+
+  /** Cupos ocupados / disponibles por tipo (público). */
+  getPublicOccupancy(): Observable<PublicOccupancy> {
+    return this.http.get<PublicOccupancy>(`${this.base}/public/occupancy`);
   }
 }
 

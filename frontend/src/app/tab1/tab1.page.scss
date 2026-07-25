@@ -1,51 +1,279 @@
-.pp-loading {
+/* /inicio — Bento cards (inspirado en analytics bento UI + ui-ux-pro-max) */
+
+:host {
+  --pp-inicio-card-radius: 22px;
+  --pp-inicio-hairline: color-mix(in srgb, var(--pp-border, #e2e8f0) 88%, transparent);
+  --pp-bento-gap: 0.85rem;
+  --pp-bento-shadow: 0 1px 2px rgba(15, 39, 68, 0.04), 0 10px 28px rgba(15, 39, 68, 0.06);
+}
+
+.pp-inicio {
+  --padding-top: 0.85rem;
+  --background: transparent;
+}
+
+.pp-bento {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pp-bento-gap);
+}
+
+.pp-bento-head {
+  margin: 0;
+}
+
+.pp-bento-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--pp-bento-gap);
+}
+
+.pp-bento-tile {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--pp-inicio-card-radius);
+  border: 1px solid var(--pp-inicio-hairline);
+  background: var(--pp-surface, #fff);
+  box-shadow: var(--pp-bento-shadow);
+  transition:
+    transform var(--pp-motion, 200ms) var(--pp-ease, ease),
+    box-shadow var(--pp-motion, 200ms) var(--pp-ease, ease),
+    border-color var(--pp-motion, 200ms) var(--pp-ease, ease);
+}
+
+.pp-bento-tile--metric {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  min-height: 7.5rem;
+  padding: 1rem 0.95rem 1.05rem;
+}
+
+.pp-bento-tile--primary {
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(37, 99, 235, 0.14), transparent 55%),
+    var(--pp-surface, #fff);
+}
+
+.pp-bento-tile--car {
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(37, 99, 235, 0.1), transparent 55%),
+    var(--pp-surface, #fff);
+}
+
+.pp-bento-tile--moto {
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(249, 115, 22, 0.14), transparent 55%),
+    var(--pp-surface, #fff);
+}
+
+.pp-bento-tile-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-bottom: 0.35rem;
+  border-radius: 10px;
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--ion-color-primary, #2563eb);
+  font-size: 1.05rem;
+}
+
+.pp-bento-tile--moto .pp-bento-tile-icon {
+  background: rgba(249, 115, 22, 0.12);
+  color: #ea580c;
+}
+
+.pp-bento-tile--metric .pp-kpi-value {
+  font-size: clamp(1.65rem, 5.5vw, 2.05rem);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1;
+  color: var(--pp-foreground, #0f172a);
+  font-variant-numeric: tabular-nums;
+}
+
+.pp-bento-tile--metric .pp-kpi-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pp-muted, #475569);
+}
+
+.pp-bento-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--pp-bento-gap);
+  align-items: start;
+}
+
+.pp-bento-hint {
+  margin: 0.65rem 0 0;
+  font-size: 0.8rem;
+  color: var(--pp-muted, #475569);
+}
+
+:host ::ng-deep .pp-inicio-card.p-card,
+:host ::ng-deep .p-card.pp-card-shadow,
+:host ::ng-deep .pp-bento-card.p-card {
+  border: 1px solid var(--pp-inicio-hairline);
+  border-radius: var(--pp-inicio-card-radius);
+  background: var(--pp-surface, #fff);
+  box-shadow: var(--pp-bento-shadow);
+  overflow: hidden;
+  transform: none !important;
+  transition:
+    border-color var(--pp-motion, 200ms) var(--pp-ease, ease),
+    box-shadow var(--pp-motion, 200ms) var(--pp-ease, ease);
+}
+
+:host ::ng-deep .pp-inicio-card.p-card:hover,
+:host ::ng-deep .p-card.pp-card-shadow:hover,
+:host ::ng-deep .pp-bento-card.p-card:hover,
+.pp-bento-tile:hover {
+  border-color: color-mix(in srgb, var(--ion-color-primary) 22%, var(--pp-inicio-hairline));
+  box-shadow: 0 2px 4px rgba(15, 39, 68, 0.04), 0 14px 32px rgba(15, 39, 68, 0.08);
+  transform: none !important;
+}
+
+:host ::ng-deep .p-card.pp-card-shadow .p-card-caption,
+:host ::ng-deep .pp-inicio-card.p-card .p-card-caption,
+:host ::ng-deep .pp-bento-card.p-card .p-card-caption {
+  margin: 0;
+  padding: 1.15rem 1.2rem 1rem;
+  background: transparent;
+  border-bottom: 1px solid var(--pp-inicio-hairline);
+  text-align: center;
+}
+
+:host ::ng-deep .pp-inicio-card .p-card-title,
+:host ::ng-deep .pp-bento-card .p-card-title,
+:host ::ng-deep .p-card.pp-card-shadow .p-card-title {
+  display: block;
+  width: 100%;
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--pp-foreground, #0f172a);
+  text-align: center;
+}
+
+:host ::ng-deep .pp-inicio-card .p-card-subtitle,
+:host ::ng-deep .pp-bento-card .p-card-subtitle,
+:host ::ng-deep .p-card.pp-card-shadow .p-card-subtitle {
+  display: block;
+  width: 100%;
+  margin: 0.3rem auto 0;
+  max-width: 42ch;
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--pp-muted, #475569);
+  text-align: center;
+}
+
+:host ::ng-deep .p-card.pp-card-shadow .p-card-content {
+  padding: 1.15rem 1.2rem 1.3rem;
+}
+
+:host ::ng-deep .pp-owner-welcome.p-card .p-card-content {
+  padding: 1.35rem 1.25rem 1.4rem;
+  background:
+    radial-gradient(90% 80% at 100% 0%, rgba(37, 99, 235, 0.1), transparent 50%),
+    var(--pp-surface, #fff);
+}
+
+.pp-revenue-inline {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 40vh;
-  gap: 1rem;
-  color: var(--ion-color-medium);
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+  padding: 1.1rem 1rem 0.9rem;
+  border-radius: 16px;
+  text-align: center;
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(5, 150, 105, 0.12), transparent 60%),
+    color-mix(in srgb, var(--pp-page-bg, #f1f5f9) 70%, white);
+  border: 1px solid color-mix(in srgb, var(--ion-color-success, #059669) 18%, var(--pp-inicio-hairline));
+}
+
+.pp-revenue-inline-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ion-color-success, #059669);
+}
+
+.pp-revenue-inline-label ion-icon {
+  font-size: 1rem;
+}
+
+.pp-revenue-inline .pp-money {
+  margin: 0;
 }
 
 .pp-period {
   display: flex;
   align-items: center;
   gap: var(--space-sm, 0.5rem);
-  font-size: 0.875rem;
-  color: var(--pp-muted-color, var(--ion-color-medium));
-  margin-bottom: var(--space-md, 0.75rem);
-  font-weight: 500;
+  margin: 0;
+  padding: 0.2rem 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--pp-muted, #475569);
 }
 
 .pp-period-icon {
   color: var(--ion-color-primary);
+  font-size: 0.9rem;
 }
 
-.pp-card-shadow {
-  box-shadow: var(--pp-card-shadow);
+.pp-owner-welcome-head {
+  text-align: center;
+}
+
+.pp-owner-welcome-kicker {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ion-color-primary, #2563eb);
 }
 
 .pp-owner-welcome-title {
   font-family: var(--pp-font-display, Georgia, serif);
-  font-size: 1.5rem;
+  font-size: clamp(1.75rem, 5vw, 2.15rem);
   font-weight: 400;
   margin: 0;
-  color: var(--pp-heading-color, var(--pp-foreground));
-  line-height: 1.2;
+  color: var(--pp-foreground, #0f172a);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
 .pp-owner-welcome-sub {
-  margin: 0.25rem 0 0;
-  color: var(--pp-muted-color);
-  font-size: 0.9rem;
+  margin: 0.45rem auto 0;
+  color: var(--pp-muted, #475569);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  max-width: 36ch;
 }
 
 .pp-owner-home-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-sm, 0.5rem);
-  margin-top: var(--space-md, 1rem);
+  gap: 0.65rem;
+  margin-top: 1.25rem;
 }
 
 @media (max-width: 400px) {
@@ -56,79 +284,246 @@
 
 .pp-owner-action-btn {
   width: 100%;
-  min-height: 44px;
+  min-height: 48px;
 }
 
-.pp-chart-box {
-  position: relative;
-  width: min(100%, 280px);
-  height: 220px;
-  margin: 0 auto 1.25rem;
+:host ::ng-deep .pp-owner-action-btn.p-button,
+:host ::ng-deep .pp-owner-action-btn .p-button {
+  min-height: 48px;
+  border-radius: 14px;
+  font-weight: 700;
 }
 
-::ng-deep .pp-chart-box .pp-occupancy-chart {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+.pp-money {
+  margin: 0.15rem 0 0;
+  font-size: clamp(1.85rem, 6vw, 2.45rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--pp-foreground, #0f172a);
+  font-variant-numeric: tabular-nums;
 }
 
-::ng-deep .pp-chart-box .pp-occupancy-chart canvas {
+.pp-currency {
+  margin-left: 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--pp-muted, #475569);
+  vertical-align: middle;
+}
+
+.pp-section-title {
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pp-muted, #475569);
+}
+
+.pp-legend-row {
+  background: color-mix(in srgb, var(--pp-page-bg, #f1f5f9) 55%, white);
+  border-color: var(--pp-inicio-hairline);
+  border-radius: 14px;
+  padding: 0.7rem 0.8rem;
+}
+
+.pp-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.pp-stat-cell {
+  padding: 0.9rem 0.95rem;
+  border: 1px solid var(--pp-inicio-hairline);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--pp-page-bg, #f1f5f9) 72%, white);
+}
+
+.pp-stat-num {
   display: block;
-  max-width: 100%;
-  max-height: 100%;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--pp-foreground, #0f172a);
 }
 
-.pp-chart-center {
-  position: absolute;
-  inset: 0;
+.pp-stat-cap {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  color: var(--pp-muted, #475569);
+  line-height: 1.35;
+}
+
+@media (min-width: 900px) {
+  :host ::ng-deep .pp-occupancy-card.p-card {
+    margin: 0;
+  }
+}
+
+/* Acordeones dentro de Inicio: más quietos, alineados al bento */
+:host ::ng-deep ion-accordion.pp-easy-acc {
+  border-color: var(--pp-inicio-hairline);
+  box-shadow: none;
+  border-radius: 16px;
+}
+
+:host ::ng-deep ion-accordion.pp-easy-acc:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: color-mix(in srgb, var(--ion-color-primary) 25%, var(--pp-inicio-hairline));
+}
+
+:host ::ng-deep ion-accordion.pp-easy-acc.accordion-expanded,
+:host ::ng-deep ion-accordion.pp-easy-acc[expanded] {
+  border-color: var(--ion-color-primary);
+  box-shadow: none;
+  transform: none;
+}
+
+:host ::ng-deep ion-accordion.pp-easy-acc .pp-easy-acc-header {
+  --background: color-mix(in srgb, var(--pp-page-bg, #f1f5f9) 88%, white);
+  --min-height: 72px;
+}
+
+:host ::ng-deep .pp-easy-acc-toggle-box {
+  background: var(--ion-color-primary, #2563eb);
+  min-height: 72px;
+}
+
+:host-context(.ion-palette-dark) ::ng-deep .p-card.pp-card-shadow .p-card-caption,
+:host-context(.ion-palette-dark) ::ng-deep .pp-inicio-card.p-card .p-card-caption {
+  background: transparent;
+  border-bottom-color: rgba(148, 163, 184, 0.25);
+}
+
+:host-context(.ion-palette-dark) .pp-bento-tile,
+:host-context(.ion-palette-dark) ::ng-deep .pp-stat-cell {
+  background: var(--pp-surface, #1e293b);
+  border-color: rgba(148, 163, 184, 0.22);
+}
+
+:host-context(.ion-palette-dark) ::ng-deep ion-accordion.pp-easy-acc .pp-easy-acc-header {
+  --background: rgba(15, 23, 42, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host ::ng-deep .p-card.pp-card-shadow,
+  :host ::ng-deep .pp-inicio-card.p-card,
+  :host ::ng-deep ion-accordion.pp-easy-acc,
+  .pp-bento-tile {
+    transition: none;
+  }
+}
+
+.pp-loading {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.15rem;
+  min-height: 40vh;
+  gap: 1rem;
+  color: var(--ion-color-medium);
+}
+
+.pp-error-box {
+  padding: 1rem 1.1rem;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--ion-color-danger) 25%, transparent);
+  background: color-mix(in srgb, var(--ion-color-danger) 8%, white);
+}
+
+.pp-card-shadow {
+  /* Estilos de card en :host ::ng-deep arriba */
+}
+
+.pp-chart-box {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 0 auto 1.25rem;
+}
+
+.pp-chart-ring {
+  position: relative;
+  width: min(100%, 240px);
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+}
+
+:host ::ng-deep .pp-chart-ring .pp-occupancy-chart,
+:host ::ng-deep .pp-chart-ring .p-chart {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+:host ::ng-deep .pp-chart-ring canvas {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+.pp-chart-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  width: 46%;
+  max-width: 7.5rem;
+  transform: translate(-50%, -50%);
   pointer-events: none;
-  z-index: 1;
-  padding: 0 2.5rem;
   text-align: center;
 }
 
 .pp-chart-total {
-  font-size: 2.3rem;
+  display: block;
+  font-size: clamp(1.85rem, 8vw, 2.35rem);
   font-weight: 800;
   color: var(--ion-color-primary);
-  line-height: 1.1;
+  line-height: 1;
   letter-spacing: -0.03em;
-  transition: font-size 0.2s ease-in-out;
 
   &--empty {
-    font-size: 2rem;
+    font-size: clamp(1.45rem, 6vw, 1.85rem);
     color: var(--ion-color-medium);
   }
 }
 
 .pp-chart-sub {
-  font-size: 0.7rem;
+  display: block;
+  font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--ion-color-medium);
   font-weight: 600;
-  transition: font-size 0.2s ease-in-out;
+  line-height: 1.2;
 }
 
-/* Full HD (FHD) / Desktop Screens */
 @media (min-width: 1200px) {
-  .pp-chart-box {
-    height: 300px;
-    max-width: 360px;
+  .pp-chart-ring {
+    width: min(100%, 300px);
   }
 
   .pp-chart-total {
-    font-size: 3.2rem;
+    font-size: 2.75rem;
   }
 
   .pp-chart-sub {
-    font-size: 0.85rem;
+    font-size: 0.72rem;
   }
 }
 
@@ -214,32 +609,6 @@
   font-size: 0.8rem;
 }
 
-.pp-stat-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-}
-
-.pp-stat-cell {
-  background: rgba(15, 39, 68, 0.04);
-  border-radius: 10px;
-  padding: 0.75rem;
-  text-align: center;
-}
-
-.pp-stat-num {
-  display: block;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--ion-color-primary);
-}
-
-.pp-stat-cap {
-  font-size: 0.7rem;
-  color: var(--ion-color-medium);
-  line-height: 1.2;
-}
-
 ::ng-deep .pp-pbar {
   height: 0.65rem;
   border-radius: 6px;
@@ -257,26 +626,6 @@
   background: rgba(15, 39, 68, 0.08);
   border-radius: 6px;
   overflow: hidden;
-}
-
-.pp-money {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--ion-color-primary);
-  margin: 0;
-}
-
-.pp-currency {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--ion-color-medium);
-}
-
-.pp-section-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--ion-color-primary);
-  margin: 1rem 0 0.5rem 0.25rem;
 }
 
 .pp-rate-meta {
@@ -301,7 +650,7 @@
 }
 
 .pp-admin-rates-card ::ng-deep .p-card-body {
-  padding-top: 0.5rem;
+  /* padding unificado vía global.scss */
 }
 
 ion-accordion.pp-rate-acc--car .pp-easy-acc-plate {
@@ -416,7 +765,7 @@ ion-accordion.pp-rate-acc--moto .pp-easy-acc-plate {
 }
 
 .pp-owner-vehicles-card ::ng-deep .p-card-body {
-  padding-top: 0.5rem;
+  /* padding unificado con pp-easy-acc vía global.scss */
 }
 
 .pp-easy-acc-group {
@@ -427,27 +776,35 @@ ion-accordion.pp-rate-acc--moto .pp-easy-acc-plate {
 }
 
 ion-accordion.pp-easy-acc {
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(13, 148, 136, 0.22);
-  background: #fff;
-  box-shadow: 0 2px 10px rgba(13, 148, 136, 0.08);
+  border: 1px solid rgba(13, 148, 136, 0.15);
+  background: var(--ion-background-color, #fff);
+  box-shadow: 0 2px 10px rgba(13, 148, 136, 0.05);
   transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+}
+
+ion-accordion.pp-easy-acc:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(13, 148, 136, 0.1);
+  border-color: rgba(13, 148, 136, 0.3);
 }
 
 ion-accordion.pp-easy-acc.accordion-expanded,
 ion-accordion.pp-easy-acc[expanded] {
   border: 2px solid #0d9488;
-  box-shadow: 0 4px 18px rgba(13, 148, 136, 0.18);
+  box-shadow: 0 6px 20px rgba(13, 148, 136, 0.18);
+  transform: translateY(0);
 }
 
 ion-accordion.pp-easy-acc .pp-easy-acc-header {
   --background: #ecfdf5;
   --border-width: 0;
   --inner-border-width: 0;
-  --min-height: 58px;
+  --min-height: 76px;
   --padding-start: 0;
   --padding-end: 12px;
   --inner-padding-end: 0;
@@ -461,7 +818,7 @@ ion-accordion.pp-easy-acc .pp-easy-acc-header::part(native) {
 .pp-easy-acc-toggle-box {
   flex-shrink: 0;
   width: 44px;
-  min-height: 58px;
+  min-height: 76px;
   align-self: stretch;
   display: flex;
   align-items: center;
@@ -497,6 +854,7 @@ ion-accordion.pp-easy-acc .pp-easy-acc-header::part(native) {
   letter-spacing: 0.06em;
   color: #334155;
   text-transform: uppercase;
+  font-family: var(--pp-font-mono, ui-monospace, monospace);
 }
 
 .pp-easy-acc-sub {
@@ -506,9 +864,73 @@ ion-accordion.pp-easy-acc .pp-easy-acc-header::part(native) {
   font-weight: 500;
 }
 
+.pp-easy-acc-entry {
+  margin: 0.35rem 0 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #0f766e;
+  line-height: 1.35;
+}
+
+.pp-easy-acc-entry-k {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  margin-bottom: 0.1rem;
+}
+
+.pp-easy-acc-entry--muted {
+  color: #94a3b8;
+  font-weight: 500;
+  font-size: 0.78rem;
+}
+
+.pp-vehicle-owner-name {
+  font-family: var(--pp-font-body);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.pp-vehicle-owner-status--inactive {
+  color: var(--ion-color-danger, #dc2626);
+}
+
+.pp-vehicle-owner-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+}
+
+.pp-vehicle-owner-details div {
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--pp-border, #e2e8f0);
+  border-radius: 12px;
+  background: var(--pp-page-bg, #f8fafc);
+}
+
+.pp-vehicle-owner-details dt {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--pp-muted, #64748b);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.pp-vehicle-owner-details dd {
+  overflow-wrap: anywhere;
+  margin: 0.25rem 0 0;
+  color: var(--pp-foreground, #0f172a);
+  font-weight: 600;
+}
+
 .pp-easy-acc-panel {
   padding: 1rem 1rem 1.25rem;
-  background: #fff;
+  background: var(--ion-background-color, #fff);
   border-top: 1px solid rgba(13, 148, 136, 0.15);
 }
 
@@ -521,6 +943,11 @@ ion-accordion.pp-easy-acc[expanded] .pp-easy-acc-panel {
   margin-top: 0.85rem;
 }
 
+.pp-easy-acc-save {
+  width: 100%;
+  min-height: 44px;
+}
+
 .pp-easy-acc-toggle-slot-hidden {
   display: none !important;
   width: 0 !important;
@@ -530,4 +957,18 @@ ion-accordion.pp-easy-acc[expanded] .pp-easy-acc-panel {
 ion-accordion.pp-easy-acc::part(header) .ion-accordion-toggle-icon,
 ion-accordion.pp-easy-acc .ion-accordion-toggle-icon {
   display: none !important;
+}
+
+@media (max-width: 480px) {
+  .pp-vehicle-owner-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ion-accordion.pp-easy-acc,
+  ion-accordion.pp-easy-acc:hover {
+    transition: none;
+    transform: none;
+  }
 }

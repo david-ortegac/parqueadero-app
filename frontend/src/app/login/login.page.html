@@ -1,54 +1,116 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar class="pp-toolbar">
-    <ion-title>Acceso</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="pp-auth-content" [fullscreen]="true">
+  <div class="pp-auth">
+    <aside class="pp-auth-visual" aria-hidden="true">
+      <div class="pp-auth-orb pp-auth-orb--a"></div>
+      <div class="pp-auth-orb pp-auth-orb--b"></div>
+      <div class="pp-auth-orb pp-auth-orb--c"></div>
+      <div class="pp-auth-visual-inner">
+        <svg class="pp-auth-illu" viewBox="0 0 280 200" role="img" focusable="false">
+          <defs>
+            <linearGradient id="ppAuthLot" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#2563EB" />
+              <stop offset="100%" stop-color="#0F2744" />
+            </linearGradient>
+            <linearGradient id="ppAuthCar" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#38BDF8" />
+              <stop offset="100%" stop-color="#2563EB" />
+            </linearGradient>
+          </defs>
+          <rect x="24" y="48" width="232" height="120" rx="28" fill="url(#ppAuthLot)" opacity="0.92" />
+          <rect x="48" y="72" width="56" height="72" rx="12" fill="#fff" opacity="0.12" />
+          <rect x="116" y="72" width="56" height="72" rx="12" fill="#fff" opacity="0.08" />
+          <rect x="184" y="72" width="48" height="72" rx="12" fill="#0D9488" opacity="0.35" />
+          <path
+            d="M70 138h140c8 0 14-5 16-12l10-34c2-8-3-16-12-18l-28-6c-4-8-12-14-22-14H118c-10 0-18 6-22 14l-20 5c-9 2-14 11-12 19l8 30c2 8 8 16 18 16z"
+            fill="url(#ppAuthCar)"
+          />
+          <circle cx="108" cy="138" r="12" fill="#0F2744" />
+          <circle cx="108" cy="138" r="6" fill="#E2E8F0" />
+          <circle cx="182" cy="138" r="12" fill="#0F2744" />
+          <circle cx="182" cy="138" r="6" fill="#E2E8F0" />
+          <rect x="128" y="96" width="36" height="18" rx="6" fill="#fff" opacity="0.55" />
+        </svg>
+        <p class="pp-auth-visual-kicker">Parking solutions</p>
+        <p class="pp-auth-visual-title">Parqueadero</p>
+        <p class="pp-auth-visual-copy">Ocupación, cobros y usuarios en un solo flujo.</p>
+      </div>
+    </aside>
 
-<ion-content class="pp-login-content ion-padding">
-  <div class="pp-login-hero">
-    <div class="pp-login-brand">
-      <span class="pp-login-brand-title">Parqueadero</span>
-      <span class="pp-login-brand-sub">Parking solutions</span>
-    </div>
-    <p class="pp-login-tagline">Gestión de ocupación, cobros y usuarios en un solo lugar.</p>
+    <section class="pp-auth-panel" aria-labelledby="login-heading">
+      <header class="pp-auth-panel-head">
+        <p class="pp-auth-eyebrow">Bienvenido</p>
+        <h1 id="login-heading" class="pp-auth-title">Iniciar sesión</h1>
+        <p class="pp-auth-subtitle">Usa el correo y la contraseña de tu cuenta.</p>
+      </header>
+
+      <form class="pp-auth-form" (ngSubmit)="submit()" novalidate>
+        <div class="pp-auth-fields">
+          <div class="pp-field">
+            <label class="pp-field-label" for="login-email">Correo</label>
+            <input
+              pInputText
+              id="login-email"
+              name="email"
+              [(ngModel)]="email"
+              type="email"
+              inputmode="email"
+              autocomplete="email"
+              autocapitalize="off"
+              spellcheck="false"
+              placeholder="nombre@correo.com"
+              class="w-full pp-auth-input"
+              [attr.aria-invalid]="!!errorMessage"
+              [attr.aria-describedby]="errorMessage ? 'login-error' : null"
+              [disabled]="loading"
+              (ngModelChange)="clearError()"
+            />
+          </div>
+
+          <div class="pp-field">
+            <label class="pp-field-label" for="login-password">Contraseña</label>
+            <p-password
+              inputId="login-password"
+              name="password"
+              [(ngModel)]="password"
+              [feedback]="false"
+              [toggleMask]="true"
+              styleClass="w-full pp-auth-password"
+              [inputStyle]="{ width: '100%' }"
+              placeholder="Tu contraseña"
+              autocomplete="current-password"
+              [disabled]="loading"
+              (ngModelChange)="clearError()"
+            />
+          </div>
+        </div>
+
+        @if (errorMessage) {
+          <p id="login-error" class="pp-auth-error" role="alert" aria-live="assertive">
+            <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+            <span>{{ errorMessage }}</span>
+          </p>
+        }
+
+        <div class="pp-auth-actions">
+          <p-button
+            type="submit"
+            label="Entrar"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            styleClass="w-full pp-auth-submit"
+            [loading]="loading"
+            [disabled]="loading || !canSubmit"
+          />
+        </div>
+      </form>
+
+      <p class="pp-auth-footer">
+        ¿Eres propietario?
+        <a routerLink="/register" class="pp-auth-link">Crear cuenta</a>
+      </p>
+      <p class="pp-auth-footer pp-auth-footer--secondary">
+        <a routerLink="/consulta" class="pp-auth-link">Consultar placa sin cuenta</a>
+      </p>
+    </section>
   </div>
-
-  <p-card header="Iniciar sesión" subheader="Usa tu correo y contraseña del sistema" styleClass="pp-login-card pp-card-shadow">
-    <div class="pp-login-fields">
-      <p-floatlabel variant="on">
-        <input pInputText id="login-email" [(ngModel)]="email" type="email" autocomplete="email" class="w-full" />
-        <label for="login-email">Correo</label>
-      </p-floatlabel>
-      <p-floatlabel variant="on" class="pp-login-field-gap">
-        <p-password
-          inputId="login-password"
-          [(ngModel)]="password"
-          [feedback]="false"
-          [toggleMask]="true"
-          styleClass="w-full"
-          [inputStyle]="{ width: '100%' }"
-          autocomplete="current-password"
-        />
-        <label for="login-password">Contraseña</label>
-      </p-floatlabel>
-    </div>
-    <div class="pp-login-actions">
-      <p-button
-        label="Entrar"
-        icon="pi pi-sign-in"
-        styleClass="w-full ion-margin-top"
-        [loading]="loading"
-        [disabled]="loading"
-        (onClick)="submit()"
-      />
-      <p-button
-        label="Registrarme como propietario"
-        icon="pi pi-user-plus"
-        severity="secondary"
-        styleClass="w-full ion-margin-top"
-        [outlined]="true"
-        routerLink="/register"
-      />
-    </div>
-  </p-card>
 </ion-content>

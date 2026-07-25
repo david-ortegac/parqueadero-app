@@ -10,12 +10,20 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Operator\ParkingOperatorController;
 use App\Http\Controllers\Api\Operator\VehicleOwnerActivationController;
 use App\Http\Controllers\Api\Owner\OwnerVehicleController;
+use App\Http\Controllers\Api\Public\PublicSessionController;
 use App\Http\Controllers\Api\PushDeviceController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function (): void {
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth-login');
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:auth-register');
+
+    Route::get('/public/sessions/by-plate/{plate}', [PublicSessionController::class, 'byPlate'])
+        ->where('plate', '[A-Za-z0-9]+')
+        ->middleware('throttle:public-plate-lookup');
+
+    Route::get('/public/occupancy', [PublicSessionController::class, 'occupancy'])
+        ->middleware('throttle:public-plate-lookup');
 
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('/logout', [AuthController::class, 'logout']);
