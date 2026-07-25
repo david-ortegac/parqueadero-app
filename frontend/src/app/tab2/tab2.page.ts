@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { Subject, takeUntil } from 'rxjs';
@@ -52,6 +52,12 @@ import { ThemeService } from '../services/theme.service';
   standalone: false,
 })
 export class Tab2Page implements OnInit, OnDestroy {
+  readonly auth = inject(AuthService);
+  private readonly api = inject(ParkingApiService);
+  private readonly toast = inject(ToastController);
+  private readonly route = inject(ActivatedRoute);
+  readonly theme = inject(ThemeService);
+
   readonly documentMaxDigits = DOCUMENT_MAX_DIGITS;
 
   readonly billingModeLabel = billingModeCatalogLabel;
@@ -106,14 +112,6 @@ export class Tab2Page implements OnInit, OnDestroy {
 
   /** Placa normalizada desde `?plate=` (QR / enlace profundo). */
   private plateFromRouteNormalized: string | null = null;
-
-  constructor(
-    readonly auth: AuthService,
-    private readonly api: ParkingApiService,
-    private readonly toast: ToastController,
-    private readonly route: ActivatedRoute,
-    readonly theme: ThemeService,
-  ) {}
 
   /** Tipado explícito para el modal (evita errores de narrowing en la plantilla). */
   get receiptForSheet(): SaleReceiptData | null {

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, catchError, map, of, tap } from 'rxjs';
@@ -12,14 +12,12 @@ const USER_KEY = 'parqueadero_user';
   providedIn: 'root',
 })
 export class AuthService {
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
+
   private readonly userSubject = new BehaviorSubject<SessionUser | null>(this.readStoredUser());
 
   readonly user$: Observable<SessionUser | null> = this.userSubject.asObservable();
-
-  constructor(
-    private readonly http: HttpClient,
-    private readonly router: Router,
-  ) {}
 
   getToken(): string | null {
     return localStorage.getItem(TOKEN_KEY);

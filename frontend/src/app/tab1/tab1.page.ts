@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { Subject, forkJoin, takeUntil } from 'rxjs';
@@ -32,6 +32,14 @@ import { formatCop, formatMoney as formatMoneyUtil } from '../utils/format.utils
   standalone: false,
 })
 export class Tab1Page implements OnInit, OnDestroy {
+  readonly auth = inject(AuthService);
+  private readonly api = inject(ParkingApiService);
+  private readonly dashboardCharts = inject(DashboardService);
+  private readonly toast = inject(ToastController);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  readonly theme = inject(ThemeService);
+
   readonly billingModeLabel = billingModeCatalogLabel;
 
   readonly vehicleClassLabelShort = vehicleClassCatalogShort;
@@ -104,16 +112,6 @@ export class Tab1Page implements OnInit, OnDestroy {
     month: '2-digit',
     year: 'numeric',
   }).format(new Date());
-
-  constructor(
-    readonly auth: AuthService,
-    private readonly api: ParkingApiService,
-    private readonly dashboardCharts: DashboardService,
-    private readonly toast: ToastController,
-    private readonly router: Router,
-    private readonly route: ActivatedRoute,
-    readonly theme: ThemeService,
-  ) {}
 
   ngOnInit(): void {
     this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {

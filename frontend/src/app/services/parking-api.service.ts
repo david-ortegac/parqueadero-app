@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -100,9 +100,9 @@ export interface OwnerSessionHistoryRow {
   providedIn: 'root',
 })
 export class ParkingApiService {
-  private readonly base = environment.apiUrl;
+  private readonly http = inject(HttpClient);
 
-  constructor(private readonly http: HttpClient) {}
+  private readonly base = environment.apiUrl;
 
   getDashboard(): Observable<DashboardResponse> {
     return this.http.get<DashboardResponse>(`${this.base}/operator/dashboard`);

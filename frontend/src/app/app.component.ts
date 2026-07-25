@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ThemeService } from './services/theme.service';
 
 @Component({
@@ -8,5 +8,5 @@ import { ThemeService } from './services/theme.service';
   standalone: false,
 })
 export class AppComponent {
-  constructor(private readonly theme: ThemeService) {}
+  private readonly theme = inject(ThemeService);
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
@@ -11,15 +11,13 @@ import { apiErrorMessage } from '../utils/api-error-message';
   standalone: false,
 })
 export class LoginPage {
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly toast = inject(ToastController);
+
   email = '';
   password = '';
   loading = false;
-
-  constructor(
-    private readonly auth: AuthService,
-    private readonly router: Router,
-    private readonly toast: ToastController,
-  ) {}
 
   async submit(): Promise<void> {
     this.loading = true;

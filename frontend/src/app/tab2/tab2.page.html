@@ -287,7 +287,7 @@
               <td class="pp-hide-on-mobile">{{ s.entered_at | date : coDateTimeFormat : coTimezone : coLocale }}</td>
               <td class="pp-hide-on-mobile">
                 @if (s.billing_mode === 'week' || s.billing_mode === 'month') {
-                  @if (s.subscription_period_days != null) {
+                  @if (s.subscription_period_days !== null) {
                     {{ s.subscription_period_days }} días
                   } @else if (s.period_ends_at) {
                     Hasta {{ s.period_ends_at | date : coDateTimeFormat : coTimezone : coLocale }}
@@ -332,7 +332,7 @@
                         <span class="pp-owner-k">Prepago</span>
                         <span class="pp-owner-v">
                           @if (s.billing_mode === 'week' || s.billing_mode === 'month') {
-                            @if (s.subscription_period_days != null) {
+                            @if (s.subscription_period_days !== null) {
                               {{ s.subscription_period_days }} días
                             } @else if (s.period_ends_at) {
                               Hasta {{ s.period_ends_at | date : coDateTimeFormat : coTimezone : coLocale }}

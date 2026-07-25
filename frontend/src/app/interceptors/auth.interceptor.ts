@@ -1,5 +1,5 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Injectable, Injector } from '@angular/core';
+import { Injectable, Injector, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
@@ -10,7 +10,8 @@ import { AuthService } from '../services/auth.service';
  */
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private readonly injector: Injector) {}
+  private readonly injector = inject(Injector);
+
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const auth = this.injector.get(AuthService);

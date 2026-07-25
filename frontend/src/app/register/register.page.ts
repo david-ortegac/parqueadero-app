@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
@@ -18,6 +18,10 @@ import {
   standalone: false,
 })
 export class RegisterPage {
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly toast = inject(ToastController);
+
   readonly documentMaxDigits = DOCUMENT_MAX_DIGITS;
 
   name = '';
@@ -26,12 +30,6 @@ export class RegisterPage {
   password = '';
   passwordConfirm = '';
   loading = false;
-
-  constructor(
-    private readonly auth: AuthService,
-    private readonly router: Router,
-    private readonly toast: ToastController,
-  ) {}
 
   onDocumentChange(value: string): void {
     this.document = sanitizeDocumentDigits(value);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 import { PushNotifications } from '@capacitor/push-notifications';
 import { Capacitor } from '@capacitor/core';
@@ -13,6 +13,11 @@ import { ThemeService } from '../services/theme.service';
   standalone: false,
 })
 export class Tab3Page implements OnInit {
+  readonly auth = inject(AuthService);
+  private readonly api = inject(ParkingApiService);
+  private readonly toast = inject(ToastController);
+  readonly theme = inject(ThemeService);
+
   pushStatus = 'No inicializado';
 
   displayRole(role: string): string {
@@ -31,13 +36,6 @@ export class Tab3Page implements OnInit {
   editAddress: string | null = null;
   editCarCapacity: number | null = null;
   editMotoCapacity: number | null = null;
-
-  constructor(
-    readonly auth: AuthService,
-    private readonly api: ParkingApiService,
-    private readonly toast: ToastController,
-    readonly theme: ThemeService,
-  ) {}
 
   ngOnInit(): void {
     if (this.auth.hasRole('admin')) {

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { CanActivate, Router, UrlTree } from '@angular/router';
 import { Observable, map, of } from 'rxjs';
 import { AuthService } from '../services/auth.service';
@@ -7,10 +7,9 @@ import { AuthService } from '../services/auth.service';
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
-  constructor(
-    private readonly auth: AuthService,
-    private readonly router: Router,
-  ) {}
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+
 
   canActivate(): boolean | UrlTree | Observable<boolean | UrlTree> {
     if (!this.auth.isLoggedIn()) {
