@@ -1,0 +1,494 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Parqueadero App - Arquitectura de Microservicios Serverless en AWS
+  Patron Strangler Fig + Arquitectura Hexagonal + DynamoDB + HTTP API Gateway
+
+Globals:
+  Function:
+    Timeout: 15
+    MemorySize: 256
+    Runtime: nodejs22.x
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        NODE_ENV: production
+        JWT_SECRET_KEY: !Ref JwtSecretKey
+        JWT_ISSUER: parking-auth-service
+        JWT_AUDIENCE: parking-app
+        USERS_TABLE: !Ref UsersTable
+        RATES_CONFIG_TABLE: !Ref RatesConfigTable
+        VEHICLES_TABLE: !Ref VehiclesTable
+        SESSIONS_TABLE: !Ref SessionsTable
+        PUSH_DEVICES_TABLE: !Ref PushDevicesTable
+
+Parameters:
+  JwtSecretKey:
+    Type: String
+    NoEcho: true
+    Default: 'parqueadero-super-secret-key-change-in-production'
+    Description: Clave secreta para firma y verificacion de tokens JWT
+
+  LegacyBackendUrl:
+    Type: String
+    Default: 'https://parkingsoft.davidortega.dev/api'
+    Description: URL del backend Laravel legacy para el patron Strangler Fig (fallback)
+
+Resources:
+  # =========================================================================
+  # 1. TABLAS DYNAMODB
+  # =========================================================================
+
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ParkingUsers
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: email
+          AttributeType: S
+        - AttributeName: document
+          AttributeType: S
+        - AttributeName: role
+          AttributeType: S
+        - AttributeName: created_at
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: EmailIndex
+          KeySchema:
+            - AttributeName: email
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: DocumentIndex
+          KeySchema:
+            - AttributeName: document
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: RoleIndex
+          KeySchema:
+            - AttributeName: role
+              KeyType: HASH
+            - AttributeName: created_at
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+
+  RatesConfigTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ParkingRatesConfig
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+        - AttributeName: sk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
+
+  VehiclesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ParkingVehicles
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: plate
+          AttributeType: S
+        - AttributeName: owner_user_id
+          AttributeType: S
+        - AttributeName: depositor_document
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: PlateIndex
+          KeySchema:
+            - AttributeName: plate
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: OwnerIndex
+          KeySchema:
+            - AttributeName: owner_user_id
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: DocumentIndex
+          KeySchema:
+            - AttributeName: depositor_document
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+  SessionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ParkingSessions
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: vehicle_id
+          AttributeType: S
+        - AttributeName: status
+          AttributeType: S
+        - AttributeName: entered_at
+          AttributeType: S
+        - AttributeName: exit_date
+          AttributeType: S
+        - AttributeName: exited_at
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: StatusIndex
+          KeySchema:
+            - AttributeName: status
+              KeyType: HASH
+            - AttributeName: entered_at
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: VehicleIndex
+          KeySchema:
+            - AttributeName: vehicle_id
+              KeyType: HASH
+            - AttributeName: entered_at
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: DateIndex
+          KeySchema:
+            - AttributeName: exit_date
+              KeyType: HASH
+            - AttributeName: exited_at
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+
+  PushDevicesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ParkingPushDevices
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: token
+          AttributeType: S
+        - AttributeName: user_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: token
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: UserIndex
+          KeySchema:
+            - AttributeName: user_id
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+  # =========================================================================
+  # 2. STRANGLER FIG FACHADA - HTTP API GATEWAY v2
+  # =========================================================================
+
+  HttpApiGateway:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - '*'
+        AllowHeaders:
+          - Content-Type
+          - Authorization
+          - X-Api-Key
+          - X-Amz-Date
+          - X-Amz-Security-Token
+        AllowMethods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+          - OPTIONS
+        MaxAge: 600
+
+  # =========================================================================
+  # 3. FUNCIONES LAMBDA POR DOMINIO
+  # =========================================================================
+
+  # Dominio 1: Autenticación & Usuarios
+  AuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ms-parking-auth
+      CodeUri: ms_parking_auth/dist/
+      Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UsersTable
+      Events:
+        Login:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/login
+            Method: POST
+        Register:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/register
+            Method: POST
+        Logout:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/logout
+            Method: POST
+        Me:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/me
+            Method: GET
+        AdminUsers:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/admin/users
+            Method: ANY
+        AdminUserDetail:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/admin/users/{user}
+            Method: ANY
+        OperatorVehicleOwners:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/operator/vehicle-owners
+            Method: GET
+        OperatorVehicleOwnerDetail:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/operator/vehicle-owners/{user}
+            Method: PATCH
+
+  # Dominio 2: Tarifas, Capacidad y Configuración
+  RatesConfigFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ms-parking-rates-config
+      CodeUri: ms_parking_rates_config/dist/
+      Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref RatesConfigTable
+      Events:
+        AdminRates:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/admin/rates
+            Method: ANY
+        AdminRateDetail:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/admin/rates/{rate}
+            Method: ANY
+        AdminSchedules:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/admin/schedules
+            Method: ANY
+        AdminCapacity:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/admin/capacity
+            Method: ANY
+        AdminParkingInfo:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/admin/parking-info
+            Method: ANY
+        OperatorParkingInfo:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/operator/parking-info
+            Method: GET
+
+  # Dominio 3: Vehículos
+  VehiclesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ms-parking-vehicles
+      CodeUri: ms_parking_vehicles/dist/
+      Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref VehiclesTable
+      Events:
+        OwnerVehicles:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/owner/vehicles
+            Method: GET
+        OwnerVehicleDetail:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/owner/vehicles/{vehicle}
+            Method: ANY
+        VehiclesByPlate:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/vehicles/by-plate/{plate}
+            Method: GET
+        VehiclesPost:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/vehicles
+            Method: POST
+
+  # Dominio 4: Sesiones de Parqueo, Facturación y Reportes
+  SessionsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ms-parking-sessions
+      CodeUri: ms_parking_sessions/dist/
+      Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SessionsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref RatesConfigTable
+      Events:
+        OperatorCheckIn:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/operator/check-in
+            Method: POST
+        OperatorCheckOut:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/operator/sessions/{session}/check-out
+            Method: POST
+        OperatorActiveSessions:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/operator/sessions/active
+            Method: GET
+        OperatorDashboard:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/operator/dashboard
+            Method: GET
+        OperatorRevenue:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/operator/reports/revenue
+            Method: GET
+        OperatorDailyHistory:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/operator/reports/daily-history
+            Method: GET
+        PublicPlateLookup:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/public/sessions/by-plate/{plate}
+            Method: GET
+        PublicOccupancy:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/public/occupancy
+            Method: GET
+        OwnerActiveSession:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/owner/vehicles/{vehicle}/active-session
+            Method: GET
+        OwnerVehicleSessions:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/owner/vehicles/{vehicle}/sessions
+            Method: GET
+
+  # Dominio 5: Notificaciones Push
+  NotificationsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ms-parking-notifications
+      CodeUri: ms_parking_notifications/dist/
+      Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PushDevicesTable
+      Events:
+        PushDevices:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/push-devices
+            Method: POST
+        NotificationsSend:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /v1/notifications/send
+            Method: POST
+
+Outputs:
+  HttpApiUrl:
+    Description: URL base de la fachada API Gateway (Strangler Fig)
+    Value: !Sub 'https://${HttpApiGateway}.execute-api.${AWS::Region}.amazonaws.com'
+  AuthFunctionArn:
+    Description: ARN de ms-parking-auth
+    Value: !GetAtt AuthFunction.Arn
+  RatesConfigFunctionArn:
+    Description: ARN de ms-parking-rates-config
+    Value: !GetAtt RatesConfigFunction.Arn
+  VehiclesFunctionArn:
+    Description: ARN de ms-parking-vehicles
+    Value: !GetAtt VehiclesFunction.Arn
+  SessionsFunctionArn:
+    Description: ARN de ms-parking-sessions
+    Value: !GetAtt SessionsFunction.Arn
+  NotificationsFunctionArn:
+    Description: ARN de ms-parking-notifications
+    Value: !GetAtt NotificationsFunction.Arn

@@ -1,0 +1,27 @@
+{
+  "name": "ms_parking_sessions",
+  "version": "1.0.0",
+  "description": "Microservicio de Operaciones, Sesiones de Parqueo, Facturación y Reportes - Hexagonal Architecture + DynamoDB + AWS Lambda",
+  "type": "commonjs",
+  "scripts": {
+    "build": "npm run clean && node build.config.mjs",
+    "clean": "rimraf dist releases",
+    "package": "npm run build && npm run zip",
+    "zip": "mkdir -p releases && cd dist && bestzip ../releases/ms-parking-sessions-v1.0.0.zip *"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1147.0",
+    "@aws-sdk/lib-dynamodb": "^3.1147.0",
+    "inversify": "^8.2.3",
+    "jsonwebtoken": "^9.0.3",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^26.6.4",
+    "bestzip": "^4.0.3",
+    "esbuild": "^0.28.2",
+    "rimraf": "^6.1.3",
+    "typescript": "^7.0.2"
+  }
+}

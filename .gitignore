@@ -21,3 +21,8 @@ frontend/android
 frontend/www
 frontend/.firebase
 frontend/.agents
+node_modules
+microservices/**/node_modules
+microservices/**/dist
+microservices/**/releases
+microservices/.aws-sam

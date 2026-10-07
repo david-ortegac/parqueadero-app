@@ -1,0 +1,27 @@
+{
+  "name": "ms_parking_vehicles",
+  "version": "1.0.0",
+  "description": "Microservicio de Gestión de Vehículos - Hexagonal Architecture + DynamoDB + AWS Lambda",
+  "type": "commonjs",
+  "scripts": {
+    "build": "npm run clean && node build.config.mjs",
+    "clean": "rimraf dist releases",
+    "package": "npm run build && npm run zip",
+    "zip": "mkdir -p releases && cd dist && bestzip ../releases/ms-parking-vehicles-v1.0.0.zip *"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.758.0",
+    "@aws-sdk/lib-dynamodb": "^3.758.0",
+    "inversify": "^6.2.2",
+    "jsonwebtoken": "^9.0.2",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.8",
+    "@types/node": "^22.13.9",
+    "bestzip": "^2.2.3",
+    "esbuild": "^0.25.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.2"
+  }
+}
