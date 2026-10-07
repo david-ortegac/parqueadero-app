@@ -3,7 +3,8 @@ const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
 const bcrypt = require('bcryptjs');
 
-const isLocal = process.env.IS_OFFLINE || process.env.NODE_ENV === 'development' || process.env.DYNAMODB_ENDPOINT;
+const isLocal =
+  process.env.IS_OFFLINE || process.env.NODE_ENV === 'development' || process.env.DYNAMODB_ENDPOINT;
 const endpoint = process.env.DYNAMODB_ENDPOINT || (isLocal ? 'http://localhost:8000' : undefined);
 const region = process.env.AWS_REGION || 'us-east-1';
 
@@ -98,7 +99,7 @@ async function seed() {
             created_at: now,
             updated_at: now,
           },
-        })
+        }),
       );
       console.log(`💵 Tarifa sembrada: ${r.vehicle_class} - ${r.billing_mode} = $${r.price}`);
     }
@@ -116,7 +117,7 @@ async function seed() {
           created_at: now,
           updated_at: now,
         },
-      })
+      }),
     );
     await docClient.send(
       new PutCommand({
@@ -130,7 +131,7 @@ async function seed() {
           created_at: now,
           updated_at: now,
         },
-      })
+      }),
     );
     console.log('🚗 Cupos sembrados: Carros 20, Motos 30');
 
@@ -150,7 +151,7 @@ async function seed() {
             created_at: now,
             updated_at: now,
           },
-        })
+        }),
       );
     }
     console.log('⏰ Horarios sembrados (06:00 a 22:00 todos los días)');
@@ -166,7 +167,7 @@ async function seed() {
           address: 'Calle 10 # 45-20, Medellín',
           updated_at: now,
         },
-      })
+      }),
     );
     console.log('🏢 Información general del parqueadero sembrada');
 

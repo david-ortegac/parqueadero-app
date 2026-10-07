@@ -8,7 +8,14 @@ import { LoginPageRoutingModule } from './login-routing.module';
 import { PrimeNgResourcesModule } from '../shared/prime-ng-resources.module';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, RouterModule, IonicModule, PrimeNgResourcesModule, LoginPageRoutingModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    IonicModule,
+    PrimeNgResourcesModule,
+    LoginPageRoutingModule,
+  ],
   declarations: [LoginPage],
 })
 export class LoginPageModule {}

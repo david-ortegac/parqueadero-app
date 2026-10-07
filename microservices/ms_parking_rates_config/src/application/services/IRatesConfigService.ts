@@ -18,7 +18,7 @@ export interface IRatesConfigService {
   }): Promise<DomainRateEntity>;
   updateRate(
     rateId: string,
-    data: { price?: number | string; currency?: string; is_active?: boolean }
+    data: { price?: number | string; currency?: string; is_active?: boolean },
   ): Promise<DomainRateEntity>;
   deleteRate(rateId: string): Promise<void>;
 
@@ -30,7 +30,7 @@ export interface IRatesConfigService {
     dayOfWeek: number,
     opensAt: string | null,
     closesAt: string | null,
-    isClosed?: boolean
+    isClosed?: boolean,
   ): Promise<DomainScheduleEntity>;
 
   getParkingInfo(): Promise<DomainParkingInfoEntity>;

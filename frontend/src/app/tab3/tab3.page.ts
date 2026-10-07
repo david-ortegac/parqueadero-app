@@ -46,7 +46,7 @@ export class Tab3Page implements OnInit {
   loadParkingInfo(): void {
     this.loadingInfo = true;
     this.api.getAdminParkingInfo().subscribe({
-      next: (info) => {
+      next: info => {
         this.editName = info.name;
         this.editAddress = info.address;
         this.editCarCapacity = info.car_capacity;
@@ -74,7 +74,7 @@ export class Tab3Page implements OnInit {
       motorcycle_capacity: this.editMotoCapacity ?? null,
     };
     this.api.patchAdminParkingInfo(body).subscribe({
-      next: async (info) => {
+      next: async info => {
         this.editName = info.name;
         this.editAddress = info.address;
         this.editCarCapacity = info.car_capacity;
@@ -101,7 +101,8 @@ export class Tab3Page implements OnInit {
 
   async setupPush(): Promise<void> {
     if (!Capacitor.isNativePlatform()) {
-      this.pushStatus = 'Las push nativas requieren iOS/Android. En web usa PWA con soporte limitado.';
+      this.pushStatus =
+        'Las push nativas requieren iOS/Android. En web usa PWA con soporte limitado.';
       const t = await this.toast.create({
         message: this.pushStatus,
         duration: 3000,
@@ -117,35 +118,39 @@ export class Tab3Page implements OnInit {
     }
 
     // 1. Add listeners BEFORE registering to avoid missing early events
-    await PushNotifications.addListener('registration', (token) => {
+    await PushNotifications.addListener('registration', token => {
       this.pushStatus = 'Token registrado en el dispositivo';
       const platform = Capacitor.getPlatform() === 'ios' ? 'ios' : 'android';
       this.api.registerPushDevice({ token: token.value, platform }).subscribe({
         error: async () => {
-          const t = await this.toast.create({ message: 'No se pudo enviar el token al servidor', color: 'warning', duration: 2500 });
+          const t = await this.toast.create({
+            message: 'No se pudo enviar el token al servidor',
+            color: 'warning',
+            duration: 2500,
+          });
           await t.present();
         },
       });
     });
 
-    await PushNotifications.addListener('registrationError', async (err) => {
+    await PushNotifications.addListener('registrationError', async err => {
       this.pushStatus = `Error: ${err.error}`;
     });
 
     // 2. Add real-time foreground notification handler for premium real-time feel!
-    await PushNotifications.addListener('pushNotificationReceived', async (notification) => {
+    await PushNotifications.addListener('pushNotificationReceived', async notification => {
       this.pushStatus = `Recibido: ${notification.title}`;
       const t = await this.toast.create({
         header: notification.title,
         message: notification.body,
         duration: 5000,
         color: 'success',
-        buttons: [{ text: 'OK', role: 'cancel' }]
+        buttons: [{ text: 'OK', role: 'cancel' }],
       });
       await t.present();
     });
 
-    await PushNotifications.addListener('pushNotificationActionPerformed', async (action) => {
+    await PushNotifications.addListener('pushNotificationActionPerformed', async action => {
       console.log('Push action performed', action);
     });
 

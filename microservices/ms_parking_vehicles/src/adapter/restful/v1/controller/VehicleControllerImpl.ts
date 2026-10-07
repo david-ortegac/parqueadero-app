@@ -1,9 +1,10 @@
 import { inject, injectable } from 'inversify';
 
+import { VehicleClass } from '../../../../domain/Entities/DomainVehicleEntity';
 import { IVehicleService } from '../../../../application/services/IVehicleService';
 import { TYPES } from '../../../../ioc/Types';
-import { Response } from '../../../../models/Response';
-import { hasRequiredRole, validateTokenFromEvent } from '../../../../utils/jwt-validator';
+import { Response, LambdaEvent } from '../../../../models/Response';
+import { validateTokenFromEvent } from '../../../../utils/jwt-validator';
 import { ResponseBuilder } from '../../../../utils/response-builder';
 import { IAdapterMapper } from './Mapper/IAdapterMapper';
 import { VehicleController } from './VehicleController';
@@ -14,12 +15,12 @@ export class VehicleControllerImpl implements VehicleController {
     @inject(TYPES.VehicleService)
     private readonly service: IVehicleService,
     @inject(TYPES.IAdapterMapper)
-    private readonly mapper: IAdapterMapper
+    private readonly mapper: IAdapterMapper,
   ) {}
 
-  private parseBody(event: any): any {
+  private parseBody(event: LambdaEvent): Record<string, unknown> {
     if (!event.body) return {};
-    if (typeof event.body === 'object') return event.body;
+    if (typeof event.body === 'object') return event.body as Record<string, unknown>;
     try {
       return JSON.parse(event.body);
     } catch {
@@ -27,25 +28,17 @@ export class VehicleControllerImpl implements VehicleController {
     }
   }
 
-  private getMethod(event: any): string {
-    return (
-      event?.requestContext?.http?.method ||
-      event?.httpMethod ||
-      'GET'
-    ).toUpperCase();
+  private getMethod(event: LambdaEvent): string {
+    return (event?.requestContext?.http?.method || event?.httpMethod || 'GET').toUpperCase();
   }
 
-  private getPath(event: any): string {
-    const raw =
-      event?.rawPath ||
-      event?.requestContext?.http?.path ||
-      event?.path ||
-      '';
+  private getPath(event: LambdaEvent): string {
+    const raw = event?.rawPath || event?.requestContext?.http?.path || event?.path || '';
     const clean = raw.split('?')[0];
     return clean.replace(/^\/api\/v1/, '').replace(/^\/v1/, '') || '/';
   }
 
-  async handleRequest(event: any): Promise<Response> {
+  async handleRequest(event: LambdaEvent): Promise<Response> {
     const method = this.getMethod(event);
     const path = this.getPath(event);
     const body = this.parseBody(event);
@@ -67,7 +60,7 @@ export class VehicleControllerImpl implements VehicleController {
 
         const vehicles = await this.service.getOwnerVehicles(
           String(tokenRes.payload.userId),
-          tokenRes.payload.document
+          tokenRes.payload.document,
         );
 
         return ResponseBuilder.success(this.mapper.toDTOList(vehicles));
@@ -86,12 +79,13 @@ export class VehicleControllerImpl implements VehicleController {
           try {
             const vehicle = await this.service.getVehicleById(
               vehicleId,
-              String(tokenRes.payload.userId)
+              String(tokenRes.payload.userId),
             );
             return ResponseBuilder.success(this.mapper.toDTO(vehicle));
-          } catch (err: any) {
-            if (err.statusCode === 403) return ResponseBuilder.forbidden(err.message);
-            return ResponseBuilder.notFound(err.message || 'Vehículo no encontrado.');
+          } catch (err: unknown) {
+            const error = err as { statusCode?: number; message?: string };
+            if (error.statusCode === 403) return ResponseBuilder.forbidden(error.message);
+            return ResponseBuilder.notFound(error.message || 'Vehículo no encontrado.');
           }
         }
 
@@ -101,16 +95,17 @@ export class VehicleControllerImpl implements VehicleController {
               vehicleId,
               String(tokenRes.payload.userId),
               {
-                brand: body.brand,
-                color: body.color,
-                cylinder_cc: body.cylinder_cc,
-                photo_path: body.photo_url || body.photo_path,
-              }
+                brand: body.brand as string | undefined,
+                color: body.color as string | undefined,
+                cylinder_cc: body.cylinder_cc != null ? String(body.cylinder_cc) : undefined,
+                photo_path: (body.photo_url || body.photo_path) as string | undefined,
+              },
             );
             return ResponseBuilder.success(this.mapper.toDTO(updated));
-          } catch (err: any) {
-            if (err.statusCode === 403) return ResponseBuilder.forbidden(err.message);
-            return ResponseBuilder.notFound(err.message || 'Vehículo no encontrado.');
+          } catch (err: unknown) {
+            const error = err as { statusCode?: number; message?: string };
+            if (error.statusCode === 403) return ResponseBuilder.forbidden(error.message);
+            return ResponseBuilder.notFound(error.message || 'Vehículo no encontrado.');
           }
         }
       }
@@ -128,7 +123,9 @@ export class VehicleControllerImpl implements VehicleController {
       // 4. POST /vehicles (Create or Register Vehicle)
       if (path === '/vehicles' && method === 'POST') {
         if (!body.plate || !body.vehicle_class || !body.depositor_document) {
-          return ResponseBuilder.unprocessableEntity('plate, vehicle_class y depositor_document son requeridos.');
+          return ResponseBuilder.unprocessableEntity(
+            'plate, vehicle_class y depositor_document son requeridos.',
+          );
         }
 
         const tokenRes = validateTokenFromEvent(event);
@@ -136,21 +133,24 @@ export class VehicleControllerImpl implements VehicleController {
 
         try {
           const vehicle = await this.service.findOrCreateVehicle({
-            plate: body.plate,
-            depositor_document: body.depositor_document,
-            vehicle_class: body.vehicle_class,
-            owner_user_id: body.owner_user_id,
+            plate: body.plate as string,
+            depositor_document: body.depositor_document as string,
+            vehicle_class: body.vehicle_class as VehicleClass,
+            owner_user_id: body.owner_user_id ? String(body.owner_user_id) : undefined,
             registered_by_user_id: registeredBy,
           });
 
           return ResponseBuilder.created(this.mapper.toDTO(vehicle));
-        } catch (err: any) {
-          return ResponseBuilder.unprocessableEntity(err.message || 'Error al registrar vehículo.');
+        } catch (err: unknown) {
+          const error = err as Error;
+          return ResponseBuilder.unprocessableEntity(
+            error.message || 'Error al registrar vehículo.',
+          );
         }
       }
 
       return ResponseBuilder.notFound(`Ruta no encontrada: ${method} ${path}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error handling vehicle request:', err);
       return ResponseBuilder.internalError(err);
     }

@@ -35,42 +35,42 @@
         <p class="pp-auth-eyebrow">Sin cuenta</p>
         <h1 id="consulta-heading" class="pp-auth-title">¿Dónde está mi vehículo?</h1>
         <p class="pp-auth-subtitle pp-consulta-lead">
-          Escribe tu placa para ver la hora de ingreso. Si necesitas más detalle, inicia sesión o crea tu cuenta.
+          Escribe tu placa para ver la hora de ingreso. Si necesitas más detalle, inicia sesión o
+          crea tu cuenta.
         </p>
       </header>
 
       @if (loadingOccupancy && !occupancy) {
-        <div class="pp-consulta-spaces pp-consulta-spaces--loading" aria-busy="true">
-          <ion-spinner name="crescent" color="primary"></ion-spinner>
-          <span>Cargando cupos disponibles…</span>
-        </div>
+      <div class="pp-consulta-spaces pp-consulta-spaces--loading" aria-busy="true">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <span>Cargando cupos disponibles…</span>
+      </div>
       } @else if (hasAvailableSpaces) {
-        <div class="pp-consulta-spaces" aria-label="Cupos disponibles">
-          <p class="pp-consulta-spaces-title">Cupos disponibles</p>
-          <div
-            class="pp-consulta-spaces-grid"
-            [class.pp-consulta-spaces-grid--single]="!showCarSpaces || !showMotorcycleSpaces"
-          >
-            @if (showCarSpaces) {
-              <article class="pp-consulta-space-tile pp-consulta-space-tile--car">
-                <span class="pp-consulta-space-icon" aria-hidden="true">
-                  <ion-icon name="car-outline"></ion-icon>
-                </span>
-                <span class="pp-consulta-space-value">{{ occupancy!.car.available }}</span>
-                <span class="pp-consulta-space-label">Carros</span>
-              </article>
-            }
-            @if (showMotorcycleSpaces) {
-              <article class="pp-consulta-space-tile pp-consulta-space-tile--moto">
-                <span class="pp-consulta-space-icon" aria-hidden="true">
-                  <ion-icon name="bicycle-outline"></ion-icon>
-                </span>
-                <span class="pp-consulta-space-value">{{ occupancy!.motorcycle.available }}</span>
-                <span class="pp-consulta-space-label">Motos</span>
-              </article>
-            }
-          </div>
+      <div class="pp-consulta-spaces" aria-label="Cupos disponibles">
+        <p class="pp-consulta-spaces-title">Cupos disponibles</p>
+        <div
+          class="pp-consulta-spaces-grid"
+          [class.pp-consulta-spaces-grid--single]="!showCarSpaces || !showMotorcycleSpaces"
+        >
+          @if (showCarSpaces) {
+          <article class="pp-consulta-space-tile pp-consulta-space-tile--car">
+            <span class="pp-consulta-space-icon" aria-hidden="true">
+              <ion-icon name="car-outline"></ion-icon>
+            </span>
+            <span class="pp-consulta-space-value">{{ occupancy!.car.available }}</span>
+            <span class="pp-consulta-space-label">Carros</span>
+          </article>
+          } @if (showMotorcycleSpaces) {
+          <article class="pp-consulta-space-tile pp-consulta-space-tile--moto">
+            <span class="pp-consulta-space-icon" aria-hidden="true">
+              <ion-icon name="bicycle-outline"></ion-icon>
+            </span>
+            <span class="pp-consulta-space-value">{{ occupancy!.motorcycle.available }}</span>
+            <span class="pp-consulta-space-label">Motos</span>
+          </article>
+          }
         </div>
+      </div>
       }
 
       <form class="pp-auth-form" (ngSubmit)="search()" novalidate>
@@ -107,30 +107,28 @@
       </form>
 
       @if (errorMessage) {
-        <p class="pp-auth-error" role="alert" aria-live="assertive">
-          <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
-          <span>{{ errorMessage }}</span>
+      <p class="pp-auth-error" role="alert" aria-live="assertive">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+        <span>{{ errorMessage }}</span>
+      </p>
+      } @if (searched && result && !errorMessage) {
+      <div class="pp-consulta-result" [class.pp-consulta-result--parked]="result.is_parked">
+        @if (result.is_parked && entryClockParts) {
+        <p class="pp-consulta-result-kicker">
+          {{ result.plate }} · {{ vehicleClassLabel(result.vehicle_class) }} · en parqueadero
         </p>
-      }
-
-      @if (searched && result && !errorMessage) {
-        <div class="pp-consulta-result" [class.pp-consulta-result--parked]="result.is_parked">
-          @if (result.is_parked && entryClockParts) {
-            <p class="pp-consulta-result-kicker">
-              {{ result.plate }} · {{ vehicleClassLabel(result.vehicle_class) }} · en parqueadero
-            </p>
-            <p class="pp-consulta-clock" aria-label="Hora de ingreso">
-              <span class="pp-consulta-clock-time">{{ entryClockParts.time }}</span>
-              <span class="pp-consulta-clock-date">{{ entryClockParts.date }}</span>
-            </p>
-          } @else {
-            <p class="pp-consulta-result-kicker">{{ result.plate }}</p>
-            <p class="pp-consulta-empty-title">Sin sesión activa</p>
-            <p class="pp-consulta-empty-copy">
-              Esta placa no tiene un ingreso abierto en el parqueadero ahora mismo.
-            </p>
-          }
-        </div>
+        <p class="pp-consulta-clock" aria-label="Hora de ingreso">
+          <span class="pp-consulta-clock-time">{{ entryClockParts.time }}</span>
+          <span class="pp-consulta-clock-date">{{ entryClockParts.date }}</span>
+        </p>
+        } @else {
+        <p class="pp-consulta-result-kicker">{{ result.plate }}</p>
+        <p class="pp-consulta-empty-title">Sin sesión activa</p>
+        <p class="pp-consulta-empty-copy">
+          Esta placa no tiene un ingreso abierto en el parqueadero ahora mismo.
+        </p>
+        }
+      </div>
       }
 
       <div class="pp-consulta-auth">
@@ -140,30 +138,30 @@
         </p>
         <div class="pp-consulta-auth-actions">
           @if (isLoggedIn) {
-            <p-button
-              type="button"
-              label="Ir al panel"
-              icon="pi pi-th-large"
-              styleClass="w-full pp-auth-submit"
-              (onClick)="goPanel()"
-            />
+          <p-button
+            type="button"
+            label="Ir al panel"
+            icon="pi pi-th-large"
+            styleClass="w-full pp-auth-submit"
+            (onClick)="goPanel()"
+          />
           } @else {
-            <p-button
-              type="button"
-              label="Iniciar sesión"
-              icon="pi pi-sign-in"
-              styleClass="w-full pp-auth-submit"
-              routerLink="/login"
-            />
-            <p-button
-              type="button"
-              label="Registrarme como propietario"
-              icon="pi pi-user-plus"
-              severity="secondary"
-              [outlined]="true"
-              styleClass="w-full pp-consulta-register"
-              routerLink="/register"
-            />
+          <p-button
+            type="button"
+            label="Iniciar sesión"
+            icon="pi pi-sign-in"
+            styleClass="w-full pp-auth-submit"
+            routerLink="/login"
+          />
+          <p-button
+            type="button"
+            label="Registrarme como propietario"
+            icon="pi pi-user-plus"
+            severity="secondary"
+            [outlined]="true"
+            styleClass="w-full pp-consulta-register"
+            routerLink="/register"
+          />
           }
         </div>
       </div>

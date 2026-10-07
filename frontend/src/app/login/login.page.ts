@@ -41,9 +41,12 @@ export class LoginPage {
         this.loading = false;
         await this.router.navigate(['/inicio']);
       },
-      error: async (err) => {
+      error: async err => {
         this.loading = false;
-        this.errorMessage = apiErrorMessage(err, 'No se pudo iniciar sesión. Revisa correo y contraseña.');
+        this.errorMessage = apiErrorMessage(
+          err,
+          'No se pudo iniciar sesión. Revisa correo y contraseña.',
+        );
         const t = await this.toast.create({
           message: this.errorMessage,
           duration: 3200,

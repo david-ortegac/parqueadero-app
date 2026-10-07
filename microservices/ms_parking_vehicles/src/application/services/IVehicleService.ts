@@ -11,7 +11,7 @@ export interface IVehicleService {
       color?: string | null;
       cylinder_cc?: string | null;
       photo_path?: string | null;
-    }
+    },
   ): Promise<DomainVehicleEntity>;
   findOrCreateVehicle(data: {
     plate: string;

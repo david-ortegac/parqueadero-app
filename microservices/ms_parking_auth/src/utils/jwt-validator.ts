@@ -1,5 +1,6 @@
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
+import { LambdaEvent } from '../models/Response';
 
 export interface TokenPayload {
   userId: number | string;
@@ -41,7 +42,7 @@ export class JWTValidator {
 
   generateToken(payload: Omit<TokenPayload, 'iat' | 'exp'>, expiresIn = '30d'): string {
     return jwt.sign(payload, this.secretKey, {
-      expiresIn: expiresIn as any,
+      expiresIn: expiresIn as jwt.SignOptions['expiresIn'],
       issuer: this.issuer,
       audience: this.audience,
     });
@@ -91,8 +92,8 @@ export class JWTValidator {
   }
 }
 
-export function extractTokenFromEvent(event: any): string | null {
-  const headers = event?.headers || {};
+export function extractTokenFromEvent(event: LambdaEvent): string | null {
+  const headers = (event?.headers || {}) as Record<string, string | undefined>;
   const authHeader =
     headers.Authorization ||
     headers.authorization ||
@@ -111,8 +112,8 @@ export function extractTokenFromEvent(event: any): string | null {
 }
 
 export function validateTokenFromEvent(
-  event: any,
-  options?: JWTValidatorOptions
+  event: LambdaEvent,
+  options?: JWTValidatorOptions,
 ): TokenValidationResult {
   const token = extractTokenFromEvent(event);
   if (!token) {
@@ -128,7 +129,7 @@ export function validateTokenFromEvent(
 
 export function hasRequiredRole(
   payload: TokenPayload,
-  requiredRoles: Array<'admin' | 'operator' | 'vehicle_owner'>
+  requiredRoles: Array<'admin' | 'operator' | 'vehicle_owner'>,
 ): boolean {
   if (!payload || !payload.role) {
     return false;

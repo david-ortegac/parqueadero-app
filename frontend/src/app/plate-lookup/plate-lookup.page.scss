@@ -93,20 +93,20 @@
   border-radius: 16px;
   border: 1px solid transparent;
   background: var(--pp-consulta-surface);
-  box-shadow: 0 1px 2px rgba(15, 39, 68, 0.04), 0 8px 20px rgba(15, 39, 68, 0.06);
+  box-shadow:
+    0 1px 2px rgba(15, 39, 68, 0.04),
+    0 8px 20px rgba(15, 39, 68, 0.06);
   text-align: center;
 }
 
 .pp-consulta-space-tile--car {
   border-color: color-mix(in srgb, var(--pp-consulta-car) 22%, transparent);
-  background:
-    linear-gradient(180deg, var(--pp-consulta-car-soft) 0%, #fff 58%);
+  background: linear-gradient(180deg, var(--pp-consulta-car-soft) 0%, #fff 58%);
 }
 
 .pp-consulta-space-tile--moto {
   border-color: color-mix(in srgb, var(--pp-consulta-moto) 24%, transparent);
-  background:
-    linear-gradient(180deg, var(--pp-consulta-moto-soft) 0%, #fff 58%);
+  background: linear-gradient(180deg, var(--pp-consulta-moto-soft) 0%, #fff 58%);
 }
 
 .pp-consulta-space-icon {
@@ -162,7 +162,11 @@
   text-align: center;
   text-transform: uppercase;
   color: var(--pp-consulta-ink) !important;
-  border-color: color-mix(in srgb, var(--pp-consulta-car) 18%, var(--pp-border, #e2e8f0)) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--pp-consulta-car) 18%,
+    var(--pp-border, #e2e8f0)
+  ) !important;
   background: #f8fbff !important;
 }
 
@@ -187,8 +191,7 @@
 }
 
 .pp-consulta-result--parked {
-  background:
-    linear-gradient(165deg, rgba(37, 99, 235, 0.12) 0%, rgba(13, 148, 136, 0.1) 100%);
+  background: linear-gradient(165deg, rgba(37, 99, 235, 0.12) 0%, rgba(13, 148, 136, 0.1) 100%);
   border-color: color-mix(in srgb, var(--pp-consulta-car) 28%, transparent);
 }
 

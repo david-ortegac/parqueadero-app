@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 
 import { IRatesConfigService } from '../../../../application/services/IRatesConfigService';
 import { TYPES } from '../../../../ioc/Types';
-import { Response } from '../../../../models/Response';
+import { Response, LambdaEvent } from '../../../../models/Response';
 import { hasRequiredRole, validateTokenFromEvent } from '../../../../utils/jwt-validator';
 import { ResponseBuilder } from '../../../../utils/response-builder';
 import { IAdapterMapper } from './Mapper/IAdapterMapper';
@@ -14,12 +14,12 @@ export class RatesConfigControllerImpl implements RatesConfigController {
     @inject(TYPES.RatesConfigService)
     private readonly service: IRatesConfigService,
     @inject(TYPES.IAdapterMapper)
-    private readonly mapper: IAdapterMapper
+    private readonly mapper: IAdapterMapper,
   ) {}
 
-  private parseBody(event: any): any {
+  private parseBody(event: LambdaEvent): Record<string, unknown> {
     if (!event.body) return {};
-    if (typeof event.body === 'object') return event.body;
+    if (typeof event.body === 'object') return event.body as Record<string, unknown>;
     try {
       return JSON.parse(event.body);
     } catch {
@@ -27,26 +27,18 @@ export class RatesConfigControllerImpl implements RatesConfigController {
     }
   }
 
-  private getMethod(event: any): string {
-    return (
-      event?.requestContext?.http?.method ||
-      event?.httpMethod ||
-      'GET'
-    ).toUpperCase();
+  private getMethod(event: LambdaEvent): string {
+    return (event?.requestContext?.http?.method || event?.httpMethod || 'GET').toUpperCase();
   }
 
-  private getPath(event: any): string {
-    const raw =
-      event?.rawPath ||
-      event?.requestContext?.http?.path ||
-      event?.path ||
-      '';
+  private getPath(event: LambdaEvent): string {
+    const raw = event?.rawPath || event?.requestContext?.http?.path || event?.path || '';
     // Remove query string and normalise leading /v1
     const clean = raw.split('?')[0];
     return clean.replace(/^\/api\/v1/, '').replace(/^\/v1/, '') || '/';
   }
 
-  async handleRequest(event: any): Promise<Response> {
+  async handleRequest(event: LambdaEvent): Promise<Response> {
     const method = this.getMethod(event);
     const path = this.getPath(event);
     const body = this.parseBody(event);
@@ -75,7 +67,7 @@ export class RatesConfigControllerImpl implements RatesConfigController {
 
           if (!body.vehicle_class || !body.billing_mode || body.price === undefined) {
             return ResponseBuilder.unprocessableEntity(
-              'vehicle_class, billing_mode y price son requeridos.'
+              'vehicle_class, billing_mode y price son requeridos.',
             );
           }
 
@@ -142,7 +134,7 @@ export class RatesConfigControllerImpl implements RatesConfigController {
             Number(body.day_of_week),
             body.opens_at ?? null,
             body.closes_at ?? null,
-            body.is_closed ?? false
+            body.is_closed ?? false,
           );
 
           return ResponseBuilder.created(this.mapper.scheduleToDTO(saved));
@@ -187,8 +179,18 @@ export class RatesConfigControllerImpl implements RatesConfigController {
           const updated = await this.service.updateParkingInfo({
             name: body.name,
             address: body.address,
-            car_capacity: body.car_capacity !== undefined ? (body.car_capacity === null ? null : Number(body.car_capacity)) : undefined,
-            motorcycle_capacity: body.motorcycle_capacity !== undefined ? (body.motorcycle_capacity === null ? null : Number(body.motorcycle_capacity)) : undefined,
+            car_capacity:
+              body.car_capacity !== undefined
+                ? body.car_capacity === null
+                  ? null
+                  : Number(body.car_capacity)
+                : undefined,
+            motorcycle_capacity:
+              body.motorcycle_capacity !== undefined
+                ? body.motorcycle_capacity === null
+                  ? null
+                  : Number(body.motorcycle_capacity)
+                : undefined,
           });
 
           return ResponseBuilder.success(this.mapper.parkingInfoToDTO(updated));
@@ -196,7 +198,7 @@ export class RatesConfigControllerImpl implements RatesConfigController {
       }
 
       return ResponseBuilder.notFound(`Ruta no encontrada: ${method} ${path}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error handling request:', err);
       return ResponseBuilder.internalError(err);
     }

@@ -1,8 +1,9 @@
 import { inject, injectable } from 'inversify';
 
 import { INotificationService } from '../../../../application/services/INotificationService';
+import { DevicePlatform } from '../../../../domain/Entities/DomainDeviceEntity';
 import { TYPES } from '../../../../ioc/Types';
-import { Response } from '../../../../models/Response';
+import { Response, LambdaEvent } from '../../../../models/Response';
 import { validateTokenFromEvent } from '../../../../utils/jwt-validator';
 import { ResponseBuilder } from '../../../../utils/response-builder';
 import { NotificationController } from './NotificationController';
@@ -11,12 +12,12 @@ import { NotificationController } from './NotificationController';
 export class NotificationControllerImpl implements NotificationController {
   constructor(
     @inject(TYPES.NotificationService)
-    private readonly service: INotificationService
+    private readonly service: INotificationService,
   ) {}
 
-  private parseBody(event: any): any {
+  private parseBody(event: LambdaEvent): Record<string, unknown> {
     if (!event.body) return {};
-    if (typeof event.body === 'object') return event.body;
+    if (typeof event.body === 'object') return event.body as Record<string, unknown>;
     try {
       return JSON.parse(event.body);
     } catch {
@@ -24,25 +25,17 @@ export class NotificationControllerImpl implements NotificationController {
     }
   }
 
-  private getMethod(event: any): string {
-    return (
-      event?.requestContext?.http?.method ||
-      event?.httpMethod ||
-      'GET'
-    ).toUpperCase();
+  private getMethod(event: LambdaEvent): string {
+    return (event?.requestContext?.http?.method || event?.httpMethod || 'GET').toUpperCase();
   }
 
-  private getPath(event: any): string {
-    const raw =
-      event?.rawPath ||
-      event?.requestContext?.http?.path ||
-      event?.path ||
-      '';
+  private getPath(event: LambdaEvent): string {
+    const raw = event?.rawPath || event?.requestContext?.http?.path || event?.path || '';
     const clean = raw.split('?')[0];
     return clean.replace(/^\/api\/v1/, '').replace(/^\/v1/, '') || '/';
   }
 
-  async handleRequest(event: any): Promise<Response> {
+  async handleRequest(event: LambdaEvent): Promise<Response> {
     const method = this.getMethod(event);
     const path = this.getPath(event);
     const body = this.parseBody(event);
@@ -65,14 +58,17 @@ export class NotificationControllerImpl implements NotificationController {
           return ResponseBuilder.unprocessableEntity('token y platform son requeridos.');
         }
 
-        if (!['ios', 'android', 'web'].includes(body.platform)) {
+        if (
+          typeof body.platform !== 'string' ||
+          !['ios', 'android', 'web'].includes(body.platform)
+        ) {
           return ResponseBuilder.unprocessableEntity('platform debe ser ios, android o web.');
         }
 
         await this.service.registerPushDevice(
           String(tokenRes.payload.userId),
-          body.token,
-          body.platform
+          body.token as string,
+          body.platform as DevicePlatform,
         );
 
         return ResponseBuilder.success({ message: 'Token registrado.' });
@@ -85,10 +81,10 @@ export class NotificationControllerImpl implements NotificationController {
         }
 
         const result = await this.service.sendNotificationToUser(
-          body.userId,
-          body.title,
-          body.body,
-          body.data
+          body.userId as string,
+          body.title as string,
+          body.body as string,
+          body.data as Record<string, string> | undefined,
         );
 
         return ResponseBuilder.success({
@@ -98,7 +94,7 @@ export class NotificationControllerImpl implements NotificationController {
       }
 
       return ResponseBuilder.notFound(`Ruta no encontrada: ${method} ${path}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error handling notification request:', err);
       return ResponseBuilder.internalError(err);
     }

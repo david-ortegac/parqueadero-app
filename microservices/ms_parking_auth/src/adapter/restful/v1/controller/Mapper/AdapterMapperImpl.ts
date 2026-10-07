@@ -19,6 +19,6 @@ export class AdapterMapperImpl implements IAdapterMapper {
   }
 
   toDTOList(domains: DomainUserEntity[]): AdapterUserDTO[] {
-    return domains.map((d) => this.toDTO(d));
+    return domains.map(d => this.toDTO(d));
   }
 }

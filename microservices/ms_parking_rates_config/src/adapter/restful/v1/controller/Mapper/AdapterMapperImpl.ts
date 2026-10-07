@@ -30,7 +30,7 @@ export class AdapterMapperImpl implements IAdapterMapper {
   }
 
   rateListToDTO(domains: DomainRateEntity[]): AdapterRateDTO[] {
-    return domains.map((d) => this.rateToDTO(d));
+    return domains.map(d => this.rateToDTO(d));
   }
 
   capacityToDTO(domain: DomainCapacityEntity): AdapterCapacityDTO {
@@ -42,7 +42,7 @@ export class AdapterMapperImpl implements IAdapterMapper {
   }
 
   capacityListToDTO(domains: DomainCapacityEntity[]): AdapterCapacityDTO[] {
-    return domains.map((d) => this.capacityToDTO(d));
+    return domains.map(d => this.capacityToDTO(d));
   }
 
   scheduleToDTO(domain: DomainScheduleEntity): AdapterScheduleDTO {
@@ -56,7 +56,7 @@ export class AdapterMapperImpl implements IAdapterMapper {
   }
 
   scheduleListToDTO(domains: DomainScheduleEntity[]): AdapterScheduleDTO[] {
-    return domains.map((d) => this.scheduleToDTO(d));
+    return domains.map(d => this.scheduleToDTO(d));
   }
 
   parkingInfoToDTO(domain: DomainParkingInfoEntity): AdapterParkingInfoDTO {

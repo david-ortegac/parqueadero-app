@@ -1,9 +1,4 @@
-import {
-  GetCommand,
-  PutCommand,
-  QueryCommand,
-  ScanCommand,
-} from '@aws-sdk/lib-dynamodb';
+import { GetCommand, PutCommand, QueryCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import { injectable } from 'inversify';
 
 import { dynamoDocClient } from '../client';
@@ -109,7 +104,7 @@ export class SessionRepositoryImpl implements SessionRepository {
 
   async countActiveByVehicleClass(vehicleClass: 'car' | 'motorcycle'): Promise<number> {
     const active = await this.findActiveSessions();
-    return active.filter((s) => s.vehicle_class === vehicleClass).length;
+    return active.filter(s => s.vehicle_class === vehicleClass).length;
   }
 
   async findSessionsByVehicleId(vehicleId: string): Promise<DynamoSessionItem[]> {
@@ -161,11 +156,11 @@ export class SessionRepositoryImpl implements SessionRepository {
     let items = (scanResult.Items as DynamoSessionItem[]) || [];
 
     if (fromDate) {
-      items = items.filter((s) => s.exited_at && s.exited_at >= fromDate);
+      items = items.filter(s => s.exited_at && s.exited_at >= fromDate);
     }
     if (toDate) {
       const toIso = toDate.includes('T') ? toDate : `${toDate}T23:59:59.999Z`;
-      items = items.filter((s) => s.exited_at && s.exited_at <= toIso);
+      items = items.filter(s => s.exited_at && s.exited_at <= toIso);
     }
 
     return items;
@@ -184,7 +179,7 @@ export class SessionRepositoryImpl implements SessionRepository {
 
       const result = await dynamoDocClient.send(command);
       if (result.Items) {
-        return (result.Items as DynamoSessionItem[]).filter((s) => s.status === 'completed');
+        return (result.Items as DynamoSessionItem[]).filter(s => s.status === 'completed');
       }
     } catch {
       // Fallback

@@ -3,12 +3,13 @@ import { Response } from '../models/Response';
 const CORS_HEADERS = {
   'Content-Type': 'application/json',
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+  'Access-Control-Allow-Headers':
+    'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
   'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
 };
 
 export class ResponseBuilder {
-  static success(data: any, statusCode = 200): Response {
+  static success(data: unknown, statusCode = 200): Response {
     return {
       statusCode,
       headers: CORS_HEADERS,
@@ -16,7 +17,7 @@ export class ResponseBuilder {
     };
   }
 
-  static created(data: any): Response {
+  static created(data: unknown): Response {
     return this.success(data, 201);
   }
 
@@ -28,7 +29,7 @@ export class ResponseBuilder {
     };
   }
 
-  static badRequest(message: string, errors?: any): Response {
+  static badRequest(message: string, errors?: unknown): Response {
     return {
       statusCode: 400,
       headers: CORS_HEADERS,
@@ -60,7 +61,7 @@ export class ResponseBuilder {
     };
   }
 
-  static unprocessableEntity(message: string, errors?: any): Response {
+  static unprocessableEntity(message: string, errors?: unknown): Response {
     return {
       statusCode: 422,
       headers: CORS_HEADERS,
@@ -68,7 +69,7 @@ export class ResponseBuilder {
     };
   }
 
-  static internalError(error: any): Response {
+  static internalError(error: unknown): Response {
     console.error('Internal Error:', error);
     return {
       statusCode: 500,

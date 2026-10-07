@@ -3,10 +3,11 @@ import 'reflect-metadata';
 import { SessionController } from './adapter/restful/v1/controller/SessionController';
 import { container } from './ioc/inversify.config';
 import { TYPES } from './ioc/Types';
+import { LambdaEvent } from './models/Response';
 
 let controller: SessionController;
 
-export const handler = async (event: any) => {
+export const handler = async (event: LambdaEvent) => {
   console.log('Incoming event to ms_parking_sessions:', JSON.stringify(event));
 
   try {

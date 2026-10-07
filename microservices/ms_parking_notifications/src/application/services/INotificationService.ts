@@ -4,13 +4,13 @@ export interface INotificationService {
   registerPushDevice(
     userId: string,
     token: string,
-    platform: DevicePlatform
+    platform: DevicePlatform,
   ): Promise<DomainPushDeviceEntity>;
 
   sendNotificationToUser(
     userId: string,
     title: string,
     body: string,
-    data?: Record<string, string>
+    data?: Record<string, string>,
   ): Promise<{ sent: number; failed: number }>;
 }

@@ -15,7 +15,7 @@ export class AuthServiceImpl implements IAuthService {
     @inject(TYPES.UserRepository)
     private readonly repository: UserRepository,
     @inject(TYPES.IInfraestructureMapper)
-    private readonly mapper: IInfraestructureMapper
+    private readonly mapper: IInfraestructureMapper,
   ) {
     this.jwtValidator = new JWTValidator();
   }
@@ -35,8 +35,9 @@ export class AuthServiceImpl implements IAuthService {
     }
 
     if (!item.is_active) {
-      const error: any = new Error('Usuario inactivo. Contacte al administrador.');
-      error.statusCode = 403;
+      const error = Object.assign(new Error('Usuario inactivo. Contacte al administrador.'), {
+        statusCode: 403,
+      });
       throw error;
     }
 
@@ -71,7 +72,9 @@ export class AuthServiceImpl implements IAuthService {
     const existingDoc = await this.repository.findByDocument(docDigits);
 
     if (existingEmail || existingDoc) {
-      throw new Error('No fue posible completar el registro. Verifique sus datos o contacte al administrador.');
+      throw new Error(
+        'No fue posible completar el registro. Verifique sus datos o contacte al administrador.',
+      );
     }
 
     const hashedPassword = await JWTValidator.hashPassword(data.password);
@@ -92,7 +95,8 @@ export class AuthServiceImpl implements IAuthService {
     const createdUser = this.mapper.toDomain(saved);
 
     return {
-      message: 'Registro recibido. Un administrador u operador debe activar tu cuenta para iniciar sesión.',
+      message:
+        'Registro recibido. Un administrador u operador debe activar tu cuenta para iniciar sesión.',
       user: createdUser,
     };
   }
@@ -151,7 +155,7 @@ export class AuthServiceImpl implements IAuthService {
       password?: string;
       role?: UserRole;
       is_active?: boolean;
-    }
+    },
   ): Promise<DomainUserEntity> {
     const existing = await this.repository.findById(userId);
     if (!existing) {

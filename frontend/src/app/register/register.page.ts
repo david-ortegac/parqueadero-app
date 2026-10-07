@@ -78,7 +78,7 @@ export class RegisterPage {
         password: this.password,
       })
       .subscribe({
-        next: async (res) => {
+        next: async res => {
           this.loading = false;
           const t = await this.toast.create({
             message: res.message ?? 'Registro creado.',
@@ -88,7 +88,7 @@ export class RegisterPage {
           await t.present();
           await this.router.navigate(['/login']);
         },
-        error: async (err) => {
+        error: async err => {
           this.loading = false;
           const t = await this.toast.create({
             message: apiErrorMessage(err, 'No se pudo registrar.'),

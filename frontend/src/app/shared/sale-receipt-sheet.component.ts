@@ -1,6 +1,14 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { EntryTicketData, SaleReceiptData, formatCop, formatReceiptDateTime } from './sale-receipt.model';
-import { buildEntryTicketPrintDocument, buildSaleReceiptPrintDocument } from './sale-receipt-print-html';
+import {
+  EntryTicketData,
+  SaleReceiptData,
+  formatCop,
+  formatReceiptDateTime,
+} from './sale-receipt.model';
+import {
+  buildEntryTicketPrintDocument,
+  buildSaleReceiptPrintDocument,
+} from './sale-receipt-print-html';
 import { buildOwnerProfilePlateUrl } from '../utils/owner-plate-deep-link';
 import { buildPlateBarcodeBlockForPrint, getPlateBarcodeDataUrl } from '../utils/plate-barcode';
 import { buildPlateQrBlockForPrint, getPlateQrDataUrl } from '../utils/plate-qr';
@@ -54,7 +62,7 @@ export class SaleReceiptSheetComponent implements OnChanges {
     }
     const targetUrl = buildOwnerProfilePlateUrl(plate);
     const gen = ++this.plateQrGen;
-    void getPlateQrDataUrl(targetUrl).then((src) => {
+    void getPlateQrDataUrl(targetUrl).then(src => {
       if (gen === this.plateQrGen) {
         this.plateQrSrc = src;
       }

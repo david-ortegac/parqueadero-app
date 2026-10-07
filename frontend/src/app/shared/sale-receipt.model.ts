@@ -101,8 +101,7 @@ export function buildEntryTicketFromSession(
 
 /** Unión para abrir el mismo modal de ticket (ingreso o cobro). */
 export type TicketSheetPayload =
-  | { mode: 'sale'; data: SaleReceiptData }
-  | { mode: 'entry'; data: EntryTicketData };
+  { mode: 'sale'; data: SaleReceiptData } | { mode: 'entry'; data: EntryTicketData };
 
 export function buildSaleReceiptFromSession(
   session: ParkingSession,

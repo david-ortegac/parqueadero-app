@@ -10,7 +10,6 @@ export class RoleGuard implements CanActivate {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
-
   canActivate(route: ActivatedRouteSnapshot): boolean | UrlTree {
     const allowed = route.data['roles'] as SessionUser['role'][] | undefined;
     if (!allowed?.length) {

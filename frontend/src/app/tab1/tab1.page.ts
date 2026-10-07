@@ -101,11 +101,13 @@ export class Tab1Page implements OnInit, OnDestroy {
   private ownerPlateQueryNormalized: string | null = null;
 
   /** PrimeNG Chart (doughnut) */
-  chartData: { labels: string[]; datasets: { data: number[]; backgroundColor: string[]; hoverBackgroundColor: string[] }[] } =
-    {
-      labels: [],
-      datasets: [{ data: [], backgroundColor: [], hoverBackgroundColor: [] }],
-    };
+  chartData: {
+    labels: string[];
+    datasets: { data: number[]; backgroundColor: string[]; hoverBackgroundColor: string[] }[];
+  } = {
+    labels: [],
+    datasets: [{ data: [], backgroundColor: [], hoverBackgroundColor: [] }],
+  };
 
   chartOptions: Record<string, unknown> = {};
 
@@ -117,7 +119,7 @@ export class Tab1Page implements OnInit, OnDestroy {
   }).format(new Date());
 
   ngOnInit(): void {
-    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
       this.ownerPlateQueryNormalized = this.normalizeOwnerPlateQuery(params.get('plate'));
       const isOwner = this.auth.getUser()?.role === 'vehicle_owner';
       if (isOwner && !this.loadingOwnerVehicles && this.ownerVehicles.length > 0) {
@@ -177,7 +179,7 @@ export class Tab1Page implements OnInit, OnDestroy {
     }
 
     this.api.getDashboard().subscribe({
-      next: (d) => {
+      next: d => {
         this.dashboard = d;
         this.syncChart();
         this.loading = false;
@@ -191,7 +193,7 @@ export class Tab1Page implements OnInit, OnDestroy {
 
     if (user.role === 'admin') {
       this.api.getAdminRates().subscribe({
-        next: (r) => {
+        next: r => {
           this.rates = r;
           this.syncRateDraftsFromRates();
           this.syncRatesAccordionOpenWithGroups();
@@ -200,7 +202,7 @@ export class Tab1Page implements OnInit, OnDestroy {
     }
 
     this.api.getRevenueSummary().subscribe({
-      next: (rep) => {
+      next: rep => {
         this.revenueTotal = rep.total;
       },
       error: () => {
@@ -218,7 +220,10 @@ export class Tab1Page implements OnInit, OnDestroy {
   }
 
   shareCar(): number {
-    return this.dashboardCharts.sharePercent(this.dashboard?.occupancy.car.active ?? 0, this.totalActive);
+    return this.dashboardCharts.sharePercent(
+      this.dashboard?.occupancy.car.active ?? 0,
+      this.totalActive,
+    );
   }
 
   shareMoto(): number {
@@ -280,7 +285,9 @@ export class Tab1Page implements OnInit, OnDestroy {
   }
 
   private syncRatesAccordionOpenWithGroups(): void {
-    this.ratesAccordion.syncWithValues(this.rateGroups.map((g) => this.ratesAccordionKey(g.vehicleClass)));
+    this.ratesAccordion.syncWithValues(
+      this.rateGroups.map(g => this.ratesAccordionKey(g.vehicleClass)),
+    );
   }
 
   ratesAccordionKey(vehicleClass: string): string {
@@ -326,8 +333,8 @@ export class Tab1Page implements OnInit, OnDestroy {
         is_active: draft.is_active,
       })
       .subscribe({
-        next: (updated) => {
-          const i = this.rates.findIndex((x) => x.id === rate.id);
+        next: updated => {
+          const i = this.rates.findIndex(x => x.id === rate.id);
           if (i >= 0) {
             this.rates[i] = updated;
           }
@@ -376,10 +383,10 @@ export class Tab1Page implements OnInit, OnDestroy {
     }
     this.loadingOwners = true;
     this.api.getOperatorVehicleOwners().subscribe({
-      next: (rows) => {
+      next: rows => {
         this.vehicleOwners = rows;
         this.vehicleOwnersAccordion.syncWithValues(
-          rows.map((owner) => this.vehicleOwnerAccordionKey(owner.id)),
+          rows.map(owner => this.vehicleOwnerAccordionKey(owner.id)),
         );
         this.loadingOwners = false;
       },
@@ -428,11 +435,13 @@ export class Tab1Page implements OnInit, OnDestroy {
 
     this.savingOwnerId = owner.id;
     this.api.patchVehicleOwnerActivation(owner.id, { is_active: isActive }).subscribe({
-      next: (res) => {
+      next: res => {
         owner.is_active = res.is_active;
         this.savingOwnerId = null;
         void this.presentToast(
-          res.is_active ? 'Propietario activado. Vehículos con su cédula quedan vinculados.' : 'Cuenta desactivada.',
+          res.is_active
+            ? 'Propietario activado. Vehículos con su cédula quedan vinculados.'
+            : 'Cuenta desactivada.',
           'success',
         );
       },
@@ -475,9 +484,7 @@ export class Tab1Page implements OnInit, OnDestroy {
     if (!q) {
       return;
     }
-    const v = this.ownerVehicles.find(
-      (x) => x.plate.trim().toUpperCase().replace(/\s+/g, '') === q,
-    );
+    const v = this.ownerVehicles.find(x => x.plate.trim().toUpperCase().replace(/\s+/g, '') === q);
     if (!v) {
       return;
     }
@@ -513,10 +520,10 @@ export class Tab1Page implements OnInit, OnDestroy {
   loadOwnerVehicles(): void {
     this.loadingOwnerVehicles = true;
     this.api.getOwnerVehicles().subscribe({
-      next: (list) => {
+      next: list => {
         this.ownerVehicles = list;
         this.syncOwnerEditDrafts();
-        this.ownerAccordion.syncWithValues(list.map((x) => this.ownerAccordionKey(x.id)));
+        this.ownerAccordion.syncWithValues(list.map(x => this.ownerAccordionKey(x.id)));
         this.loadingOwnerVehicles = false;
         this.applyOwnerPlateQueryToAccordion();
       },
@@ -557,8 +564,8 @@ export class Tab1Page implements OnInit, OnDestroy {
         cylinder_cc: d.cylinder_cc.trim() || null,
       })
       .subscribe({
-        next: (updated) => {
-          const i = this.ownerVehicles.findIndex((x) => x.id === updated.id);
+        next: updated => {
+          const i = this.ownerVehicles.findIndex(x => x.id === updated.id);
           if (i >= 0) {
             this.ownerVehicles[i] = updated;
           }
@@ -584,8 +591,8 @@ export class Tab1Page implements OnInit, OnDestroy {
       return;
     }
     this.ownerHistoryLoading = true;
-    forkJoin(this.ownerVehicles.map((v) => this.api.getOwnerVehicleSessions(v.id))).subscribe({
-      next: (all) => {
+    forkJoin(this.ownerVehicles.map(v => this.api.getOwnerVehicleSessions(v.id))).subscribe({
+      next: all => {
         const map: Record<number, OwnerSessionHistoryRow[]> = {};
         this.ownerVehicles.forEach((v, i) => {
           map[v.id] = all[i] ?? [];

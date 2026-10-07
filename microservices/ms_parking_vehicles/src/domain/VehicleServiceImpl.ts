@@ -13,7 +13,7 @@ export class VehicleServiceImpl implements IVehicleService {
     @inject(TYPES.VehicleRepository)
     private readonly repository: VehicleRepository,
     @inject(TYPES.IInfraestructureMapper)
-    private readonly mapper: IInfraestructureMapper
+    private readonly mapper: IInfraestructureMapper,
   ) {}
 
   async getOwnerVehicles(ownerUserId: string, document?: string): Promise<DomainVehicleEntity[]> {
@@ -42,8 +42,9 @@ export class VehicleServiceImpl implements IVehicleService {
     }
 
     if (ownerUserId && item.owner_user_id && item.owner_user_id !== ownerUserId) {
-      const err: any = new Error('No autorizado para ver este vehículo.');
-      err.statusCode = 403;
+      const err = Object.assign(new Error('No autorizado para ver este vehículo.'), {
+        statusCode: 403,
+      });
       throw err;
     }
 
@@ -58,7 +59,7 @@ export class VehicleServiceImpl implements IVehicleService {
       color?: string | null;
       cylinder_cc?: string | null;
       photo_path?: string | null;
-    }
+    },
   ): Promise<DomainVehicleEntity> {
     const item = await this.repository.findById(vehicleId);
     if (!item) {
@@ -66,8 +67,9 @@ export class VehicleServiceImpl implements IVehicleService {
     }
 
     if (item.owner_user_id && item.owner_user_id !== ownerUserId) {
-      const err: any = new Error('No autorizado para modificar este vehículo.');
-      err.statusCode = 403;
+      const err = Object.assign(new Error('No autorizado para modificar este vehículo.'), {
+        statusCode: 403,
+      });
       throw err;
     }
 

@@ -276,7 +276,12 @@ ion-tab-button,
 
 .pp-login-hero {
   background:
-    linear-gradient(145deg, rgba(15, 39, 68, 0.97) 0%, rgba(30, 58, 95, 0.94) 46%, rgba(37, 99, 235, 0.9) 100%),
+    linear-gradient(
+      145deg,
+      rgba(15, 39, 68, 0.97) 0%,
+      rgba(30, 58, 95, 0.94) 46%,
+      rgba(37, 99, 235, 0.9) 100%
+    ),
     radial-gradient(circle at 88% 12%, rgba(5, 150, 105, 0.4), transparent 42%);
   color: #fff;
   padding: var(--space-xl) var(--space-lg) calc(var(--space-2xl) + 0.5rem);
@@ -387,7 +392,9 @@ ion-tab-button,
   text-align: center;
   border: 1px solid var(--pp-border);
   box-shadow: var(--shadow-sm);
-  transition: border-color var(--pp-motion) var(--pp-ease), box-shadow var(--pp-motion) var(--pp-ease);
+  transition:
+    border-color var(--pp-motion) var(--pp-ease),
+    box-shadow var(--pp-motion) var(--pp-ease);
 }
 
 .pp-kpi-cell:hover {
@@ -453,7 +460,9 @@ ion-tab-button,
   min-height: 44px;
   border-radius: 12px;
   border: 1px solid var(--pp-border);
-  transition: border-color var(--pp-motion-fast) var(--pp-ease), box-shadow var(--pp-motion-fast) var(--pp-ease);
+  transition:
+    border-color var(--pp-motion-fast) var(--pp-ease),
+    box-shadow var(--pp-motion-fast) var(--pp-ease);
 }
 
 .pp-field input.p-inputtext:focus-visible,

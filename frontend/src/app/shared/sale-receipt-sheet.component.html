@@ -29,8 +29,12 @@
             }
             <div class="pp-r-muted center pp-r-sub">Recibo de pago — Parqueo</div>
             <hr class="pp-r-rule" />
-            <div class="pp-r-row"><span>Ticket</span><span>#{{ receipt.ticketNo }}</span></div>
-            <div class="pp-r-row"><span>Placa</span><span>{{ receipt.plate }}</span></div>
+            <div class="pp-r-row">
+              <span>Ticket</span><span>#{{ receipt.ticketNo }}</span>
+            </div>
+            <div class="pp-r-row">
+              <span>Placa</span><span>{{ receipt.plate }}</span>
+            </div>
             @if (receiptPlateBarcodeSrc; as bsrc) {
               <div class="pp-r-barcode"><img [src]="bsrc" alt="Código de barras placa" /></div>
             }
@@ -40,19 +44,32 @@
                 <p class="pp-r-qr-caption">Escanea para abrir Parqueo en la app con esta placa.</p>
               </div>
             }
-            <div class="pp-r-row"><span>Vehículo</span><span>{{ receipt.vehicleClassLabel }}</span></div>
-            <div class="pp-r-row"><span>Modalidad</span><span>{{ receipt.billingModeLabel }}</span></div>
+            <div class="pp-r-row">
+              <span>Vehículo</span><span>{{ receipt.vehicleClassLabel }}</span>
+            </div>
+            <div class="pp-r-row">
+              <span>Modalidad</span><span>{{ receipt.billingModeLabel }}</span>
+            </div>
             @if (receipt.depositorDocument) {
-              <div class="pp-r-row"><span>Doc.</span><span class="pp-r-wrap">{{ receipt.depositorDocument }}</span></div>
+              <div class="pp-r-row">
+                <span>Doc.</span><span class="pp-r-wrap">{{ receipt.depositorDocument }}</span>
+              </div>
             }
-            <div class="pp-r-row"><span>Ingreso</span><span>{{ formatWhen(receipt.enteredAtIso) }}</span></div>
-            <div class="pp-r-row"><span>Salida</span><span>{{ formatWhen(receipt.exitedAtIso) }}</span></div>
+            <div class="pp-r-row">
+              <span>Ingreso</span><span>{{ formatWhen(receipt.enteredAtIso) }}</span>
+            </div>
+            <div class="pp-r-row">
+              <span>Salida</span><span>{{ formatWhen(receipt.exitedAtIso) }}</span>
+            </div>
             <hr class="pp-r-rule" />
             <div class="pp-r-total">{{ formatMoney(receipt.amountPaid) }}</div>
             <div class="pp-r-footer">Gracias por su visita · Documento para control interno</div>
           </div>
         </div>
-        <p class="pp-receipt-hint">Usa «Imprimir 80mm» y elige tu impresora térmica. En el cuadro de impresión, desactiva márgenes si tu driver lo permite.</p>
+        <p class="pp-receipt-hint">
+          Usa «Imprimir 80mm» y elige tu impresora térmica. En el cuadro de impresión, desactiva
+          márgenes si tu driver lo permite.
+        </p>
       }
       @if (entryTicket) {
         <div class="pp-receipt-preview">
@@ -66,8 +83,12 @@
             }
             <div class="pp-r-muted center pp-r-sub">Ticket de ingreso — Parqueo</div>
             <hr class="pp-r-rule" />
-            <div class="pp-r-row"><span>Ticket</span><span>#{{ entryTicket.ticketNo }}</span></div>
-            <div class="pp-r-row"><span>Placa</span><span>{{ entryTicket.plate }}</span></div>
+            <div class="pp-r-row">
+              <span>Ticket</span><span>#{{ entryTicket.ticketNo }}</span>
+            </div>
+            <div class="pp-r-row">
+              <span>Placa</span><span>{{ entryTicket.plate }}</span>
+            </div>
             @if (entryTicketPlateBarcodeSrc; as bsrc) {
               <div class="pp-r-barcode"><img [src]="bsrc" alt="Código de barras placa" /></div>
             }
@@ -77,18 +98,29 @@
                 <p class="pp-r-qr-caption">Escanea para abrir Parqueo en la app con esta placa.</p>
               </div>
             }
-            <div class="pp-r-row"><span>Vehículo</span><span>{{ entryTicket.vehicleClassLabel }}</span></div>
-            <div class="pp-r-row"><span>Modalidad</span><span>{{ entryTicket.billingModeLabel }}</span></div>
+            <div class="pp-r-row">
+              <span>Vehículo</span><span>{{ entryTicket.vehicleClassLabel }}</span>
+            </div>
+            <div class="pp-r-row">
+              <span>Modalidad</span><span>{{ entryTicket.billingModeLabel }}</span>
+            </div>
             @if (entryTicket.depositorDocument) {
-              <div class="pp-r-row"><span>Doc.</span><span class="pp-r-wrap">{{ entryTicket.depositorDocument }}</span></div>
+              <div class="pp-r-row">
+                <span>Doc.</span><span class="pp-r-wrap">{{ entryTicket.depositorDocument }}</span>
+              </div>
             }
-            <div class="pp-r-row"><span>Ingreso</span><span>{{ formatWhen(entryTicket.enteredAtIso) }}</span></div>
+            <div class="pp-r-row">
+              <span>Ingreso</span><span>{{ formatWhen(entryTicket.enteredAtIso) }}</span>
+            </div>
             @if (entryTicket.periodEndsAtIso) {
-              <div class="pp-r-row"><span>Válido hasta</span><span>{{ formatWhen(entryTicket.periodEndsAtIso) }}</span></div>
+              <div class="pp-r-row">
+                <span>Válido hasta</span><span>{{ formatWhen(entryTicket.periodEndsAtIso) }}</span>
+              </div>
             }
             @if (entryTicket.subscriptionCoverageLine) {
               <div class="pp-r-row">
-                <span>Cobertura</span><span class="pp-r-wrap">{{ entryTicket.subscriptionCoverageLine }}</span>
+                <span>Cobertura</span
+                ><span class="pp-r-wrap">{{ entryTicket.subscriptionCoverageLine }}</span>
               </div>
             }
             <hr class="pp-r-rule" />

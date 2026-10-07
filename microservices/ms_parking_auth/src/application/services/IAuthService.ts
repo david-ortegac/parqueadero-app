@@ -1,7 +1,10 @@
 import { DomainUserEntity, UserRole } from '../../domain/Entities/DomainUserEntity';
 
 export interface IAuthService {
-  login(credentials: { email: string; password: string }): Promise<{ token: string; user: DomainUserEntity }>;
+  login(credentials: {
+    email: string;
+    password: string;
+  }): Promise<{ token: string; user: DomainUserEntity }>;
   register(data: {
     name: string;
     email: string;
@@ -28,7 +31,7 @@ export interface IAuthService {
       password?: string;
       role?: UserRole;
       is_active?: boolean;
-    }
+    },
   ): Promise<DomainUserEntity>;
 
   getVehicleOwners(): Promise<DomainUserEntity[]>;

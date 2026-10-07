@@ -13,11 +13,7 @@ describe('Tab2Page', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [Tab2Page],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        provideRouter([]),
-      ],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 

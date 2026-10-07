@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 
-import { DomainVehicleEntity } from '../../../../domain/Entities/DomainVehicleEntity';
+import { DomainVehicleEntity } from '../../../../../domain/Entities/DomainVehicleEntity';
 import { AdapterVehicleDTO } from '../Entity/AdapterVehicleDTO';
 import { IAdapterMapper } from './IAdapterMapper';
 
@@ -22,6 +22,6 @@ export class AdapterMapperImpl implements IAdapterMapper {
   }
 
   toDTOList(domains: DomainVehicleEntity[]): AdapterVehicleDTO[] {
-    return domains.map((d) => this.toDTO(d));
+    return domains.map(d => this.toDTO(d));
   }
 }

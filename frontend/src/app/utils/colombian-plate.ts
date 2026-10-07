@@ -45,7 +45,10 @@ export function inferVehicleClassFromPlate(plate: string): VehicleClassPlate | n
 }
 
 /** `null` = sin error de formato (vacío no se considera aquí; validar requerido aparte). */
-export function validateOperatorPlate(plate: string, vehicleClass: VehicleClassPlate): string | null {
+export function validateOperatorPlate(
+  plate: string,
+  vehicleClass: VehicleClassPlate,
+): string | null {
   const p = plate.trim();
   if (p.length === 0) {
     return null;
@@ -70,9 +73,7 @@ export function validateOperatorPlate(plate: string, vehicleClass: VehicleClassP
     return 'Moto: completa la placa (ej. ABC12 o ABC12A).';
   }
   if (p.length === 5) {
-    return MOTO_PLATE_5.test(p)
-      ? null
-      : 'Moto: tras las 3 letras deben ir 2 números (ej. ABC12).';
+    return MOTO_PLATE_5.test(p) ? null : 'Moto: tras las 3 letras deben ir 2 números (ej. ABC12).';
   }
   if (p.length === 6) {
     return MOTO_PLATE_6.test(p)

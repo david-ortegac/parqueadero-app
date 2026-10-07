@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 
-import { DomainParkingSessionEntity } from '../../../../domain/Entities/DomainSessionEntity';
+import { DomainParkingSessionEntity } from '../../../../../domain/Entities/DomainSessionEntity';
 import { AdapterSessionDTO } from '../Entity/AdapterSessionDTO';
 import { IAdapterMapper } from './IAdapterMapper';
 
@@ -32,6 +32,6 @@ export class AdapterMapperImpl implements IAdapterMapper {
   }
 
   toDTOList(domains: DomainParkingSessionEntity[]): AdapterSessionDTO[] {
-    return domains.map((d) => this.toDTO(d));
+    return domains.map(d => this.toDTO(d));
   }
 }

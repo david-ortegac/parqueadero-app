@@ -1,4 +1,4 @@
-import { DomainVehicleEntity } from '../../../../domain/Entities/DomainVehicleEntity';
+import { DomainVehicleEntity } from '../../../../../domain/Entities/DomainVehicleEntity';
 import { AdapterVehicleDTO } from '../Entity/AdapterVehicleDTO';
 
 export interface IAdapterMapper {

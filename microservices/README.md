@@ -49,13 +49,13 @@ ms_parking_<dominio>/
 
 El sistema se divide en **5 microservicios autónomos** alineados a sus Bounded Contexts:
 
-| Microservicio | Dominio de Trabajo | Responsabilidades Principales | Tabla DynamoDB |
-|---|---|---|---|
-| **`ms_parking_auth`** | Autenticación y Usuarios | Registro de clientes, Login con JWT, roles (`admin`, `operator`, `vehicle_owner`), gestión de usuarios y activación de cuentas. | `ParkingUsers` |
-| **`ms_parking_rates_config`** | Tarifas y Configuración | Tarifas dinámicas (minuto, hora, día, semana, mes), cupos y capacidad máxima por vehículo, horarios de atención y configuración general. | `ParkingRatesConfig` |
-| **`ms_parking_vehicles`** | Vehículos y Propietarios | Catálogo de vehículos, validación de placas colombianas (carros y motos), vinculación de propietarios y perfiles de vehículos. | `ParkingVehicles` |
-| **`ms_parking_sessions`** | Operaciones y Facturación | Check-in, Check-out, cálculo en tiempo real de cobro (Billing Service), ocupación en vivo, consulta pública por placa, historial y reportes financieros. | `ParkingSessions` |
-| **`ms_parking_notifications`** | Dispositivos Push (FCM) | Registro de tokens de notificación de la app (iOS, Android, Web) y envío de alertas push automáticas ante ingresos y salidas. | `ParkingPushDevices` |
+| Microservicio                  | Dominio de Trabajo        | Responsabilidades Principales                                                                                                                            | Tabla DynamoDB       |
+| ------------------------------ | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| **`ms_parking_auth`**          | Autenticación y Usuarios  | Registro de clientes, Login con JWT, roles (`admin`, `operator`, `vehicle_owner`), gestión de usuarios y activación de cuentas.                          | `ParkingUsers`       |
+| **`ms_parking_rates_config`**  | Tarifas y Configuración   | Tarifas dinámicas (minuto, hora, día, semana, mes), cupos y capacidad máxima por vehículo, horarios de atención y configuración general.                 | `ParkingRatesConfig` |
+| **`ms_parking_vehicles`**      | Vehículos y Propietarios  | Catálogo de vehículos, validación de placas colombianas (carros y motos), vinculación de propietarios y perfiles de vehículos.                           | `ParkingVehicles`    |
+| **`ms_parking_sessions`**      | Operaciones y Facturación | Check-in, Check-out, cálculo en tiempo real de cobro (Billing Service), ocupación en vivo, consulta pública por placa, historial y reportes financieros. | `ParkingSessions`    |
+| **`ms_parking_notifications`** | Dispositivos Push (FCM)   | Registro de tokens de notificación de la app (iOS, Android, Web) y envío de alertas push automáticas ante ingresos y salidas.                            | `ParkingPushDevices` |
 
 ---
 
@@ -64,30 +64,35 @@ El sistema se divide en **5 microservicios autónomos** alineados a sus Bounded 
 El almacenamiento fue diseñado para alto rendimiento y baja latencia en entornos serverless:
 
 ### 1. `ParkingUsers`
-* **PK:** `id` (String)
-* **GSI `EmailIndex`:** `email` (HASH)
-* **GSI `DocumentIndex`:** `document` (HASH)
-* **GSI `RoleIndex`:** `role` (HASH), `created_at` (RANGE)
+
+- **PK:** `id` (String)
+- **GSI `EmailIndex`:** `email` (HASH)
+- **GSI `DocumentIndex`:** `document` (HASH)
+- **GSI `RoleIndex`:** `role` (HASH), `created_at` (RANGE)
 
 ### 2. `ParkingRatesConfig` (Single-Table Design para Configuración)
-* **PK:** `pk` (String) — ej. `RATE`, `CAPACITY`, `SCHEDULE`, `SETTING`
-* **SK:** `sk` (String) — ej. `car#hour`, `motorcycle#minute`, `car`, `DAY#1`, `PARKING_INFO`
+
+- **PK:** `pk` (String) — ej. `RATE`, `CAPACITY`, `SCHEDULE`, `SETTING`
+- **SK:** `sk` (String) — ej. `car#hour`, `motorcycle#minute`, `car`, `DAY#1`, `PARKING_INFO`
 
 ### 3. `ParkingVehicles`
-* **PK:** `id` (String)
-* **GSI `PlateIndex`:** `plate` (HASH)
-* **GSI `OwnerIndex`:** `owner_user_id` (HASH)
-* **GSI `DocumentIndex`:** `depositor_document` (HASH)
+
+- **PK:** `id` (String)
+- **GSI `PlateIndex`:** `plate` (HASH)
+- **GSI `OwnerIndex`:** `owner_user_id` (HASH)
+- **GSI `DocumentIndex`:** `depositor_document` (HASH)
 
 ### 4. `ParkingSessions`
-* **PK:** `id` (String)
-* **GSI `StatusIndex`:** `status` (HASH), `entered_at` (RANGE)
-* **GSI `VehicleIndex`:** `vehicle_id` (HASH), `entered_at` (RANGE)
-* **GSI `DateIndex`:** `exit_date` (HASH: YYYY-MM-DD), `exited_at` (RANGE)
+
+- **PK:** `id` (String)
+- **GSI `StatusIndex`:** `status` (HASH), `entered_at` (RANGE)
+- **GSI `VehicleIndex`:** `vehicle_id` (HASH), `entered_at` (RANGE)
+- **GSI `DateIndex`:** `exit_date` (HASH: YYYY-MM-DD), `exited_at` (RANGE)
 
 ### 5. `ParkingPushDevices`
-* **PK:** `token` (String)
-* **GSI `UserIndex`:** `user_id` (HASH)
+
+- **PK:** `token` (String)
+- **GSI `UserIndex`:** `user_id` (HASH)
 
 ---
 
@@ -96,12 +101,12 @@ El almacenamiento fue diseñado para alto rendimiento y baja latencia en entorno
 El patrón **Strangler Fig** permite sustituir el monolito en producción de forma progresiva sin tiempo de inactividad:
 
 1. **Fachada Unificada (Strangler Facade):**
-   * Se despliega un **Amazon API Gateway HTTP API v2** delante del sistema.
+   - Se despliega un **Amazon API Gateway HTTP API v2** delante del sistema.
 2. **Enrutamiento por Fases:**
-   * Las rutas de los dominios migrados se conectan directamente a sus respectivas funciones Lambda.
-   * La ruta por defecto (`$default` o `{proxy+}`) redirige las peticiones aún no migradas o de contingencia al backend monolítico de Laravel (`https://parkingsoft.davidortega.dev/api`).
+   - Las rutas de los dominios migrados se conectan directamente a sus respectivas funciones Lambda.
+   - La ruta por defecto (`$default` o `{proxy+}`) redirige las peticiones aún no migradas o de contingencia al backend monolítico de Laravel (`https://parkingsoft.davidortega.dev/api`).
 3. **Cero Impacto en el Frontend:**
-   * La aplicación Angular/Ionic simplemente apunta a la URL base del API Gateway. Las firmas de endpoints, rutas, códigos HTTP y payloads JSON son 100% idénticos a los del monolito.
+   - La aplicación Angular/Ionic simplemente apunta a la URL base del API Gateway. Las firmas de endpoints, rutas, códigos HTTP y payloads JSON son 100% idénticos a los del monolito.
 
 ```
                          [ Frontend / Ionic App ]
@@ -126,13 +131,15 @@ El patrón **Strangler Fig** permite sustituir el monolito en producción de for
 ## 🚀 5. Instrucciones de Compilación y Despliegue en AWS
 
 ### Requisitos Previos
-* Node.js v20+ o v22+ y npm
-* AWS CLI configurado (`aws configure`)
-* AWS SAM CLI (opcional pero recomendado: `sam --version`)
+
+- Node.js v20+ o v22+ y npm
+- AWS CLI configurado (`aws configure`)
+- AWS SAM CLI (opcional pero recomendado: `sam --version`)
 
 ---
 
 ### Paso 1: Compilar y Empaquetar Todos los Microservicios
+
 Desde la raíz de la carpeta `microservices`:
 
 ```bash
@@ -145,6 +152,7 @@ Este comando ejecuta en paralelo el empaquetador `esbuild` en cada microservicio
 ---
 
 ### Paso 2: Crear las Tablas en DynamoDB
+
 Para crear las 5 tablas con sus claves y GSIs en AWS (o en DynamoDB local):
 
 ```bash
@@ -158,6 +166,7 @@ npm run dynamo:create-tables
 ---
 
 ### Paso 3: Sembrar Datos Iniciales (Seed)
+
 Para cargar los usuarios de prueba iniciales (Admin, Operador, Propietario), las tarifas base de carros y motos, la capacidad de parqueo y los horarios:
 
 ```bash
@@ -167,6 +176,7 @@ npm run dynamo:seed
 ---
 
 ### Paso 4: Despliegue en AWS con AWS SAM
+
 El archivo [`template.yaml`](file:///home/david/Documentos/GitHub/parqueadero-app/microservices/template.yaml) contiene la definición completa de Infraestructura como Código (IaC).
 
 ```bash
@@ -178,21 +188,24 @@ sam deploy --guided
 ```
 
 Durante el asistente de SAM:
-* **Stack Name:** `parqueadero-serverless-stack`
-* **AWS Region:** `us-east-1` (o tu región preferida)
-* **JwtSecretKey:** Introduce tu clave secreta de producción
-* **LegacyBackendUrl:** URL de fallback del backend Laravel legacy
-* **Confirm changes before deploy:** `Y`
-* **Allow SAM CLI IAM role creation:** `Y`
+
+- **Stack Name:** `parqueadero-serverless-stack`
+- **AWS Region:** `us-east-1` (o tu región preferida)
+- **JwtSecretKey:** Introduce tu clave secreta de producción
+- **LegacyBackendUrl:** URL de fallback del backend Laravel legacy
+- **Confirm changes before deploy:** `Y`
+- **Allow SAM CLI IAM role creation:** `Y`
 
 Al finalizar, SAM te proporcionará el `HttpApiUrl` de salida (ej. `https://xyz123.execute-api.us-east-1.amazonaws.com`).
 
 ---
 
 ### Paso 5: Conectar el Frontend Angular / Ionic
+
 Simplemente actualiza el archivo de entorno en el frontend:
 
 `frontend/src/environments/environment.prod.ts`:
+
 ```typescript
 export const environment = {
   production: true,

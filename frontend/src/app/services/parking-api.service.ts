@@ -124,15 +124,23 @@ export class ParkingApiService {
   }
 
   checkOut(sessionId: number): Observable<ParkingSession> {
-    return this.http.post<ParkingSession>(`${this.base}/operator/sessions/${sessionId}/check-out`, {});
+    return this.http.post<ParkingSession>(
+      `${this.base}/operator/sessions/${sessionId}/check-out`,
+      {},
+    );
   }
 
   getDailyHistory(date: string): Observable<DailyHistoryResponse> {
     const params = new HttpParams().set('date', date);
-    return this.http.get<DailyHistoryResponse>(`${this.base}/operator/reports/daily-history`, { params });
+    return this.http.get<DailyHistoryResponse>(`${this.base}/operator/reports/daily-history`, {
+      params,
+    });
   }
 
-  getRevenueSummary(from?: string, to?: string): Observable<{
+  getRevenueSummary(
+    from?: string,
+    to?: string,
+  ): Observable<{
     total: string;
     by_vehicle_class: Record<string, string>;
     by_billing_mode: Record<string, string>;
@@ -166,16 +174,23 @@ export class ParkingApiService {
     return this.http.get<OwnerVehicle[]>(`${this.base}/owner/vehicles`);
   }
 
-  registerPushDevice(body: { token: string; platform: 'ios' | 'android' | 'web' }): Observable<{ message: string }> {
+  registerPushDevice(body: {
+    token: string;
+    platform: 'ios' | 'android' | 'web';
+  }): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${this.base}/push-devices`, body);
   }
 
   getOwnerActiveSession(vehicleId: number): Observable<OwnerActiveSession> {
-    return this.http.get<OwnerActiveSession>(`${this.base}/owner/vehicles/${vehicleId}/active-session`);
+    return this.http.get<OwnerActiveSession>(
+      `${this.base}/owner/vehicles/${vehicleId}/active-session`,
+    );
   }
 
   getOwnerVehicleSessions(vehicleId: number): Observable<OwnerSessionHistoryRow[]> {
-    return this.http.get<OwnerSessionHistoryRow[]>(`${this.base}/owner/vehicles/${vehicleId}/sessions`);
+    return this.http.get<OwnerSessionHistoryRow[]>(
+      `${this.base}/owner/vehicles/${vehicleId}/sessions`,
+    );
   }
 
   patchOwnerVehicle(
@@ -189,7 +204,10 @@ export class ParkingApiService {
     return this.http.get<OperatorVehicleOwnerRow[]>(`${this.base}/operator/vehicle-owners`);
   }
 
-  patchVehicleOwnerActivation(userId: number, body: { is_active: boolean }): Observable<{ id: number; is_active: boolean }> {
+  patchVehicleOwnerActivation(
+    userId: number,
+    body: { is_active: boolean },
+  ): Observable<{ id: number; is_active: boolean }> {
     return this.http.patch<{ id: number; is_active: boolean }>(
       `${this.base}/operator/vehicle-owners/${userId}`,
       body,

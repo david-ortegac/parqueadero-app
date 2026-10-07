@@ -135,7 +135,9 @@
 :host ::ng-deep .pp-bento-card.p-card:hover,
 .pp-bento-tile:hover {
   border-color: color-mix(in srgb, var(--ion-color-primary) 22%, var(--pp-inicio-hairline));
-  box-shadow: 0 2px 4px rgba(15, 39, 68, 0.04), 0 14px 32px rgba(15, 39, 68, 0.08);
+  box-shadow:
+    0 2px 4px rgba(15, 39, 68, 0.04),
+    0 14px 32px rgba(15, 39, 68, 0.08);
   transform: none !important;
 }
 
@@ -198,7 +200,8 @@
   background:
     radial-gradient(120% 100% at 50% 0%, rgba(5, 150, 105, 0.12), transparent 60%),
     color-mix(in srgb, var(--pp-page-bg, #f1f5f9) 70%, white);
-  border: 1px solid color-mix(in srgb, var(--ion-color-success, #059669) 18%, var(--pp-inicio-hairline));
+  border: 1px solid
+    color-mix(in srgb, var(--ion-color-success, #059669) 18%, var(--pp-inicio-hairline));
 }
 
 .pp-revenue-inline-label {

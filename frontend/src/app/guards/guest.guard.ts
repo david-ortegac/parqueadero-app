@@ -10,7 +10,6 @@ export class GuestGuard implements CanActivate {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
-
   canActivate(): boolean | UrlTree {
     if (this.auth.isLoggedIn()) {
       return this.router.createUrlTree(['/inicio']);

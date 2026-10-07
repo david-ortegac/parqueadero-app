@@ -2,11 +2,12 @@ import { inject, injectable } from 'inversify';
 
 import { ISessionService } from '../../../../application/services/ISessionService';
 import { TYPES } from '../../../../ioc/Types';
-import { Response } from '../../../../models/Response';
+import { Response, LambdaEvent } from '../../../../models/Response';
 import { hasRequiredRole, validateTokenFromEvent } from '../../../../utils/jwt-validator';
 import { ResponseBuilder } from '../../../../utils/response-builder';
 import { IAdapterMapper } from './Mapper/IAdapterMapper';
 import { SessionController } from './SessionController';
+import { BillingMode, VehicleClass } from '../../../../domain/Entities/DomainSessionEntity';
 
 @injectable()
 export class SessionControllerImpl implements SessionController {
@@ -14,12 +15,12 @@ export class SessionControllerImpl implements SessionController {
     @inject(TYPES.SessionService)
     private readonly service: ISessionService,
     @inject(TYPES.IAdapterMapper)
-    private readonly mapper: IAdapterMapper
+    private readonly mapper: IAdapterMapper,
   ) {}
 
-  private parseBody(event: any): any {
+  private parseBody(event: LambdaEvent): Record<string, unknown> {
     if (!event.body) return {};
-    if (typeof event.body === 'object') return event.body;
+    if (typeof event.body === 'object') return event.body as Record<string, unknown>;
     try {
       return JSON.parse(event.body);
     } catch {
@@ -27,25 +28,17 @@ export class SessionControllerImpl implements SessionController {
     }
   }
 
-  private getMethod(event: any): string {
-    return (
-      event?.requestContext?.http?.method ||
-      event?.httpMethod ||
-      'GET'
-    ).toUpperCase();
+  private getMethod(event: LambdaEvent): string {
+    return (event?.requestContext?.http?.method || event?.httpMethod || 'GET').toUpperCase();
   }
 
-  private getPath(event: any): string {
-    const raw =
-      event?.rawPath ||
-      event?.requestContext?.http?.path ||
-      event?.path ||
-      '';
+  private getPath(event: LambdaEvent): string {
+    const raw = event?.rawPath || event?.requestContext?.http?.path || event?.path || '';
     const clean = raw.split('?')[0];
     return clean.replace(/^\/api\/v1/, '').replace(/^\/v1/, '') || '/';
   }
 
-  async handleRequest(event: any): Promise<Response> {
+  async handleRequest(event: LambdaEvent): Promise<Response> {
     const method = this.getMethod(event);
     const path = this.getPath(event);
     const body = this.parseBody(event);
@@ -70,8 +63,9 @@ export class SessionControllerImpl implements SessionController {
         try {
           const result = await this.service.lookupPublicSessionByPlate(plate);
           return ResponseBuilder.success(result);
-        } catch (err: any) {
-          return ResponseBuilder.unprocessableEntity(err.message || 'Error al consultar placa.');
+        } catch (err: unknown) {
+          const error = err as Error;
+          return ResponseBuilder.unprocessableEntity(error.message || 'Error al consultar placa.');
         }
       }
 
@@ -84,25 +78,26 @@ export class SessionControllerImpl implements SessionController {
 
         if (!body.plate || !body.depositor_document || !body.vehicle_class || !body.billing_mode) {
           return ResponseBuilder.unprocessableEntity(
-            'plate, depositor_document, vehicle_class y billing_mode son requeridos.'
+            'plate, depositor_document, vehicle_class y billing_mode son requeridos.',
           );
         }
 
         try {
           const session = await this.service.checkIn({
-            plate: body.plate,
-            depositor_document: body.depositor_document,
-            vehicle_class: body.vehicle_class,
-            billing_mode: body.billing_mode,
-            owner_user_id: body.owner_user_id,
+            plate: body.plate as string,
+            depositor_document: body.depositor_document as string,
+            vehicle_class: body.vehicle_class as VehicleClass,
+            billing_mode: body.billing_mode as BillingMode,
+            owner_user_id: body.owner_user_id as string,
             registered_by_user_id: String(tokenRes.payload!.userId),
           });
 
           return ResponseBuilder.created({
             session: this.mapper.toDTO(session),
           });
-        } catch (err: any) {
-          return ResponseBuilder.unprocessableEntity(err.message || 'Error en check-in.');
+        } catch (err: unknown) {
+          const error = err as Error;
+          return ResponseBuilder.unprocessableEntity(error.message || 'Error en check-in.');
         }
       }
 
@@ -123,8 +118,9 @@ export class SessionControllerImpl implements SessionController {
         try {
           const session = await this.service.checkOut(sessionId);
           return ResponseBuilder.success(this.mapper.toDTO(session));
-        } catch (err: any) {
-          return ResponseBuilder.unprocessableEntity(err.message || 'Error en check-out.');
+        } catch (err: unknown) {
+          const error = err as Error;
+          return ResponseBuilder.unprocessableEntity(error.message || 'Error en check-out.');
         }
       }
 
@@ -217,7 +213,7 @@ export class SessionControllerImpl implements SessionController {
       }
 
       return ResponseBuilder.notFound(`Ruta no encontrada: ${method} ${path}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error handling session request:', err);
       return ResponseBuilder.internalError(err);
     }

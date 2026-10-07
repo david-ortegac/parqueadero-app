@@ -50,15 +50,19 @@ export function billingRateUnitSuffix(mode: string): string {
 }
 
 /** Selectores Ionic / Prime (Parqueo tab). */
-export const VEHICLE_OPTIONS: { label: string; value: VehicleClassId }[] = VEHICLE_CLASSES.map((value) => ({
-  label: VEHICLE_CLASS_LABEL_SHORT[value],
-  value,
-}));
+export const VEHICLE_OPTIONS: { label: string; value: VehicleClassId }[] = VEHICLE_CLASSES.map(
+  value => ({
+    label: VEHICLE_CLASS_LABEL_SHORT[value],
+    value,
+  }),
+);
 
-export const BILLING_OPTIONS: { label: string; value: BillingModeId }[] = BILLING_MODES.map((value) => ({
-  label: BILLING_MODE_LABEL[value],
-  value,
-}));
+export const BILLING_OPTIONS: { label: string; value: BillingModeId }[] = BILLING_MODES.map(
+  value => ({
+    label: BILLING_MODE_LABEL[value],
+    value,
+  }),
+);
 
 /** Colores gráfico ocupación (mismo criterio que --pp-chart-* en theme). */
 export const OCCUPANCY_CHART_COLORS = {
@@ -98,9 +102,9 @@ export function groupRatesByVehicleClass(rates: Rate[]): {
   sectionTitle: string;
   rates: Rate[];
 }[] {
-  return VEHICLE_CLASSES.map((vehicleClass) => ({
+  return VEHICLE_CLASSES.map(vehicleClass => ({
     vehicleClass,
     sectionTitle: VEHICLE_CLASS_LABEL[vehicleClass],
-    rates: sortRatesByBillingMode(rates.filter((r) => r.vehicle_class === vehicleClass)),
-  })).filter((g) => g.rates.length > 0);
+    rates: sortRatesByBillingMode(rates.filter(r => r.vehicle_class === vehicleClass)),
+  })).filter(g => g.rates.length > 0);
 }

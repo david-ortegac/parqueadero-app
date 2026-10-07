@@ -19,7 +19,7 @@ export class RatesConfigServiceImpl implements IRatesConfigService {
     @inject(TYPES.RatesConfigRepository)
     private readonly repository: RatesConfigRepository,
     @inject(TYPES.IInfraestructureMapper)
-    private readonly mapper: IInfraestructureMapper
+    private readonly mapper: IInfraestructureMapper,
   ) {}
 
   async getRates(): Promise<DomainRateEntity[]> {
@@ -50,7 +50,7 @@ export class RatesConfigServiceImpl implements IRatesConfigService {
 
   async updateRate(
     rateId: string,
-    data: { price?: number | string; currency?: string; is_active?: boolean }
+    data: { price?: number | string; currency?: string; is_active?: boolean },
   ): Promise<DomainRateEntity> {
     // Parse rateId, e.g. "car_minute" or from query/path
     let [vClass, bMode] = rateId.split('_') as [VehicleClass, BillingMode];
@@ -62,7 +62,9 @@ export class RatesConfigServiceImpl implements IRatesConfigService {
     if (!existing) {
       // Try finding by ID if passed as numeric or different string
       const all = await this.repository.findAllRates();
-      const match = all.find((r) => r.id === rateId || `${r.vehicle_class}_${r.billing_mode}` === rateId);
+      const match = all.find(
+        r => r.id === rateId || `${r.vehicle_class}_${r.billing_mode}` === rateId,
+      );
       if (match) {
         existing = match;
         vClass = match.vehicle_class;
@@ -92,10 +94,12 @@ export class RatesConfigServiceImpl implements IRatesConfigService {
       [vClass, bMode] = rateId.split('#');
     }
 
-    let existing = await this.repository.findRate(vClass, bMode);
+    const existing = await this.repository.findRate(vClass, bMode);
     if (!existing) {
       const all = await this.repository.findAllRates();
-      const match = all.find((r) => r.id === rateId || `${r.vehicle_class}_${r.billing_mode}` === rateId);
+      const match = all.find(
+        r => r.id === rateId || `${r.vehicle_class}_${r.billing_mode}` === rateId,
+      );
       if (match) {
         vClass = match.vehicle_class;
         bMode = match.billing_mode;
@@ -133,7 +137,7 @@ export class RatesConfigServiceImpl implements IRatesConfigService {
     dayOfWeek: number,
     opensAt: string | null,
     closesAt: string | null,
-    isClosed?: boolean
+    isClosed?: boolean,
   ): Promise<DomainScheduleEntity> {
     const domainEntity: DomainScheduleEntity = {
       id: `schedule_${dayOfWeek}`,

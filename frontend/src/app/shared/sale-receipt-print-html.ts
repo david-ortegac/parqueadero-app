@@ -96,7 +96,9 @@ export function buildSaleReceiptPrintDocument(
   const nitLine =
     data.nit && data.nit.length > 0 ? `<div class="muted">NIT: ${escapeHtml(data.nit)}</div>` : '';
   const addrLine =
-    data.address && data.address.length > 0 ? `<div class="muted wrap">${escapeHtml(data.address)}</div>` : '';
+    data.address && data.address.length > 0
+      ? `<div class="muted wrap">${escapeHtml(data.address)}</div>`
+      : '';
   const docLine =
     data.depositorDocument && data.depositorDocument.length > 0
       ? `<div class="row"><span>Doc.</span><span class="wrap">${escapeHtml(data.depositorDocument)}</span></div>`
@@ -146,7 +148,9 @@ export function buildEntryTicketPrintDocument(
   const nitLine =
     data.nit && data.nit.length > 0 ? `<div class="muted">NIT: ${escapeHtml(data.nit)}</div>` : '';
   const addrLine =
-    data.address && data.address.length > 0 ? `<div class="muted wrap">${escapeHtml(data.address)}</div>` : '';
+    data.address && data.address.length > 0
+      ? `<div class="muted wrap">${escapeHtml(data.address)}</div>`
+      : '';
   const docLine =
     data.depositorDocument && data.depositorDocument.length > 0
       ? `<div class="row"><span>Doc.</span><span class="wrap">${escapeHtml(data.depositorDocument)}</span></div>`

@@ -1,9 +1,4 @@
-import {
-  DeleteCommand,
-  PutCommand,
-  QueryCommand,
-  ScanCommand,
-} from '@aws-sdk/lib-dynamodb';
+import { DeleteCommand, PutCommand, QueryCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import { injectable } from 'inversify';
 
 import { dynamoDocClient } from '../client';

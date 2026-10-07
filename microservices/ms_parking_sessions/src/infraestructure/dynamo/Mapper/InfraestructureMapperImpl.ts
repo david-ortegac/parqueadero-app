@@ -75,6 +75,6 @@ export class InfraestructureMapperImpl implements IInfraestructureMapper {
   }
 
   toDomainList(items: DynamoSessionItem[]): DomainParkingSessionEntity[] {
-    return items.map((i) => this.toDomain(i));
+    return items.map(i => this.toDomain(i));
   }
 }

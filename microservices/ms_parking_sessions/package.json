@@ -7,7 +7,10 @@
     "build": "npm run clean && node build.config.mjs",
     "clean": "rimraf dist releases",
     "package": "npm run build && npm run zip",
-    "zip": "mkdir -p releases && cd dist && bestzip ../releases/ms-parking-sessions-v1.0.0.zip *"
+    "zip": "mkdir -p releases && cd dist && bestzip ../releases/ms-parking-sessions-v1.0.0.zip *",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --write src"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1147.0",
@@ -22,6 +25,6 @@
     "bestzip": "^4.0.3",
     "esbuild": "^0.28.2",
     "rimraf": "^6.1.3",
-    "typescript": "^7.0.2"
+    "typescript": "~7.0.2"
   }
 }

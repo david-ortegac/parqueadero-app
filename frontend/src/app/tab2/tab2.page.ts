@@ -151,14 +151,14 @@ export class Tab2Page implements OnInit, OnDestroy {
     if (!q) {
       return this.activeSessions;
     }
-    return this.activeSessions.filter((s) => {
+    return this.activeSessions.filter(s => {
       const plate = (s.vehicle?.plate ?? '').toUpperCase();
       return plate.includes(q);
     });
   }
 
   ngOnInit(): void {
-    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const raw = params.get('plate');
       this.plateFromRouteNormalized = this.normalizePlateQueryParam(raw);
       const role = this.auth.getUser()?.role;
@@ -180,7 +180,7 @@ export class Tab2Page implements OnInit, OnDestroy {
     const role = this.auth.getUser()?.role;
     if (role === 'admin' || role === 'operator') {
       this.api.getOperatorParkingInfo().subscribe({
-        next: (info) => (this.parkingInfo = info),
+        next: info => (this.parkingInfo = info),
       });
     }
   }
@@ -205,9 +205,7 @@ export class Tab2Page implements OnInit, OnDestroy {
     if (!q) {
       return;
     }
-    const v = this.vehicles.find(
-      (x) => x.plate.trim().toUpperCase().replace(/\s+/g, '') === q,
-    );
+    const v = this.vehicles.find(x => x.plate.trim().toUpperCase().replace(/\s+/g, '') === q);
     if (!v) {
       return;
     }
@@ -225,11 +223,11 @@ export class Tab2Page implements OnInit, OnDestroy {
     if (role === 'vehicle_owner') {
       this.loadingList = true;
       this.api.getOwnerVehicles().subscribe({
-        next: (v) => {
+        next: v => {
           this.vehicles = v;
           if (
             this.ownerParkingAccordionOpen !== undefined &&
-            !v.some((x) => this.ownerParkingAccordionKey(x.id) === this.ownerParkingAccordionOpen)
+            !v.some(x => this.ownerParkingAccordionKey(x.id) === this.ownerParkingAccordionOpen)
           ) {
             this.ownerParkingAccordionOpen = undefined;
           }
@@ -239,7 +237,11 @@ export class Tab2Page implements OnInit, OnDestroy {
         },
         error: async () => {
           this.loadingList = false;
-          const t = await this.toast.create({ message: 'No se pudieron cargar tus vehículos', duration: 2500, color: 'danger' });
+          const t = await this.toast.create({
+            message: 'No se pudieron cargar tus vehículos',
+            duration: 2500,
+            color: 'danger',
+          });
           await t.present();
         },
       });
@@ -249,14 +251,20 @@ export class Tab2Page implements OnInit, OnDestroy {
     if (role === 'admin' || role === 'operator') {
       this.loadingList = true;
       this.api.getActiveSessions().subscribe({
-        next: (s) => {
+        next: s => {
           this.activeSessions = s;
-          this.activeSessionsAccordion.syncWithValues(s.map((x) => this.activeSessionAccordionKey(x.id)));
+          this.activeSessionsAccordion.syncWithValues(
+            s.map(x => this.activeSessionAccordionKey(x.id)),
+          );
           this.loadingList = false;
         },
         error: async () => {
           this.loadingList = false;
-          const t = await this.toast.create({ message: 'No se pudieron cargar las sesiones', duration: 2500, color: 'danger' });
+          const t = await this.toast.create({
+            message: 'No se pudieron cargar las sesiones',
+            duration: 2500,
+            color: 'danger',
+          });
           await t.present();
         },
       });
@@ -278,7 +286,7 @@ export class Tab2Page implements OnInit, OnDestroy {
     }
     this.loadingHistory = true;
     this.api.getDailyHistory(this.historyDate).subscribe({
-      next: (h) => {
+      next: h => {
         this.dailyHistory = h;
         this.loadingHistory = false;
       },
@@ -348,17 +356,24 @@ export class Tab2Page implements OnInit, OnDestroy {
         billing_mode: this.billingMode,
       })
       .subscribe({
-        next: async (res) => {
-          const t = await this.toast.create({ message: 'Ingreso registrado', duration: 2000, color: 'success' });
+        next: async res => {
+          const t = await this.toast.create({
+            message: 'Ingreso registrado',
+            duration: 2000,
+            color: 'success',
+          });
           await t.present();
-          this.ticketSheet = { mode: 'entry', data: buildEntryTicketFromSession(res.session, this.parkingInfo) };
+          this.ticketSheet = {
+            mode: 'entry',
+            data: buildEntryTicketFromSession(res.session, this.parkingInfo),
+          };
           this.ticketSheetOpen = true;
           this.plate = '';
           this.vehicleClass = 'car';
           this.depositorDocument = '';
           this.refresh();
         },
-        error: async (err) => {
+        error: async err => {
           const t = await this.toast.create({
             message: err.error?.message ?? 'Error en ingreso',
             duration: 3000,
@@ -376,7 +391,10 @@ export class Tab2Page implements OnInit, OnDestroy {
 
   /** Reimprime el ticket de ingreso (ej. ticket perdido). */
   reprintEntryTicket(session: ParkingSession): void {
-    this.ticketSheet = { mode: 'entry', data: buildEntryTicketFromSession(session, this.parkingInfo) };
+    this.ticketSheet = {
+      mode: 'entry',
+      data: buildEntryTicketFromSession(session, this.parkingInfo),
+    };
     this.ticketSheetOpen = true;
   }
 
@@ -412,12 +430,7 @@ export class Tab2Page implements OnInit, OnDestroy {
     const end = el.selectionEnd ?? 0;
     const pasted = ev.clipboardData?.getData('text') ?? '';
     const pastedDigits = pasted.replace(/\D/g, '');
-    this.depositorDocument = mergePastedDigitsOnly(
-      this.depositorDocument,
-      pasted,
-      start,
-      end,
-    );
+    this.depositorDocument = mergePastedDigitsOnly(this.depositorDocument, pasted, start, end);
     const cursor = Math.min(start + pastedDigits.length, this.depositorDocument.length);
     queueMicrotask(() => {
       el.setSelectionRange(cursor, cursor);
@@ -425,13 +438,16 @@ export class Tab2Page implements OnInit, OnDestroy {
   }
 
   openReceiptForSale(session: ParkingSession): void {
-    this.ticketSheet = { mode: 'sale', data: buildSaleReceiptFromSession(session, this.parkingInfo) };
+    this.ticketSheet = {
+      mode: 'sale',
+      data: buildSaleReceiptFromSession(session, this.parkingInfo),
+    };
     this.ticketSheetOpen = true;
   }
 
   async checkout(session: ParkingSession): Promise<void> {
     this.api.checkOut(session.id).subscribe({
-      next: async (res) => {
+      next: async res => {
         const t = await this.toast.create({
           message: `Cobro registrado: ${res.amount_paid ?? res.amount_due} COP`,
           duration: 2500,
@@ -441,7 +457,7 @@ export class Tab2Page implements OnInit, OnDestroy {
         this.openReceiptForSale(res);
         this.refresh();
       },
-      error: async (err) => {
+      error: async err => {
         const t = await this.toast.create({
           message: err.error?.message ?? 'Error al cerrar sesión',
           duration: 2500,
@@ -478,7 +494,7 @@ export class Tab2Page implements OnInit, OnDestroy {
 
   onActiveSessionsFilterChange(): void {
     this.activeSessionsAccordion.syncWithValues(
-      this.filteredActiveSessions.map((s) => this.activeSessionAccordionKey(s.id)),
+      this.filteredActiveSessions.map(s => this.activeSessionAccordionKey(s.id)),
     );
   }
 
@@ -526,11 +542,11 @@ export class Tab2Page implements OnInit, OnDestroy {
       return;
     }
     this.api.getOwnerVehicles().subscribe({
-      next: (list) => {
+      next: list => {
         this.vehicles = list;
         if (
           this.ownerParkingAccordionOpen !== undefined &&
-          !list.some((x) => this.ownerParkingAccordionKey(x.id) === this.ownerParkingAccordionOpen)
+          !list.some(x => this.ownerParkingAccordionKey(x.id) === this.ownerParkingAccordionOpen)
         ) {
           this.ownerParkingAccordionOpen = undefined;
         }
@@ -650,7 +666,7 @@ export class Tab2Page implements OnInit, OnDestroy {
       this.ownerUiNowMs = Date.now();
     }, 1000);
 
-    const hasMinute = this.vehicles.some((v) => v.active_session?.billing_mode === 'minute');
+    const hasMinute = this.vehicles.some(v => v.active_session?.billing_mode === 'minute');
     if (hasMinute) {
       this.ownerMinuteRefreshHandle = setInterval(() => this.refreshOwnerParkingFromApi(), 45000);
     }

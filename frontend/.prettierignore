@@ -1,0 +1,8 @@
+node_modules/
+dist/
+build/
+.angular/
+android/
+coverage/
+package-lock.json
+*.log

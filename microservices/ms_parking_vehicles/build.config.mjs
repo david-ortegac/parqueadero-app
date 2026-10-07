@@ -1,12 +1,12 @@
-import { build } from "esbuild";
-import { writeFileSync, mkdirSync, existsSync } from "fs";
+import { build } from 'esbuild';
+import { writeFileSync, mkdirSync, existsSync } from 'fs';
 
 const sharedConfig = {
-  entryPoints: ["src/index.ts"],
+  entryPoints: ['src/index.ts'],
   bundle: true,
-  platform: "node",
-  target: "node22",
-  external: ["@aws-sdk/client-dynamodb", "@aws-sdk/lib-dynamodb"],
+  platform: 'node',
+  target: 'node22',
+  external: ['@aws-sdk/client-dynamodb', '@aws-sdk/lib-dynamodb'],
   sourcemap: true,
   minify: false,
   metafile: true,
@@ -14,37 +14,39 @@ const sharedConfig = {
 
 async function buildForLambda() {
   try {
-    console.log("🔨 Iniciando build para AWS Lambda ms_parking_vehicles...");
+    console.log('🔨 Iniciando build para AWS Lambda ms_parking_vehicles...');
 
-    if (!existsSync("dist")) {
-      mkdirSync("dist", { recursive: true });
+    if (!existsSync('dist')) {
+      mkdirSync('dist', { recursive: true });
     }
 
-    if (!existsSync("releases")) {
-      mkdirSync("releases", { recursive: true });
+    if (!existsSync('releases')) {
+      mkdirSync('releases', { recursive: true });
     }
 
     const result = await build({
       ...sharedConfig,
-      outfile: "dist/index.js",
-      format: "cjs",
+      outfile: 'dist/index.js',
+      format: 'cjs',
     });
 
-    console.log("✅ Build completado exitosamente");
-    console.log(`📦 Tamaño del bundle: ${(result.metafile.outputs["dist/index.js"].bytes / 1024).toFixed(2)} KB`);
+    console.log('✅ Build completado exitosamente');
+    console.log(
+      `📦 Tamaño del bundle: ${(result.metafile.outputs['dist/index.js'].bytes / 1024).toFixed(2)} KB`,
+    );
 
     const packageJson = {
-      name: "ms-parking-vehicles",
-      version: "1.0.0",
-      main: "index.js",
-      type: "commonjs",
+      name: 'ms-parking-vehicles',
+      version: '1.0.0',
+      main: 'index.js',
+      type: 'commonjs',
       dependencies: {},
     };
 
-    writeFileSync("dist/package.json", JSON.stringify(packageJson, null, 2));
-    console.log("✅ package.json creado en dist/");
+    writeFileSync('dist/package.json', JSON.stringify(packageJson, null, 2));
+    console.log('✅ package.json creado en dist/');
   } catch (error) {
-    console.error("❌ Error en el build:", error);
+    console.error('❌ Error en el build:', error);
     process.exit(1);
   }
 }

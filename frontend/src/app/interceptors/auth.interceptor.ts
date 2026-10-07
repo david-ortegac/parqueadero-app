@@ -1,4 +1,10 @@
-import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+} from '@angular/common/http';
 import { Injectable, Injector, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -12,7 +18,6 @@ import { AuthService } from '../services/auth.service';
 export class AuthInterceptor implements HttpInterceptor {
   private readonly injector = inject(Injector);
 
-
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const auth = this.injector.get(AuthService);
     const token = auth.getToken();
@@ -25,7 +30,12 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(outgoing).pipe(
       catchError((err: unknown) => {
-        if (err instanceof HttpErrorResponse && err.status === 401 && !req.url.includes('/v1/login') && !req.url.includes('/public/')) {
+        if (
+          err instanceof HttpErrorResponse &&
+          err.status === 401 &&
+          !req.url.includes('/v1/login') &&
+          !req.url.includes('/public/')
+        ) {
           auth.invalidateSession();
         }
         return throwError(() => err);

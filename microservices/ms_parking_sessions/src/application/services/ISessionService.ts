@@ -25,7 +25,10 @@ export interface ISessionService {
     };
   }>;
 
-  getRevenueSummary(from?: string, to?: string): Promise<{
+  getRevenueSummary(
+    from?: string,
+    to?: string,
+  ): Promise<{
     total: string;
     by_vehicle_class: Record<string, string>;
     by_billing_mode: Record<string, string>;
@@ -38,14 +41,14 @@ export interface ISessionService {
     open_stays: DomainParkingSessionEntity[];
   }>;
 
-  lookupPublicSessionByPlate(plate: string): Promise<any>;
+  lookupPublicSessionByPlate(plate: string): Promise<Record<string, unknown>>;
 
   getPublicOccupancy(): Promise<{
     car: { active: number; capacity: number | null; available: number | null };
     motorcycle: { active: number; capacity: number | null; available: number | null };
   }>;
 
-  getOwnerActiveSession(vehicleId: string): Promise<any>;
+  getOwnerActiveSession(vehicleId: string): Promise<Record<string, unknown> | null>;
 
   getOwnerVehicleSessions(vehicleId: string): Promise<DomainParkingSessionEntity[]>;
 }

@@ -1,4 +1,4 @@
-import { DomainParkingSessionEntity } from '../../../../domain/Entities/DomainSessionEntity';
+import { DomainParkingSessionEntity } from '../../../../../domain/Entities/DomainSessionEntity';
 import { AdapterSessionDTO } from '../Entity/AdapterSessionDTO';
 
 export interface IAdapterMapper {

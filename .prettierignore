@@ -1,0 +1,10 @@
+node_modules/
+dist/
+releases/
+build/
+coverage/
+.angular/
+android/
+backend/
+package-lock.json
+*.log

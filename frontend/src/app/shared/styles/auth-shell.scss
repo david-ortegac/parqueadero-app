@@ -27,11 +27,8 @@
     radial-gradient(120% 80% at 10% -10%, var(--pp-auth-soft) 0%, transparent 55%),
     radial-gradient(90% 70% at 100% 0%, var(--pp-auth-soft-2) 0%, transparent 50%),
     linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
-  padding:
-    max(1rem, env(safe-area-inset-top))
-    max(1rem, env(safe-area-inset-right))
-    max(1.5rem, env(safe-area-inset-bottom))
-    max(1rem, env(safe-area-inset-left));
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+    max(1.5rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
   touch-action: manipulation;
 }
 
@@ -374,7 +371,12 @@
     padding: 2.5rem;
     min-height: 100dvh;
     background:
-      linear-gradient(155deg, rgba(15, 39, 68, 0.96) 0%, rgba(30, 58, 95, 0.92) 48%, rgba(37, 99, 235, 0.88) 100%),
+      linear-gradient(
+        155deg,
+        rgba(15, 39, 68, 0.96) 0%,
+        rgba(30, 58, 95, 0.92) 48%,
+        rgba(37, 99, 235, 0.88) 100%
+      ),
       radial-gradient(circle at 80% 20%, rgba(13, 148, 136, 0.35), transparent 42%);
     border-radius: 0;
   }

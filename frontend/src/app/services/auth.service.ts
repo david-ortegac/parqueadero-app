@@ -41,36 +41,37 @@ export class AuthService {
     if (!this.getToken()) {
       return of(null);
     }
-    return this.http
-      .get<SessionUser & { is_active?: boolean }>(`${environment.apiUrl}/me`)
-      .pipe(
-        map((user) => {
-          if (user.is_active === false) {
-            this.clearLocal();
-            return null;
-          }
-          const sessionUser: SessionUser = {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            document: user.document,
-            role: user.role,
-          };
-          this.persistUser(sessionUser);
-          return sessionUser;
-        }),
-        catchError(() => {
+    return this.http.get<SessionUser & { is_active?: boolean }>(`${environment.apiUrl}/me`).pipe(
+      map(user => {
+        if (user.is_active === false) {
           this.clearLocal();
-          return of(null);
-        }),
-      );
+          return null;
+        }
+        const sessionUser: SessionUser = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          document: user.document,
+          role: user.role,
+        };
+        this.persistUser(sessionUser);
+        return sessionUser;
+      }),
+      catchError(() => {
+        this.clearLocal();
+        return of(null);
+      }),
+    );
   }
 
   login(email: string, password: string): Observable<{ token: string; user: SessionUser }> {
     return this.http
-      .post<{ token: string; user: SessionUser }>(`${environment.apiUrl}/login`, { email, password })
+      .post<{ token: string; user: SessionUser }>(`${environment.apiUrl}/login`, {
+        email,
+        password,
+      })
       .pipe(
-        tap((res) => {
+        tap(res => {
           localStorage.setItem(TOKEN_KEY, res.token);
           this.persistUser(res.user);
         }),

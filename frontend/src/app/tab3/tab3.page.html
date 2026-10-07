@@ -2,8 +2,14 @@
   <ion-toolbar class="pp-toolbar">
     <ion-title>Cuenta</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="theme.toggleDarkMode()" [attr.aria-label]="theme.isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'">
-        <ion-icon slot="icon-only" [name]="theme.isDarkMode ? 'sunny-outline' : 'moon-outline'"></ion-icon>
+      <ion-button
+        (click)="theme.toggleDarkMode()"
+        [attr.aria-label]="theme.isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'"
+      >
+        <ion-icon
+          slot="icon-only"
+          [name]="theme.isDarkMode ? 'sunny-outline' : 'moon-outline'"
+        ></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -11,124 +17,131 @@
 
 <ion-content class="ion-padding pp-page">
   @if (auth.getUser(); as u) {
-    <p-card styleClass="pp-card-shadow pp-profile-card">
-      <div class="pp-profile-head">
-        <div class="pp-profile-avatar" aria-hidden="true">
-          <ion-icon name="person-outline"></ion-icon>
+  <p-card styleClass="pp-card-shadow pp-profile-card">
+    <div class="pp-profile-head">
+      <div class="pp-profile-avatar" aria-hidden="true">
+        <ion-icon name="person-outline"></ion-icon>
+      </div>
+      <div class="pp-profile-meta">
+        <h1 class="pp-profile-name">{{ u.name }}</h1>
+        <p class="pp-profile-email">{{ u.email }}</p>
+        <span class="pp-role-tag">{{ displayRole(u.role) }}</span>
+      </div>
+    </div>
+  </p-card>
+  } @if (auth.hasRole('admin')) {
+  <p-card
+    header="Configuración del parqueadero"
+    subheader="Dirección y capacidad máxima de vehículos"
+    styleClass="pp-card-shadow ion-margin-top"
+  >
+    @if (loadingInfo) {
+    <div class="pp-center"><ion-spinner name="crescent" color="primary"></ion-spinner></div>
+    } @else {
+    <div class="pp-settings-stack">
+      <div class="pp-field">
+        <label class="pp-field-label" for="fld-park-name">
+          <ion-icon name="business-outline" class="pp-field-icon" aria-hidden="true"></ion-icon>
+          Nombre del parqueadero
+        </label>
+        <input
+          id="fld-park-name"
+          pInputText
+          [(ngModel)]="editName"
+          placeholder="Ej. Parqueadero Central"
+          autocomplete="off"
+          class="w-full"
+        />
+        <p class="pp-field-hint">Aparecerá en el encabezado de los tickets.</p>
+      </div>
+
+      <div class="pp-field">
+        <label class="pp-field-label" for="fld-park-address">
+          <ion-icon name="location-outline" class="pp-field-icon" aria-hidden="true"></ion-icon>
+          Dirección
+        </label>
+        <input
+          id="fld-park-address"
+          pInputText
+          [(ngModel)]="editAddress"
+          placeholder="Ej. Calle 10 # 5-32, Bogotá"
+          autocomplete="off"
+          class="w-full"
+        />
+        <p class="pp-field-hint">Se imprimirá en el ticket de ingreso y en el recibo de cobro.</p>
+      </div>
+
+      <div class="pp-capacity-row">
+        <div class="pp-field pp-capacity-field">
+          <label class="pp-field-label" for="fld-car-cap">
+            <ion-icon name="car-outline" class="pp-field-icon" aria-hidden="true"></ion-icon>
+            Cupos — Carros
+          </label>
+          <p-inputnumber
+            inputId="fld-car-cap"
+            [(ngModel)]="editCarCapacity"
+            [min]="0"
+            [max]="9999"
+            [showButtons]="true"
+            buttonLayout="horizontal"
+            incrementButtonIcon="pi pi-plus"
+            decrementButtonIcon="pi pi-minus"
+            [allowEmpty]="true"
+            placeholder="Sin límite"
+            styleClass="w-full"
+          />
+          <p class="pp-field-hint">Vacío = sin límite.</p>
         </div>
-        <div class="pp-profile-meta">
-          <h1 class="pp-profile-name">{{ u.name }}</h1>
-          <p class="pp-profile-email">{{ u.email }}</p>
-          <span class="pp-role-tag">{{ displayRole(u.role) }}</span>
+
+        <div class="pp-field pp-capacity-field">
+          <label class="pp-field-label" for="fld-moto-cap">
+            <ion-icon name="bicycle-outline" class="pp-field-icon" aria-hidden="true"></ion-icon>
+            Cupos — Motos
+          </label>
+          <p-inputnumber
+            inputId="fld-moto-cap"
+            [(ngModel)]="editMotoCapacity"
+            [min]="0"
+            [max]="9999"
+            [showButtons]="true"
+            buttonLayout="horizontal"
+            incrementButtonIcon="pi pi-plus"
+            decrementButtonIcon="pi pi-minus"
+            [allowEmpty]="true"
+            placeholder="Sin límite"
+            styleClass="w-full"
+          />
+          <p class="pp-field-hint">Vacío = sin límite.</p>
         </div>
       </div>
-    </p-card>
+    </div>
+
+    <div class="pp-settings-actions">
+      <p-button
+        label="Guardar cambios"
+        icon="pi pi-check"
+        [loading]="savingInfo"
+        [disabled]="savingInfo"
+        styleClass="w-full pp-settings-save"
+        (onClick)="saveParkingInfo()"
+      />
+    </div>
+    }
+  </p-card>
   }
 
-  @if (auth.hasRole('admin')) {
-    <p-card
-      header="Configuración del parqueadero"
-      subheader="Dirección y capacidad máxima de vehículos"
-      styleClass="pp-card-shadow ion-margin-top"
-    >
-      @if (loadingInfo) {
-        <div class="pp-center"><ion-spinner name="crescent" color="primary"></ion-spinner></div>
-      } @else {
-        <div class="pp-settings-stack">
-          <div class="pp-field">
-            <label class="pp-field-label" for="fld-park-name">
-              <ion-icon name="business-outline" class="pp-field-icon" aria-hidden="true"></ion-icon>
-              Nombre del parqueadero
-            </label>
-            <input
-              id="fld-park-name"
-              pInputText
-              [(ngModel)]="editName"
-              placeholder="Ej. Parqueadero Central"
-              autocomplete="off"
-              class="w-full"
-            />
-            <p class="pp-field-hint">Aparecerá en el encabezado de los tickets.</p>
-          </div>
-
-          <div class="pp-field">
-            <label class="pp-field-label" for="fld-park-address">
-              <ion-icon name="location-outline" class="pp-field-icon" aria-hidden="true"></ion-icon>
-              Dirección
-            </label>
-            <input
-              id="fld-park-address"
-              pInputText
-              [(ngModel)]="editAddress"
-              placeholder="Ej. Calle 10 # 5-32, Bogotá"
-              autocomplete="off"
-              class="w-full"
-            />
-            <p class="pp-field-hint">Se imprimirá en el ticket de ingreso y en el recibo de cobro.</p>
-          </div>
-
-          <div class="pp-capacity-row">
-            <div class="pp-field pp-capacity-field">
-              <label class="pp-field-label" for="fld-car-cap">
-                <ion-icon name="car-outline" class="pp-field-icon" aria-hidden="true"></ion-icon>
-                Cupos — Carros
-              </label>
-              <p-inputnumber
-                inputId="fld-car-cap"
-                [(ngModel)]="editCarCapacity"
-                [min]="0"
-                [max]="9999"
-                [showButtons]="true"
-                buttonLayout="horizontal"
-                incrementButtonIcon="pi pi-plus"
-                decrementButtonIcon="pi pi-minus"
-                [allowEmpty]="true"
-                placeholder="Sin límite"
-                styleClass="w-full"
-              />
-              <p class="pp-field-hint">Vacío = sin límite.</p>
-            </div>
-
-            <div class="pp-field pp-capacity-field">
-              <label class="pp-field-label" for="fld-moto-cap">
-                <ion-icon name="bicycle-outline" class="pp-field-icon" aria-hidden="true"></ion-icon>
-                Cupos — Motos
-              </label>
-              <p-inputnumber
-                inputId="fld-moto-cap"
-                [(ngModel)]="editMotoCapacity"
-                [min]="0"
-                [max]="9999"
-                [showButtons]="true"
-                buttonLayout="horizontal"
-                incrementButtonIcon="pi pi-plus"
-                decrementButtonIcon="pi pi-minus"
-                [allowEmpty]="true"
-                placeholder="Sin límite"
-                styleClass="w-full"
-              />
-              <p class="pp-field-hint">Vacío = sin límite.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="pp-settings-actions">
-          <p-button
-            label="Guardar cambios"
-            icon="pi pi-check"
-            [loading]="savingInfo"
-            [disabled]="savingInfo"
-            styleClass="w-full pp-settings-save"
-            (onClick)="saveParkingInfo()"
-          />
-        </div>
-      }
-    </p-card>
-  }
-
-  <p-card header="Notificaciones push" subheader="FCM en dispositivo nativo" styleClass="pp-card-shadow ion-margin-top">
+  <p-card
+    header="Notificaciones push"
+    subheader="FCM en dispositivo nativo"
+    styleClass="pp-card-shadow ion-margin-top"
+  >
     <p class="pp-push-msg">{{ pushStatus }}</p>
-    <p-button label="Activar push (dispositivo)" icon="pi pi-bell" styleClass="w-full" (onClick)="setupPush()" />
+    <p-button
+      label="Activar push (dispositivo)"
+      icon="pi pi-bell"
+      styleClass="w-full"
+      (onClick)="setupPush()"
+    />
   </p-card>
 
   <p-button

@@ -1,0 +1,7 @@
+node_modules/
+dist/
+releases/
+build/
+package-lock.json
+*.zip
+*.log

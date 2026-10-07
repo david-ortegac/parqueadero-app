@@ -28,6 +28,6 @@ export class InfraestructureMapperImpl implements IInfraestructureMapper {
   }
 
   toDomainList(items: DynamoPushDeviceItem[]): DomainPushDeviceEntity[] {
-    return items.map((i) => this.toDomain(i));
+    return items.map(i => this.toDomain(i));
   }
 }

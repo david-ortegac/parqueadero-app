@@ -36,6 +36,6 @@ export class InfraestructureMapperImpl implements IInfraestructureMapper {
   }
 
   toDomainList(items: DynamoUserItem[]): DomainUserEntity[] {
-    return items.map((item) => this.toDomain(item));
+    return items.map(item => this.toDomain(item));
   }
 }

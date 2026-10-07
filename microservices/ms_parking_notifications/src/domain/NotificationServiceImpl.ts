@@ -13,13 +13,13 @@ export class NotificationServiceImpl implements INotificationService {
     @inject(TYPES.NotificationRepository)
     private readonly repository: NotificationRepository,
     @inject(TYPES.IInfraestructureMapper)
-    private readonly mapper: IInfraestructureMapper
+    private readonly mapper: IInfraestructureMapper,
   ) {}
 
   async registerPushDevice(
     userId: string,
     token: string,
-    platform: DevicePlatform
+    platform: DevicePlatform,
   ): Promise<DomainPushDeviceEntity> {
     const domainEntity: DomainPushDeviceEntity = {
       token: token.trim(),
@@ -36,7 +36,7 @@ export class NotificationServiceImpl implements INotificationService {
     userId: string,
     title: string,
     body: string,
-    data: Record<string, string> = {}
+    data: Record<string, string> = {},
   ): Promise<{ sent: number; failed: number }> {
     const devices = await this.repository.findDevicesByUserId(String(userId));
 
@@ -52,7 +52,9 @@ export class NotificationServiceImpl implements INotificationService {
     for (const dev of devices) {
       try {
         if (!fcmServerKey) {
-          console.log(`[FCM Mock / DryRun] Send to token ${dev.token.substring(0, 15)}...: ${title} - ${body}`);
+          console.log(
+            `[FCM Mock / DryRun] Send to token ${dev.token.substring(0, 15)}...: ${title} - ${body}`,
+          );
           sent++;
           continue;
         }
@@ -74,7 +76,7 @@ export class NotificationServiceImpl implements INotificationService {
               Authorization: `key=${fcmServerKey}`,
             },
             timeout: 5000,
-          }
+          },
         );
 
         if (response.data?.failure > 0) {
@@ -88,8 +90,9 @@ export class NotificationServiceImpl implements INotificationService {
         } else {
           sent++;
         }
-      } catch (err: any) {
-        console.error(`[FCM Error] Failed sending push to token ${dev.token}:`, err?.message);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.error(`[FCM Error] Failed sending push to token ${dev.token}:`, message);
         failed++;
       }
     }

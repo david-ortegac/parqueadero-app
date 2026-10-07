@@ -3,10 +3,11 @@ import 'reflect-metadata';
 import { VehicleController } from './adapter/restful/v1/controller/VehicleController';
 import { container } from './ioc/inversify.config';
 import { TYPES } from './ioc/Types';
+import { LambdaEvent } from './models/Response';
 
 let controller: VehicleController;
 
-export const handler = async (event: any) => {
+export const handler = async (event: LambdaEvent) => {
   console.log('Incoming event to ms_parking_vehicles:', JSON.stringify(event));
 
   try {

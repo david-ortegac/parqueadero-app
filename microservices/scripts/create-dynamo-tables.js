@@ -5,11 +5,14 @@ const {
   DescribeTableCommand,
 } = require('@aws-sdk/client-dynamodb');
 
-const isLocal = process.env.IS_OFFLINE || process.env.NODE_ENV === 'development' || process.env.DYNAMODB_ENDPOINT;
+const isLocal =
+  process.env.IS_OFFLINE || process.env.NODE_ENV === 'development' || process.env.DYNAMODB_ENDPOINT;
 const endpoint = process.env.DYNAMODB_ENDPOINT || (isLocal ? 'http://localhost:8000' : undefined);
 const region = process.env.AWS_REGION || 'us-east-1';
 
-console.log(`🔌 Conectando a DynamoDB (Region: ${region}${endpoint ? `, Endpoint: ${endpoint}` : ''})...`);
+console.log(
+  `🔌 Conectando a DynamoDB (Region: ${region}${endpoint ? `, Endpoint: ${endpoint}` : ''})...`,
+);
 
 const client = new DynamoDBClient({
   region,

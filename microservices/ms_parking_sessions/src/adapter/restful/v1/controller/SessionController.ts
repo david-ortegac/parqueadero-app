@@ -1,5 +1,5 @@
-import { Response } from '../../../../models/Response';
+import { Response, LambdaEvent } from '../../../../models/Response';
 
 export interface SessionController {
-  handleRequest(event: any): Promise<Response>;
+  handleRequest(event: LambdaEvent): Promise<Response>;
 }

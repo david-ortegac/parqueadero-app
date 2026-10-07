@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
-import { OCCUPANCY_CHART_COLORS, OCCUPANCY_CHART_LABELS } from '../constants/parking-billing.catalog';
+import {
+  OCCUPANCY_CHART_COLORS,
+  OCCUPANCY_CHART_LABELS,
+} from '../constants/parking-billing.catalog';
 import { DashboardResponse } from './parking-api.service';
 
 export interface OccupancyChartData {
@@ -15,7 +18,10 @@ export interface OccupancyChartData {
 export class DashboardService {
   buildChartData(dashboard: DashboardResponse | null): OccupancyChartData {
     if (!dashboard) {
-      return { labels: [], datasets: [{ data: [], backgroundColor: [], hoverBackgroundColor: [] }] };
+      return {
+        labels: [],
+        datasets: [{ data: [], backgroundColor: [], hoverBackgroundColor: [] }],
+      };
     }
     const c = dashboard.occupancy.car.active;
     const m = dashboard.occupancy.motorcycle.active;
@@ -36,7 +42,10 @@ export class DashboardService {
       datasets: [
         {
           data: [c, m],
-          backgroundColor: [OCCUPANCY_CHART_COLORS.car.fill, OCCUPANCY_CHART_COLORS.motorcycle.fill],
+          backgroundColor: [
+            OCCUPANCY_CHART_COLORS.car.fill,
+            OCCUPANCY_CHART_COLORS.motorcycle.fill,
+          ],
           hoverBackgroundColor: [
             OCCUPANCY_CHART_COLORS.car.hover,
             OCCUPANCY_CHART_COLORS.motorcycle.hover,

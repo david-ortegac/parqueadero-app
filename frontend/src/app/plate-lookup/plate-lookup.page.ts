@@ -155,15 +155,18 @@ export class PlateLookupPage implements OnInit, OnDestroy {
       replaceUrl: true,
     });
     this.api.lookupPublicSessionByPlate(plate).subscribe({
-      next: (row) => {
+      next: row => {
         this.loading = false;
         this.result = row;
         this.nowMs = Date.now();
         this.loadOccupancy();
       },
-      error: (err) => {
+      error: err => {
         this.loading = false;
-        this.errorMessage = apiErrorMessage(err, 'No se pudo consultar la placa. Intenta de nuevo.');
+        this.errorMessage = apiErrorMessage(
+          err,
+          'No se pudo consultar la placa. Intenta de nuevo.',
+        );
       },
     });
   }
@@ -175,7 +178,7 @@ export class PlateLookupPage implements OnInit, OnDestroy {
   private loadOccupancy(): void {
     this.loadingOccupancy = true;
     this.api.getPublicOccupancy().subscribe({
-      next: (row) => {
+      next: row => {
         this.occupancy = row;
         this.loadingOccupancy = false;
       },
@@ -186,6 +189,9 @@ export class PlateLookupPage implements OnInit, OnDestroy {
   }
 
   private normalizePlate(value: string): string {
-    return value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    return value
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '')
+      .slice(0, 6);
   }
 }

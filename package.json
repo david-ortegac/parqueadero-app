@@ -9,6 +9,14 @@
     "cap:sync": "npm run cap:sync --prefix frontend",
     "cap:open:android": "npm run cap:open:android --prefix frontend",
     "clean:install": "npm run clean:install --prefix microservices",
-    "clean:install:microservices": "npm run clean:install --prefix microservices"
+    "clean:install:microservices": "npm run clean:install --prefix microservices",
+    "lint": "npm run lint --prefix microservices && npm run lint --prefix frontend",
+    "lint:microservices": "npm run lint --prefix microservices",
+    "lint:frontend": "npm run lint --prefix frontend",
+    "lint:fix": "npm run lint:fix --prefix microservices && npm run lint:fix --prefix frontend",
+    "format": "npm run format --prefix microservices && npm run format --prefix frontend",
+    "format:microservices": "npm run format --prefix microservices",
+    "format:frontend": "npm run format --prefix frontend",
+    "format:check": "npm run format:check --prefix microservices && npm run format:check --prefix frontend"
   }
 }

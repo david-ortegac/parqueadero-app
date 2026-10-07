@@ -44,7 +44,7 @@ export class InfraestructureMapperImpl implements IInfraestructureMapper {
   }
 
   rateListToDomain(items: DynamoRateItem[]): DomainRateEntity[] {
-    return items.map((item) => this.rateToDomain(item));
+    return items.map(item => this.rateToDomain(item));
   }
 
   capacityToDomain(item: DynamoCapacityItem): DomainCapacityEntity {
@@ -71,7 +71,7 @@ export class InfraestructureMapperImpl implements IInfraestructureMapper {
   }
 
   capacityListToDomain(items: DynamoCapacityItem[]): DomainCapacityEntity[] {
-    return items.map((item) => this.capacityToDomain(item));
+    return items.map(item => this.capacityToDomain(item));
   }
 
   scheduleToDomain(item: DynamoScheduleItem): DomainScheduleEntity {
@@ -102,6 +102,6 @@ export class InfraestructureMapperImpl implements IInfraestructureMapper {
   }
 
   scheduleListToDomain(items: DynamoScheduleItem[]): DomainScheduleEntity[] {
-    return items.map((item) => this.scheduleToDomain(item));
+    return items.map(item => this.scheduleToDomain(item));
   }
 }

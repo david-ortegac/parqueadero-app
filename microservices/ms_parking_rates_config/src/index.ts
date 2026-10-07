@@ -3,10 +3,11 @@ import 'reflect-metadata';
 import { RatesConfigController } from './adapter/restful/v1/controller/RatesConfigController';
 import { container } from './ioc/inversify.config';
 import { TYPES } from './ioc/Types';
+import { LambdaEvent } from './models/Response';
 
 let controller: RatesConfigController;
 
-export const handler = async (event: any) => {
+export const handler = async (event: LambdaEvent) => {
   console.log('Incoming event:', JSON.stringify(event));
 
   try {

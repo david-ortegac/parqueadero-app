@@ -35,10 +35,7 @@ export class ColombianPlateValidator {
   }
 
   static isValidAnyClass(normalizedPlate: string): boolean {
-    return (
-      this.isValid(normalizedPlate, 'car') ||
-      this.isValid(normalizedPlate, 'motorcycle')
-    );
+    return this.isValid(normalizedPlate, 'car') || this.isValid(normalizedPlate, 'motorcycle');
   }
 
   static messageFor(vehicleClass: 'car' | 'motorcycle'): string {

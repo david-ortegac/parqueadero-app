@@ -20,14 +20,10 @@ export class SessionServiceImpl implements ISessionService {
     @inject(TYPES.IInfraestructureMapper)
     private readonly mapper: IInfraestructureMapper,
     @inject(TYPES.RatesConfigReader)
-    private readonly ratesReader: RatesConfigReader
+    private readonly ratesReader: RatesConfigReader,
   ) {}
 
-  private calculateAmount(
-    enteredAtIso: string,
-    mode: BillingMode,
-    unitPrice: number
-  ): string {
+  private calculateAmount(enteredAtIso: string, mode: BillingMode, unitPrice: number): string {
     const entry = new Date(enteredAtIso).getTime();
     const exit = Date.now();
     const diffMs = Math.max(0, exit - entry);
@@ -154,10 +150,7 @@ export class SessionServiceImpl implements ISessionService {
 
     let finalAmount = item.amount_due;
     if (['minute', 'hour', 'day'].includes(item.billing_mode)) {
-      const rate = await this.ratesReader.getRate(
-        item.vehicle_class || 'car',
-        item.billing_mode
-      );
+      const rate = await this.ratesReader.getRate(item.vehicle_class || 'car', item.billing_mode);
       const unitPrice = rate ? parseFloat(rate.price) || 0 : 0;
       finalAmount = this.calculateAmount(item.entered_at, item.billing_mode, unitPrice);
     }
@@ -202,7 +195,7 @@ export class SessionServiceImpl implements ISessionService {
 
   async getRevenueSummary(
     from?: string,
-    to?: string
+    to?: string,
   ): Promise<{
     total: string;
     by_vehicle_class: Record<string, string>;
@@ -263,10 +256,12 @@ export class SessionServiceImpl implements ISessionService {
     };
   }
 
-  async lookupPublicSessionByPlate(plate: string): Promise<any> {
+  async lookupPublicSessionByPlate(plate: string): Promise<Record<string, unknown>> {
     const normalized = ColombianPlateValidator.normalize(plate);
     if (!normalized || !ColombianPlateValidator.isValidAnyClass(normalized)) {
-      throw new Error('Formato de placa no válido. Usa el formato colombiano (ej. ABC123 o ABC12A).');
+      throw new Error(
+        'Formato de placa no válido. Usa el formato colombiano (ej. ABC123 o ABC12A).',
+      );
     }
 
     const vehicleId = `VEH_${normalized}`;
@@ -333,7 +328,7 @@ export class SessionServiceImpl implements ISessionService {
     };
   }
 
-  async getOwnerActiveSession(vehicleId: string): Promise<any> {
+  async getOwnerActiveSession(vehicleId: string): Promise<Record<string, unknown> | null> {
     const session = await this.repository.findActiveByVehicleId(vehicleId);
     if (!session) {
       return null;

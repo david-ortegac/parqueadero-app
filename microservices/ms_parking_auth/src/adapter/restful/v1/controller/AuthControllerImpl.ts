@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 
 import { IAuthService } from '../../../../application/services/IAuthService';
 import { TYPES } from '../../../../ioc/Types';
-import { Response } from '../../../../models/Response';
+import { Response, LambdaEvent } from '../../../../models/Response';
 import { hasRequiredRole, validateTokenFromEvent } from '../../../../utils/jwt-validator';
 import { ResponseBuilder } from '../../../../utils/response-builder';
 import { IAdapterMapper } from './Mapper/IAdapterMapper';
@@ -14,12 +14,12 @@ export class AuthControllerImpl implements AuthController {
     @inject(TYPES.AuthService)
     private readonly service: IAuthService,
     @inject(TYPES.IAdapterMapper)
-    private readonly mapper: IAdapterMapper
+    private readonly mapper: IAdapterMapper,
   ) {}
 
-  private parseBody(event: any): any {
+  private parseBody(event: LambdaEvent): Record<string, unknown> {
     if (!event.body) return {};
-    if (typeof event.body === 'object') return event.body;
+    if (typeof event.body === 'object') return event.body as Record<string, unknown>;
     try {
       return JSON.parse(event.body);
     } catch {
@@ -27,25 +27,17 @@ export class AuthControllerImpl implements AuthController {
     }
   }
 
-  private getMethod(event: any): string {
-    return (
-      event?.requestContext?.http?.method ||
-      event?.httpMethod ||
-      'GET'
-    ).toUpperCase();
+  private getMethod(event: LambdaEvent): string {
+    return (event?.requestContext?.http?.method || event?.httpMethod || 'GET').toUpperCase();
   }
 
-  private getPath(event: any): string {
-    const raw =
-      event?.rawPath ||
-      event?.requestContext?.http?.path ||
-      event?.path ||
-      '';
+  private getPath(event: LambdaEvent): string {
+    const raw = event?.rawPath || event?.requestContext?.http?.path || event?.path || '';
     const clean = raw.split('?')[0];
     return clean.replace(/^\/api\/v1/, '').replace(/^\/v1/, '') || '/';
   }
 
-  async handleRequest(event: any): Promise<Response> {
+  async handleRequest(event: LambdaEvent): Promise<Response> {
     const method = this.getMethod(event);
     const path = this.getPath(event);
     const body = this.parseBody(event);
@@ -74,18 +66,21 @@ export class AuthControllerImpl implements AuthController {
             token: result.token,
             user: this.mapper.toDTO(result.user),
           });
-        } catch (err: any) {
-          if (err.statusCode === 403) {
-            return ResponseBuilder.forbidden(err.message);
+        } catch (err: unknown) {
+          const error = err as { statusCode?: number; message?: string };
+          if (error.statusCode === 403) {
+            return ResponseBuilder.forbidden(error.message || 'Acceso denegado.');
           }
-          return ResponseBuilder.unprocessableEntity(err.message || 'Credenciales inválidas.');
+          return ResponseBuilder.unprocessableEntity(error.message || 'Credenciales inválidas.');
         }
       }
 
       // 2. POST /register
       if (path === '/register' && method === 'POST') {
         if (!body.name || !body.email || !body.document || !body.password) {
-          return ResponseBuilder.unprocessableEntity('Nombre, email, documento y contraseña son requeridos.');
+          return ResponseBuilder.unprocessableEntity(
+            'Nombre, email, documento y contraseña son requeridos.',
+          );
         }
 
         try {
@@ -100,8 +95,9 @@ export class AuthControllerImpl implements AuthController {
             message: result.message,
             user: this.mapper.toDTO(result.user),
           });
-        } catch (err: any) {
-          return ResponseBuilder.unprocessableEntity(err.message || 'Error en registro.');
+        } catch (err: unknown) {
+          const error = err as Error;
+          return ResponseBuilder.unprocessableEntity(error.message || 'Error en registro.');
         }
       }
 
@@ -135,7 +131,9 @@ export class AuthControllerImpl implements AuthController {
 
         if (method === 'POST') {
           if (!body.name || !body.email || !body.password || !body.role) {
-            return ResponseBuilder.unprocessableEntity('name, email, password y role son requeridos.');
+            return ResponseBuilder.unprocessableEntity(
+              'name, email, password y role son requeridos.',
+            );
           }
 
           const created = await this.service.createUser({
@@ -209,7 +207,10 @@ export class AuthControllerImpl implements AuthController {
             return ResponseBuilder.forbidden('No puedes desactivar tu propia cuenta.');
           }
 
-          const updated = await this.service.updateVehicleOwnerActivation(userId, Boolean(body.is_active));
+          const updated = await this.service.updateVehicleOwnerActivation(
+            userId,
+            Boolean(body.is_active),
+          );
           return ResponseBuilder.success({
             id: updated.id,
             is_active: updated.is_active,
@@ -218,7 +219,7 @@ export class AuthControllerImpl implements AuthController {
       }
 
       return ResponseBuilder.notFound(`Ruta no encontrada: ${method} ${path}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error handling request:', err);
       return ResponseBuilder.internalError(err);
     }
