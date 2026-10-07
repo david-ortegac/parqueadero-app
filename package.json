@@ -7,6 +7,8 @@
     "android:apk:release": "npm run android:apk:release --prefix frontend",
     "build:android": "npm run build:android --prefix frontend",
     "cap:sync": "npm run cap:sync --prefix frontend",
-    "cap:open:android": "npm run cap:open:android --prefix frontend"
+    "cap:open:android": "npm run cap:open:android --prefix frontend",
+    "clean:install": "npm run clean:install --prefix microservices",
+    "clean:install:microservices": "npm run clean:install --prefix microservices"
   }
 }

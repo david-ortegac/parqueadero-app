@@ -16,7 +16,8 @@
     "clean:all": "npm run clean --workspaces --if-present",
     "dynamo:create-tables": "node scripts/create-dynamo-tables.js",
     "dynamo:seed": "node scripts/seed-dynamo-data.js",
-    "deploy:sam": "./scripts/deploy-aws.sh"
+    "deploy:sam": "./scripts/deploy-aws.sh",
+    "clean:install": "npx rimraf -g package-lock.json node_modules \"ms_parking_*/node_modules\" \"ms_parking_*/package-lock.json\" && npm install"
   },
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.1147.0",
