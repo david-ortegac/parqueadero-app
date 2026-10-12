@@ -43,19 +43,13 @@ export class InfraestructureMapperImpl implements IInfraestructureMapper {
 
   toEntity(domain: DomainParkingSessionEntity): DynamoSessionItem {
     const now = new Date().toISOString();
-    let exitDate: string | null = null;
-    if (domain.exited_at) {
-      exitDate = domain.exited_at.split('T')[0];
-    }
 
-    return {
+    const entity: DynamoSessionItem = {
       id: domain.id,
       vehicle_id: domain.vehicle_id,
       status: domain.status,
-      exit_date: exitDate,
       billing_mode: domain.billing_mode,
       entered_at: domain.entered_at,
-      exited_at: domain.exited_at || null,
       amount_due: domain.amount_due,
       amount_paid: domain.amount_paid || null,
       period_starts_at: domain.period_starts_at || null,
@@ -72,6 +66,13 @@ export class InfraestructureMapperImpl implements IInfraestructureMapper {
       created_at: domain.created_at || now,
       updated_at: now,
     };
+
+    if (domain.exited_at) {
+      entity.exited_at = domain.exited_at;
+      entity.exit_date = domain.exited_at.split('T')[0];
+    }
+
+    return entity;
   }
 
   toDomainList(items: DynamoSessionItem[]): DomainParkingSessionEntity[] {

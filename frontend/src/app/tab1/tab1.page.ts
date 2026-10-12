@@ -51,8 +51,8 @@ export class Tab1Page implements OnInit, OnDestroy {
   dashboard: DashboardResponse | null = null;
   rates: Rate[] = [];
   /** Borradores locales por id de tarifa (solo admin). */
-  rateDrafts: Record<number, { price: number; is_active: boolean }> = {};
-  savingRateId: number | null = null;
+  rateDrafts: Record<string | number, { price: number; is_active: boolean }> = {};
+  savingRateId: string | number | null = null;
   revenueTotal: string | null = null;
   loading = true;
   error: string | null = null;
@@ -152,6 +152,10 @@ export class Tab1Page implements OnInit, OnDestroy {
     this.load();
   }
 
+  ionViewWillEnter(): void {
+    this.load();
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -194,9 +198,12 @@ export class Tab1Page implements OnInit, OnDestroy {
     if (user.role === 'admin') {
       this.api.getAdminRates().subscribe({
         next: r => {
-          this.rates = r;
+          this.rates = [...r];
           this.syncRateDraftsFromRates();
           this.syncRatesAccordionOpenWithGroups();
+        },
+        error: () => {
+          // Mantener tarifas existentes si la red falla
         },
       });
     }
@@ -274,7 +281,7 @@ export class Tab1Page implements OnInit, OnDestroy {
   }
 
   private syncRateDraftsFromRates(): void {
-    const next: Record<number, { price: number; is_active: boolean }> = {};
+    const next: Record<string | number, { price: number; is_active: boolean }> = {};
     for (const r of this.rates) {
       next[r.id] = {
         price: Number(r.price),
@@ -316,7 +323,8 @@ export class Tab1Page implements OnInit, OnDestroy {
 
   async saveRate(rate: Rate): Promise<void> {
     const draft = this.rateDrafts[rate.id];
-    if (!draft || Number.isNaN(draft.price) || draft.price < 0) {
+    const priceNum = draft ? Number(draft.price) : NaN;
+    if (!draft || Number.isNaN(priceNum) || priceNum < 0) {
       const t = await this.toast.create({
         message: 'Indica un precio válido (mayor o igual a 0).',
         duration: 2500,
@@ -329,14 +337,15 @@ export class Tab1Page implements OnInit, OnDestroy {
     this.savingRateId = rate.id;
     this.api
       .patchAdminRate(rate.id, {
-        price: draft.price,
+        price: priceNum,
         is_active: draft.is_active,
       })
       .subscribe({
         next: updated => {
-          const i = this.rates.findIndex(x => x.id === rate.id);
+          const i = this.rates.findIndex(x => String(x.id) === String(rate.id));
           if (i >= 0) {
             this.rates[i] = updated;
+            this.rates = [...this.rates];
           }
           this.syncRateDraftsFromRates();
           this.savingRateId = null;

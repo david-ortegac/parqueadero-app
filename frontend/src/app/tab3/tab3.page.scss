@@ -1,61 +1,79 @@
-.pp-card-shadow {
-  /* Estilos globales en global.scss */
+/*
+ * /cuenta — Apple Settings & Profile (UI/UX Pro Max)
+ */
+
+/* Profile Header estilo Apple ID */
+.pp-profile-card {
+  border-radius: var(--pp-radius-lg, 20px);
 }
 
 .pp-profile-head {
   display: flex;
   align-items: center;
-  gap: var(--space-md, 1rem);
+  gap: var(--space-md);
 }
 
 .pp-profile-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(37, 99, 235, 0.1);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(59, 130, 246, 0.25) 100%);
   color: var(--ion-color-primary);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
   flex-shrink: 0;
 
   ion-icon {
-    font-size: 1.75rem;
+    font-size: 2rem;
   }
+}
+
+.pp-profile-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 
 .pp-profile-name {
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.3rem;
+  font-weight: 800;
   font-family: var(--pp-font-body);
-  color: var(--pp-heading-color, var(--pp-foreground));
-  line-height: 1.25;
+  color: var(--pp-foreground);
+  line-height: 1.2;
+  letter-spacing: -0.025em;
 }
 
 .pp-profile-email {
-  margin: 0.15rem 0 0.5rem;
-  font-size: 0.9rem;
-  color: var(--pp-muted-color, var(--ion-color-medium));
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--pp-muted);
   word-break: break-all;
 }
 
 .pp-role-tag {
   display: inline-block;
-  padding: 0.2rem 0.55rem;
-  border-radius: 999px;
-  font-size: 0.7rem;
+  align-self: flex-start;
+  margin-top: 0.35rem;
+  padding: 3px 10px;
+  border-radius: var(--pp-radius-pill);
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  background: rgba(5, 150, 105, 0.12);
-  color: #047857;
+  background: var(--pp-status-activo-bg);
+  color: var(--pp-status-activo-fg);
+  border: 1px solid rgba(5, 150, 105, 0.2);
 }
 
 .pp-push-msg {
   margin: 0 0 1rem;
-  font-size: 0.9rem;
-  color: var(--pp-muted-color, var(--ion-color-medium));
+  font-size: 0.88rem;
+  color: var(--pp-muted);
+  line-height: 1.45;
 }
 
 .pp-page ::ng-deep .w-full {
@@ -77,45 +95,24 @@
 .pp-field-label {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--pp-muted-color, var(--ion-color-medium));
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--pp-foreground);
+  letter-spacing: -0.01em;
 }
 
 .pp-field-icon {
-  font-size: 1rem;
+  font-size: 1.05rem;
+  color: var(--ion-color-primary);
   flex-shrink: 0;
 }
 
 .pp-field-hint {
   margin: 0;
   font-size: 0.75rem;
-  color: var(--pp-muted-color, var(--ion-color-medium));
+  color: var(--pp-muted);
   line-height: 1.35;
-}
-
-::ng-deep .pp-field .p-inputtext {
-  border-radius: 8px;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-  width: 100%;
-}
-
-::ng-deep .pp-field .p-inputtext:focus {
-  box-shadow: 0 0 0 3px rgba(var(--ion-color-primary-rgb, 37, 99, 235), 0.2);
-  border-color: var(--ion-color-primary);
-}
-
-::ng-deep .pp-field .p-inputnumber {
-  width: 100%;
-}
-
-::ng-deep .pp-field .p-inputnumber .p-inputtext {
-  width: 100%;
 }
 
 .pp-capacity-row {
@@ -124,7 +121,7 @@
   gap: 1rem;
 }
 
-@media (max-width: 420px) {
+@media (max-width: 440px) {
   .pp-capacity-row {
     grid-template-columns: 1fr;
   }
@@ -139,26 +136,147 @@
 .pp-settings-actions {
   margin-top: 1.25rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--pp-border, rgba(15, 39, 68, 0.08));
+  border-top: 1px solid var(--pp-border);
 }
 
-::ng-deep .pp-settings-save,
+::ng-deep .pp-settings-save {
+  min-height: 48px;
+  font-weight: 700;
+  border-radius: var(--pp-radius-md);
+}
+
 ::ng-deep .pp-logout-btn {
-  min-height: 44px;
+  min-height: 48px;
+  font-weight: 700;
+  border-radius: var(--pp-radius-md);
+  margin-bottom: 2rem;
+}
+
+.pp-policy-card-desc {
+  margin: 0 0 1rem;
+  font-size: 0.88rem;
+  color: var(--pp-muted);
+  line-height: 1.45;
+}
+
+/* Zona de peligro */
+.pp-danger-card {
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  background: rgba(239, 68, 68, 0.02);
+}
+
+.pp-danger-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pp-danger-desc {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--pp-muted);
+  line-height: 1.45;
+}
+
+/* Modal de Política de Tratamiento de Datos */
+.pp-policy-doc {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.pp-policy-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--pp-radius-pill, 9999px);
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--ion-color-primary, #2563eb);
+  margin-bottom: 0.75rem;
+}
+
+.pp-policy-heading {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem;
+  color: var(--pp-foreground, #0f172a);
+  letter-spacing: -0.02em;
+}
+
+.pp-policy-lead {
+  font-size: 0.92rem;
+  color: var(--pp-muted, #64748b);
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+}
+
+.pp-policy-callout {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--pp-radius-md, 12px);
+  margin-bottom: 1.5rem;
+  align-items: flex-start;
+}
+
+.pp-policy-callout-icon {
+  font-size: 1.5rem;
+  color: #d97706;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.pp-policy-callout-title {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #b45309;
+  margin-bottom: 0.2rem;
+}
+
+.pp-policy-callout-copy {
+  font-size: 0.825rem;
+  color: #78350f;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.pp-policy-sec {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--pp-border, rgba(15, 23, 42, 0.06));
+}
+
+.pp-policy-sec-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+  color: var(--pp-foreground, #1e293b);
+}
+
+.pp-policy-sec-p {
+  font-size: 0.875rem;
+  color: var(--pp-muted, #475569);
+  line-height: 1.5;
+  margin: 0 0 0.5rem;
 }
 
 .ion-palette-dark {
-  .pp-role-tag {
-    background: rgba(45, 212, 191, 0.15);
-    color: #2dd4bf;
-  }
-
   .pp-profile-avatar {
-    background: rgba(96, 165, 250, 0.15);
-    color: #60a5fa;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.25) 0%, rgba(59, 130, 246, 0.35) 100%);
+    border-color: rgba(255, 255, 255, 0.12);
   }
 
-  .pp-settings-actions {
-    border-top-color: rgba(255, 255, 255, 0.07);
+  .pp-danger-card {
+    border-color: rgba(239, 68, 68, 0.4) !important;
+    background: rgba(239, 68, 68, 0.05);
+  }
+
+  .pp-policy-callout-copy {
+    color: #fde68a;
   }
 }

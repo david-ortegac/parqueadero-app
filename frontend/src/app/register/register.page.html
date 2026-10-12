@@ -118,6 +118,47 @@
               [disabled]="loading"
             />
           </div>
+
+          <div class="pp-policy-box">
+            <div class="pp-policy-item">
+              <ion-checkbox
+                [(ngModel)]="acceptDataPolicy"
+                name="acceptDataPolicy"
+                [disabled]="loading"
+                justify="start"
+                labelPlacement="end"
+                class="pp-policy-checkbox"
+              >
+                <span class="pp-policy-text">
+                  Autorizo el tratamiento de mis datos personales según la
+                  <button
+                    type="button"
+                    (click)="openPolicyModal($event)"
+                    class="pp-policy-btn-link"
+                  >
+                    Política de Tratamiento de Datos
+                  </button>
+                  (Ley 1581 de 2012).
+                </span>
+              </ion-checkbox>
+            </div>
+
+            <div class="pp-policy-item">
+              <ion-checkbox
+                [(ngModel)]="isAtLeast14"
+                name="isAtLeast14"
+                [disabled]="loading"
+                justify="start"
+                labelPlacement="end"
+                class="pp-policy-checkbox"
+              >
+                <span class="pp-policy-text">
+                  Certifico que tengo <strong>mínimo 14 años de edad</strong> para utilizar esta
+                  aplicación.
+                </span>
+              </ion-checkbox>
+            </div>
+          </div>
         </div>
 
         <p class="pp-register-hint">
@@ -132,7 +173,7 @@
             icon="pi pi-user-plus"
             styleClass="w-full pp-auth-submit"
             [loading]="loading"
-            [disabled]="loading"
+            [disabled]="loading || !acceptDataPolicy || !isAtLeast14"
           />
         </div>
       </form>
@@ -146,4 +187,64 @@
       </p>
     </section>
   </div>
+
+  <ion-modal
+    [isOpen]="policyModalOpen"
+    (didDismiss)="policyModalOpen = false"
+    class="pp-policy-modal"
+  >
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="pp-toolbar">
+          <ion-title>Tratamiento de Datos</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="policyModalOpen = false" fill="clear">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding pp-policy-modal-content">
+        <div class="pp-policy-doc">
+          <div class="pp-policy-badge">{{ policy.legalBasis }}</div>
+          <h2 class="pp-policy-heading">{{ policy.title }}</h2>
+          <p class="pp-policy-lead">{{ policy.summary }}</p>
+
+          <div class="pp-policy-callout">
+            <ion-icon
+              name="shield-checkmark-outline"
+              class="pp-policy-callout-icon"
+              aria-hidden="true"
+            ></ion-icon>
+            <div>
+              <strong class="pp-policy-callout-title"
+                >Requisito estricto: Mínimo 14 años de edad</strong
+              >
+              <p class="pp-policy-callout-copy">
+                Conforme al régimen de protección de datos personales de Colombia, los menores de 14
+                años no tienen autorización para crear cuentas en esta plataforma. El usuario
+                certifica cumplir este requisito.
+              </p>
+            </div>
+          </div>
+
+          @for (sec of policy.sections; track sec.title) {
+          <div class="pp-policy-sec">
+            <h3 class="pp-policy-sec-title">{{ sec.title }}</h3>
+            @for (par of sec.content; track par) {
+            <p class="pp-policy-sec-p">{{ par }}</p>
+            }
+          </div>
+          }
+        </div>
+
+        <div class="ion-padding-vertical">
+          <p-button
+            label="He leído y comprendo la política"
+            icon="pi pi-check"
+            styleClass="w-full"
+            (onClick)="policyModalOpen = false"
+          />
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

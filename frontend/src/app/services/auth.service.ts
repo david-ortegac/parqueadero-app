@@ -83,8 +83,40 @@ export class AuthService {
     document: string;
     email: string;
     password: string;
+    data_policy_accepted?: boolean;
+    is_at_least_14?: boolean;
   }): Observable<{ message?: string }> {
     return this.http.post<{ message?: string }>(`${environment.apiUrl}/register`, body);
+  }
+
+  updateProfile(body: {
+    name?: string;
+    email?: string;
+    password?: string;
+  }): Observable<{ user: SessionUser; token?: string; message?: string }> {
+    return this.http
+      .patch<{ user: SessionUser; token?: string; message?: string }>(
+        `${environment.apiUrl}/me`,
+        body,
+      )
+      .pipe(
+        tap(res => {
+          if (res.token) {
+            localStorage.setItem(TOKEN_KEY, res.token);
+          }
+          if (res.user) {
+            this.persistUser(res.user);
+          }
+        }),
+      );
+  }
+
+  deleteAccount(): Observable<{ message?: string }> {
+    return this.http.delete<{ message?: string }>(`${environment.apiUrl}/me`).pipe(
+      tap(() => {
+        this.clearLocal();
+      }),
+    );
   }
 
   logout(): void {

@@ -1,0 +1,20 @@
+version = 0.1
+
+[default]
+[default.global.parameters]
+stack_name = "parqueadero-serverless-stack"
+
+[default.build.parameters]
+cached = true
+parallel = true
+
+[default.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = false
+resolve_s3 = true
+region = "us-east-1"
+parameter_overrides = [
+  "JwtSecretKey=ojMs4hPfPZTpwOppAXzZEip1rS0BJsouDpg3daquB20S2VG1NbyHTgykg47EO6KLxQN1QCvodKjNQOR7PLXxhf",
+  "LegacyBackendUrl=https://parkingsoft.davidortega.dev/api"
+]
+image_repositories = []

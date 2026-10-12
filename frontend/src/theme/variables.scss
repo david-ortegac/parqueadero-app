@@ -1,18 +1,36 @@
-// Parqueadero — Ops SaaS (ui-ux-pro-max adaptado)
-// Primary azul operativo + verde éxito + rojo incidente
+// Parqueadero — Sistema de Diseño Apple Design & UI/UX Pro Max
+// Paleta: Ops Blue (Apple System Blue) + Emerald (Éxito) + Red (Ocupado/Alerta) + Amber (Motos)
 
 :root {
-  --pp-font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --pp-font-display: 'Calistoga', Georgia, serif;
-  --pp-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --pp-font-body:
+    'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  --pp-font-display: 'Calistoga', -apple-system, Georgia, serif;
+  --pp-font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
 
-  --pp-page-bg: #f1f5f9;
+  /* Colores de Fondo y Superficies (Apple Light Canvas) */
+  --pp-page-bg: #f8fafc;
   --pp-foreground: #0f172a;
-  --pp-muted: #475569;
-  --pp-border: #e2e8f0;
+  --pp-muted: #64748b;
+  --pp-border: rgba(226, 232, 240, 0.85);
   --pp-surface: #ffffff;
-  --pp-card-shadow: 0 1px 2px rgba(15, 39, 68, 0.04), 0 8px 24px rgba(15, 39, 68, 0.06);
-  --pp-card-radius: 16px;
+  --pp-surface-subtle: #f1f5f9;
+
+  /* Materiales y Translucidez estilo Apple Glassmorphism */
+  --pp-glass-bg: rgba(255, 255, 255, 0.78);
+  --pp-glass-bg-subtle: rgba(255, 255, 255, 0.62);
+  --pp-glass-border: rgba(255, 255, 255, 0.8);
+  --pp-glass-border-hairline: rgba(226, 232, 240, 0.75);
+  --pp-glass-blur: 24px;
+  --pp-glass-saturate: 190%;
+  --pp-specular-light: rgba(255, 255, 255, 0.9);
+
+  /* Radios y Espaciado Apple Inset */
+  --pp-radius-sm: 10px;
+  --pp-radius-md: 14px;
+  --pp-radius-lg: 20px;
+  --pp-radius-xl: 26px;
+  --pp-radius-pill: 9999px;
+  --pp-card-radius: 20px;
 
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
@@ -21,109 +39,145 @@
   --space-xl: 2rem;
   --space-2xl: 3rem;
 
-  --shadow-sm: 0 1px 2px rgba(15, 39, 68, 0.05);
-  --shadow-md: 0 4px 12px rgba(15, 39, 68, 0.08);
-  --shadow-lg: 0 12px 28px rgba(15, 39, 68, 0.12);
+  /* Sombras Difusas Ambientales Apple */
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+  --shadow-md: 0 8px 24px -4px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  --shadow-lg: 0 16px 36px -6px rgba(15, 23, 42, 0.08), 0 4px 14px -2px rgba(15, 23, 42, 0.03);
+  --pp-card-shadow: 0 4px 20px -2px rgba(15, 39, 68, 0.05), 0 1px 3px 0 rgba(15, 39, 68, 0.03);
 
-  --pp-motion-fast: 150ms;
-  --pp-motion: 200ms;
-  --pp-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Física de Movimiento Apple (Resorte amortiguado críticamente) */
+  --pp-motion-fast: 120ms;
+  --pp-motion: 220ms;
+  --pp-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --pp-spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --pp-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --pp-press-scale: 0.975;
 
-  --pp-rate-input-text: var(--ion-color-secondary);
-
+  /* Gráficas y Métricas */
   --pp-chart-car: #2563eb;
-  --pp-chart-moto: #f97316;
+  --pp-chart-moto: #f59e0b;
   --pp-chart-empty: #e2e8f0;
 
   --pp-accent: #059669;
   --pp-accent-rgb: 5, 150, 105;
 
-  --pp-status-activo-bg: #ecfdf5;
+  /* Estados Operativos */
+  --pp-status-activo-bg: rgba(5, 150, 105, 0.1);
   --pp-status-activo-fg: #047857;
-  --pp-status-vencido-bg: #fef2f2;
+  --pp-status-vencido-bg: rgba(220, 38, 38, 0.1);
   --pp-status-vencido-fg: #b91c1c;
 
-  /** Ionic — primary Ops blue */
+  /* Placa Vehicular */
+  --pp-plate-bg: #fef08a;
+  --pp-plate-fg: #1c1917;
+  --pp-plate-border: #ca8a04;
+
+  /** Ionic System Colors — Apple Inspired Palette */
   --ion-color-primary: #2563eb;
   --ion-color-primary-rgb: 37, 99, 235;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #2057ce;
-  --ion-color-primary-tint: #3b73ed;
+  --ion-color-primary-shade: #1d4ed8;
+  --ion-color-primary-tint: #3b82f6;
 
-  --ion-color-secondary: #3b82f6;
-  --ion-color-secondary-rgb: 59, 130, 246;
+  --ion-color-secondary: #0284c7;
+  --ion-color-secondary-rgb: 2, 132, 199;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #3472d8;
-  --ion-color-secondary-tint: #4f8ff7;
+  --ion-color-secondary-shade: #0369a1;
+  --ion-color-secondary-tint: #38bdf8;
 
   --ion-color-tertiary: #64748b;
   --ion-color-tertiary-rgb: 100, 116, 139;
   --ion-color-tertiary-contrast: #ffffff;
   --ion-color-tertiary-contrast-rgb: 255, 255, 255;
-  --ion-color-tertiary-shade: #58657a;
-  --ion-color-tertiary-tint: #748196;
+  --ion-color-tertiary-shade: #475569;
+  --ion-color-tertiary-tint: #94a3b8;
 
   --ion-color-success: #059669;
   --ion-color-success-rgb: 5, 150, 105;
   --ion-color-success-contrast: #ffffff;
   --ion-color-success-contrast-rgb: 255, 255, 255;
-  --ion-color-success-shade: #04845c;
-  --ion-color-success-tint: #1ea578;
+  --ion-color-success-shade: #047857;
+  --ion-color-success-tint: #10b981;
 
-  --ion-color-warning: #eab308;
+  --ion-color-warning: #f59e0b;
+  --ion-color-warning-rgb: 245, 158, 11;
   --ion-color-danger: #dc2626;
   --ion-color-danger-rgb: 220, 38, 38;
   --ion-color-danger-contrast: #ffffff;
-  --ion-color-danger-shade: #c11f1f;
-  --ion-color-danger-tint: #e03c3c;
+  --ion-color-danger-shade: #b91c1c;
+  --ion-color-danger-tint: #ef4444;
 
   --ion-background-color: var(--pp-page-bg);
   --ion-text-color: var(--pp-foreground);
 
-  --ion-toolbar-background: #0f2744;
-  --ion-toolbar-color: #ffffff;
+  /* Apple Translucent Navigation Bar */
+  --ion-toolbar-background: rgba(255, 255, 255, 0.8);
+  --ion-toolbar-color: #0f172a;
+  --ion-toolbar-border-color: rgba(226, 232, 240, 0.7);
 
-  --ion-tab-bar-background: #ffffff;
-  --ion-tab-bar-border-color: var(--pp-border);
+  /* Apple Floating Tab Bar */
+  --ion-tab-bar-background: rgba(255, 255, 255, 0.85);
+  --ion-tab-bar-border-color: rgba(255, 255, 255, 0.75);
   --ion-tab-bar-color: #64748b;
   --ion-tab-bar-color-selected: #2563eb;
 }
 
+/* Modo Oscuro — Apple Deep OLED & Space Gray */
 .ion-palette-dark {
-  --pp-page-bg: #0b1220;
+  --pp-page-bg: #0b1120;
   --pp-foreground: #f8fafc;
   --pp-muted: #94a3b8;
-  --pp-border: #334155;
-  --pp-surface: #1e293b;
-  --pp-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --pp-border: rgba(51, 65, 85, 0.7);
+  --pp-surface: #131c31;
+  --pp-surface-subtle: #1e293b;
+
+  /* Materiales Translúcidos Dark */
+  --pp-glass-bg: rgba(19, 28, 49, 0.8);
+  --pp-glass-bg-subtle: rgba(19, 28, 49, 0.6);
+  --pp-glass-border: rgba(255, 255, 255, 0.08);
+  --pp-glass-border-hairline: rgba(255, 255, 255, 0.06);
+  --pp-specular-light: rgba(255, 255, 255, 0.12);
+
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 28px -4px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 16px 44px -6px rgba(0, 0, 0, 0.7);
+  --pp-card-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.45);
+
   --pp-rate-input-text: #60a5fa;
   --pp-chart-empty: #334155;
 
-  --pp-status-activo-bg: rgba(5, 150, 105, 0.18);
+  --pp-status-activo-bg: rgba(5, 150, 105, 0.2);
   --pp-status-activo-fg: #34d399;
-  --pp-status-vencido-bg: rgba(220, 38, 38, 0.18);
+  --pp-status-vencido-bg: rgba(220, 38, 38, 0.2);
   --pp-status-vencido-fg: #f87171;
+
+  --pp-plate-bg: #422006;
+  --pp-plate-fg: #fef08a;
+  --pp-plate-border: #854d0e;
 
   --ion-background-color: var(--pp-page-bg);
   --ion-text-color: var(--pp-foreground);
-  --ion-toolbar-background: #071018;
-  --ion-toolbar-color: #f8fafc;
 
-  --ion-tab-bar-background: #111827;
-  --ion-tab-bar-border-color: #1f2937;
+  /* Translucent Chrome Dark */
+  --ion-toolbar-background: rgba(11, 17, 32, 0.82);
+  --ion-toolbar-color: #f8fafc;
+  --ion-toolbar-border-color: rgba(255, 255, 255, 0.07);
+
+  --ion-tab-bar-background: rgba(19, 28, 49, 0.85);
+  --ion-tab-bar-border-color: rgba(255, 255, 255, 0.08);
   --ion-tab-bar-color: #94a3b8;
   --ion-tab-bar-color-selected: #60a5fa;
 
-  --pp-easy-acc-bg: #1e293b;
-  --pp-easy-acc-header-bg: #0f3d36;
+  --pp-easy-acc-bg: var(--pp-surface);
+  --pp-easy-acc-header-bg: rgba(30, 41, 59, 0.65);
   --pp-easy-acc-border: rgba(255, 255, 255, 0.08);
-  --pp-easy-acc-expanded: #0d9488;
-  --pp-stat-cell-bg: rgba(255, 255, 255, 0.05);
+  --pp-easy-acc-expanded: #2563eb;
+  --pp-stat-cell-bg: rgba(255, 255, 255, 0.04);
   --pp-heading-color: #ffffff;
   --pp-muted-color: #94a3b8;
-  --pp-accent-text: #2dd4bf;
+  --pp-accent-text: #34d399;
   --pp-stat-num-color: #60a5fa;
 
   .pp-easy-acc-plate,
@@ -210,7 +264,7 @@
   ion-accordion.pp-easy-acc {
     background: var(--pp-easy-acc-bg);
     border-color: var(--pp-easy-acc-border);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-sm);
 
     .pp-easy-acc-header {
       --background: var(--pp-easy-acc-header-bg);
@@ -218,8 +272,10 @@
 
     &.accordion-expanded,
     &[expanded] {
-      border-color: var(--pp-easy-acc-expanded);
-      box-shadow: 0 6px 20px rgba(13, 148, 136, 0.25);
+      border-color: rgba(37, 99, 235, 0.6);
+      box-shadow:
+        0 0 0 1px rgba(37, 99, 235, 0.4),
+        var(--shadow-md);
     }
 
     .pp-easy-acc-panel {
@@ -230,13 +286,13 @@
   }
 
   .pp-expanded-cell {
-    background: #0f172a;
+    background: #0b1120;
   }
 
   .pp-row-expanded-content {
-    background: #1e293b;
+    background: #131c31;
     border-color: rgba(255, 255, 255, 0.08);
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 
   .p-card {

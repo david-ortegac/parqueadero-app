@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
+import { DATA_PROCESSING_POLICY } from '../constants/data-policy.constant';
 import { AuthService } from '../services/auth.service';
 import { apiErrorMessage } from '../utils/api-error-message';
 import {
@@ -23,13 +24,25 @@ export class RegisterPage {
   private readonly toast = inject(ToastController);
 
   readonly documentMaxDigits = DOCUMENT_MAX_DIGITS;
+  readonly policy = DATA_PROCESSING_POLICY;
 
   name = '';
   document = '';
   email = '';
   password = '';
   passwordConfirm = '';
+  acceptDataPolicy = false;
+  isAtLeast14 = false;
+  policyModalOpen = false;
   loading = false;
+
+  openPolicyModal(ev?: Event): void {
+    if (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+    }
+    this.policyModalOpen = true;
+  }
 
   onDocumentChange(value: string): void {
     this.document = sanitizeDocumentDigits(value);
@@ -69,6 +82,27 @@ export class RegisterPage {
       return;
     }
 
+    if (!this.acceptDataPolicy) {
+      const t = await this.toast.create({
+        message: 'Debes autorizar el tratamiento de datos personales para registrarte.',
+        duration: 3200,
+        color: 'warning',
+      });
+      await t.present();
+      return;
+    }
+
+    if (!this.isAtLeast14) {
+      const t = await this.toast.create({
+        message:
+          'Debes certificar que tienes al menos 14 años de edad para utilizar la aplicación.',
+        duration: 3500,
+        color: 'warning',
+      });
+      await t.present();
+      return;
+    }
+
     this.loading = true;
     this.auth
       .register({
@@ -76,6 +110,8 @@ export class RegisterPage {
         document: this.document,
         email: this.email.trim(),
         password: this.password,
+        data_policy_accepted: true,
+        is_at_least_14: true,
       })
       .subscribe({
         next: async res => {

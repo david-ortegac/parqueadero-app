@@ -32,7 +32,7 @@ export class AuthInterceptor implements HttpInterceptor {
       catchError((err: unknown) => {
         if (
           err instanceof HttpErrorResponse &&
-          err.status === 401 &&
+          (err.status === 401 || err.status === 403) &&
           !req.url.includes('/v1/login') &&
           !req.url.includes('/public/')
         ) {

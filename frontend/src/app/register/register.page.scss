@@ -25,3 +25,160 @@
     color: rgba(255, 255, 255, 0.88);
   }
 }
+
+.pp-policy-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 0.5rem;
+  padding: 0.85rem;
+  background: rgba(15, 23, 42, 0.03);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 14px;
+}
+
+:host-context(.dark) .pp-policy-box {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.pp-policy-item {
+  display: flex;
+  align-items: flex-start;
+}
+
+.pp-policy-checkbox {
+  --size: 20px;
+  --checkbox-background-checked: #2563eb;
+  --border-color-checked: #2563eb;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--pp-text-color, #1e293b);
+  align-items: flex-start;
+}
+
+:host-context(.dark) .pp-policy-checkbox {
+  color: #f1f5f9;
+}
+
+.pp-policy-text {
+  display: block;
+  padding-left: 0.4rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.pp-policy-btn-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: 600;
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+  display: inline;
+}
+
+.pp-policy-btn-link:hover {
+  color: #1d4ed8;
+}
+
+/* Estilos del modal de política */
+.pp-policy-doc {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.pp-policy-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+  margin-bottom: 0.75rem;
+}
+
+.pp-policy-heading {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  color: var(--pp-text-color, #0f172a);
+}
+
+.pp-policy-lead {
+  font-size: 0.925rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+}
+
+.pp-policy-callout {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  align-items: flex-start;
+}
+
+.pp-policy-callout-icon {
+  font-size: 1.5rem;
+  color: #d97706;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.pp-policy-callout-title {
+  display: block;
+  font-size: 0.9rem;
+  color: #b45309;
+  margin-bottom: 0.2rem;
+}
+
+.pp-policy-callout-copy {
+  font-size: 0.825rem;
+  color: #78350f;
+  line-height: 1.45;
+  margin: 0;
+}
+
+:host-context(.dark) .pp-policy-callout-copy {
+  color: #fde68a;
+}
+
+.pp-policy-sec {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+:host-context(.dark) .pp-policy-sec {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.pp-policy-sec-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.4rem;
+  color: var(--pp-text-color, #1e293b);
+}
+
+.pp-policy-sec-p {
+  font-size: 0.875rem;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0 0 0.5rem;
+}
+
+:host-context(.dark) .pp-policy-sec-p {
+  color: #94a3b8;
+}

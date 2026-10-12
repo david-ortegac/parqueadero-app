@@ -85,10 +85,12 @@ export class AuthControllerImpl implements AuthController {
 
         try {
           const result = await this.service.register({
-            name: body.name,
-            email: body.email,
-            document: body.document,
-            password: body.password,
+            name: body.name as string,
+            email: body.email as string,
+            document: body.document as string,
+            password: body.password as string,
+            data_policy_accepted: body.data_policy_accepted !== undefined ? Boolean(body.data_policy_accepted) : undefined,
+            is_at_least_14: body.is_at_least_14 !== undefined ? Boolean(body.is_at_least_14) : undefined,
           });
 
           return ResponseBuilder.created({
@@ -106,15 +108,50 @@ export class AuthControllerImpl implements AuthController {
         return ResponseBuilder.success({ message: 'Sesión cerrada.' });
       }
 
-      // 4. GET /me
-      if (path === '/me' && method === 'GET') {
+      // 4. /me (GET, PATCH, PUT, DELETE)
+      if (path === '/me') {
         const tokenRes = validateTokenFromEvent(event);
         if (!tokenRes.valid || !tokenRes.payload) {
           return ResponseBuilder.unauthorized('No autenticado.');
         }
 
-        const user = await this.service.me(String(tokenRes.payload.userId));
-        return ResponseBuilder.success(this.mapper.toDTO(user));
+        const userId = String(tokenRes.payload.userId);
+
+        if (method === 'GET') {
+          const user = await this.service.me(userId);
+          return ResponseBuilder.success(this.mapper.toDTO(user));
+        }
+
+        if (method === 'PATCH' || method === 'PUT') {
+          try {
+            const result = await this.service.updateProfile(userId, {
+              name: body.name as string | undefined,
+              email: body.email as string | undefined,
+              password: body.password as string | undefined,
+            });
+
+            return ResponseBuilder.success({
+              message: 'Perfil actualizado exitosamente.',
+              user: this.mapper.toDTO(result.user),
+              token: result.token,
+            });
+          } catch (err: unknown) {
+            const error = err as Error;
+            return ResponseBuilder.unprocessableEntity(error.message || 'Error al actualizar perfil.');
+          }
+        }
+
+        if (method === 'DELETE') {
+          try {
+            await this.service.deleteAccount(userId);
+            return ResponseBuilder.success({
+              message: 'Cuenta eliminada exitosamente.',
+            });
+          } catch (err: unknown) {
+            const error = err as Error;
+            return ResponseBuilder.unprocessableEntity(error.message || 'Error al eliminar cuenta.');
+          }
+        }
       }
 
       // 5. ADMIN USERS: /admin/users

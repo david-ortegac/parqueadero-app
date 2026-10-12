@@ -5,7 +5,7 @@ import { environment } from '../../environments/environment';
 import { PublicPlateLookup, PublicOccupancy } from './public-plate-lookup.model';
 
 export interface Rate {
-  id: number;
+  id: string | number;
   vehicle_class: string;
   billing_mode: string;
   price: string;
@@ -164,8 +164,8 @@ export class ParkingApiService {
   }
 
   patchAdminRate(
-    rateId: number,
-    body: { price?: number; currency?: string; is_active?: boolean },
+    rateId: string | number,
+    body: { price?: number | string; currency?: string; is_active?: boolean },
   ): Observable<Rate> {
     return this.http.patch<Rate>(`${this.base}/admin/rates/${rateId}`, body);
   }

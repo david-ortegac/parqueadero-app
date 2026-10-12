@@ -3,12 +3,12 @@
 :host {
   --pp-consulta-car: #2563eb;
   --pp-consulta-car-soft: #dbeafe;
-  --pp-consulta-moto: #0d9488;
-  --pp-consulta-moto-soft: #ccfbf1;
+  --pp-consulta-moto: #d97706;
+  --pp-consulta-moto-soft: #fef3c7;
   --pp-consulta-ink: #0f172a;
-  --pp-consulta-muted: #475569;
+  --pp-consulta-muted: #64748b;
   --pp-consulta-surface: #ffffff;
-  --pp-consulta-wash: #f1f5f9;
+  --pp-consulta-wash: #f8fafc;
 }
 
 .pp-consulta .pp-auth-visual-copy {
@@ -23,8 +23,8 @@
 .pp-consulta-lead {
   margin-inline: auto !important;
   max-width: 28rem;
-  font-size: 1.05rem !important;
-  line-height: 1.55 !important;
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
   color: var(--pp-consulta-muted) !important;
 }
 
@@ -43,12 +43,13 @@
 .pp-consulta-spaces {
   margin: 0 0 1.35rem;
   padding: 1.2rem 1.05rem 1.25rem;
-  border-radius: 20px;
-  border: 1px solid color-mix(in srgb, var(--pp-consulta-car) 14%, var(--pp-border, #e2e8f0));
+  border-radius: var(--pp-radius-lg, 20px);
+  border: 1px solid var(--pp-border);
   background:
-    radial-gradient(120% 100% at 50% 0%, rgba(37, 99, 235, 0.1), transparent 58%),
-    var(--pp-consulta-wash);
+    radial-gradient(120% 100% at 50% 0%, rgba(37, 99, 235, 0.08), transparent 58%),
+    var(--pp-surface);
   text-align: center;
+  box-shadow: var(--shadow-sm);
 }
 
 .pp-consulta-spaces--loading {
@@ -58,7 +59,7 @@
   gap: 0.7rem;
   min-height: 5rem;
   color: var(--pp-consulta-muted);
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 600;
 }
 
@@ -88,46 +89,43 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  min-height: 8rem;
+  min-height: 7.5rem;
   padding: 1.15rem 0.9rem;
-  border-radius: 16px;
-  border: 1px solid transparent;
-  background: var(--pp-consulta-surface);
-  box-shadow:
-    0 1px 2px rgba(15, 39, 68, 0.04),
-    0 8px 20px rgba(15, 39, 68, 0.06);
+  border-radius: var(--pp-radius-md, 14px);
+  background: var(--pp-surface);
+  border: 1px solid var(--pp-border);
+  box-shadow: var(--shadow-sm);
   text-align: center;
 }
 
 .pp-consulta-space-tile--car {
-  border-color: color-mix(in srgb, var(--pp-consulta-car) 22%, transparent);
-  background: linear-gradient(180deg, var(--pp-consulta-car-soft) 0%, #fff 58%);
+  border-color: rgba(37, 99, 235, 0.25);
+  background: linear-gradient(180deg, var(--pp-consulta-car-soft) 0%, var(--pp-surface) 60%);
 }
 
 .pp-consulta-space-tile--moto {
-  border-color: color-mix(in srgb, var(--pp-consulta-moto) 24%, transparent);
-  background: linear-gradient(180deg, var(--pp-consulta-moto-soft) 0%, #fff 58%);
+  border-color: rgba(217, 119, 6, 0.25);
+  background: linear-gradient(180deg, var(--pp-consulta-moto-soft) 0%, var(--pp-surface) 60%);
 }
 
 .pp-consulta-space-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.4rem;
-  height: 2.4rem;
-  border-radius: 12px;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 10px;
   background: var(--pp-consulta-car);
   color: #fff;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
 }
 
 .pp-consulta-space-tile--moto .pp-consulta-space-icon {
   background: var(--pp-consulta-moto);
-  color: #fff;
 }
 
 .pp-consulta-space-value {
-  font-size: clamp(2.15rem, 8vw, 2.55rem);
+  font-size: clamp(2rem, 7vw, 2.45rem);
   font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 1;
@@ -139,11 +137,11 @@
 }
 
 .pp-consulta-space-tile--moto .pp-consulta-space-value {
-  color: #0f766e;
+  color: var(--pp-consulta-moto);
 }
 
 .pp-consulta-space-label {
-  font-size: 1.05rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--pp-consulta-ink);
 }
@@ -156,50 +154,49 @@
 
 .pp-consulta-plate-input {
   font-family: var(--pp-font-mono, 'JetBrains Mono', ui-monospace, monospace);
-  font-size: 1.35rem !important;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-size: 1.25rem !important;
+  font-weight: 800;
+  letter-spacing: 0.12em;
   text-align: center;
   text-transform: uppercase;
   color: var(--pp-consulta-ink) !important;
-  border-color: color-mix(
-    in srgb,
-    var(--pp-consulta-car) 18%,
-    var(--pp-border, #e2e8f0)
-  ) !important;
   background: #f8fbff !important;
+  border: 1.5px solid rgba(37, 99, 235, 0.3) !important;
 }
 
 .pp-consulta-plate-input:focus {
   border-color: var(--pp-consulta-car) !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2) !important;
 }
 
 :host ::ng-deep .pp-consulta-search-btn.p-button,
 :host ::ng-deep .pp-consulta-search-btn .p-button {
   width: 100%;
-  min-height: 52px;
+  min-height: 50px;
+  font-weight: 700;
 }
 
 .pp-consulta-result {
   margin-top: 1.25rem;
   padding: 1.4rem 1.25rem 1.3rem;
-  border-radius: 20px;
-  background: var(--pp-consulta-wash);
-  border: 1px solid var(--pp-border, #e2e8f0);
+  border-radius: var(--pp-radius-lg, 20px);
+  background: var(--pp-surface);
+  border: 1px solid var(--pp-border);
+  box-shadow: var(--shadow-sm);
   text-align: center;
 }
 
 .pp-consulta-result--parked {
-  background: linear-gradient(165deg, rgba(37, 99, 235, 0.12) 0%, rgba(13, 148, 136, 0.1) 100%);
-  border-color: color-mix(in srgb, var(--pp-consulta-car) 28%, transparent);
+  background:
+    radial-gradient(130% 90% at 50% 0%, rgba(37, 99, 235, 0.1), transparent 60%), var(--pp-surface);
+  border-color: rgba(37, 99, 235, 0.3);
 }
 
 .pp-consulta-result-kicker {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--pp-consulta-car);
   font-family: var(--pp-font-mono, ui-monospace, monospace);
@@ -208,32 +205,33 @@
 }
 
 .pp-consulta-clock {
-  margin: 0.9rem 0 0;
+  margin: 0.85rem 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
   text-align: center;
 }
 
 .pp-consulta-clock-time {
-  font-family: var(--pp-font-display, Georgia, serif);
-  font-size: clamp(3rem, 12vw, 3.75rem);
+  font-family: var(--pp-font-body);
+  font-size: clamp(2.8rem, 11vw, 3.5rem);
+  font-weight: 800;
   line-height: 1;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   color: var(--pp-consulta-ink);
   font-variant-numeric: tabular-nums;
 }
 
 .pp-consulta-clock-date {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--pp-consulta-muted);
   text-transform: capitalize;
 }
 
 .pp-consulta-elapsed {
-  margin: 0.85rem 0 0;
-  font-size: 1.1rem;
+  margin: 0.75rem 0 0;
+  font-size: 1rem;
   color: var(--pp-consulta-ink);
 }
 
@@ -253,7 +251,7 @@
 
 .pp-consulta-meta dt {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -262,7 +260,7 @@
 
 .pp-consulta-meta dd {
   margin: 0.25rem 0 0;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--pp-consulta-ink);
   font-variant-numeric: tabular-nums;
@@ -270,7 +268,7 @@
 
 .pp-consulta-empty-title {
   margin: 0.75rem 0 0;
-  font-size: clamp(1.45rem, 5vw, 1.7rem);
+  font-size: clamp(1.4rem, 5vw, 1.65rem);
   font-weight: 800;
   color: var(--pp-consulta-ink);
   line-height: 1.2;
@@ -279,32 +277,32 @@
 .pp-consulta-empty-copy {
   margin: 0.55rem auto 0;
   max-width: 22rem;
-  font-size: 1.08rem;
+  font-size: 1rem;
   color: var(--pp-consulta-muted);
-  line-height: 1.55;
+  line-height: 1.5;
 }
 
 .pp-consulta-auth {
   margin-top: 1.5rem;
   padding-top: 1.35rem;
-  border-top: 1px solid var(--pp-border, #e2e8f0);
+  border-top: 1px solid var(--pp-border);
   text-align: center;
 }
 
 .pp-consulta-auth-title {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 800;
   color: var(--pp-consulta-ink);
   line-height: 1.25;
 }
 
 .pp-consulta-auth-copy {
-  margin: 0.55rem auto 0;
+  margin: 0.5rem auto 0;
   max-width: 24rem;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   color: var(--pp-consulta-muted);
-  line-height: 1.55;
+  line-height: 1.5;
 }
 
 .pp-consulta-auth-actions {
@@ -321,14 +319,7 @@
   min-height: 48px;
   width: 100%;
   font-weight: 700;
-  border-radius: 999px;
-  color: var(--pp-consulta-car) !important;
-  border-color: color-mix(in srgb, var(--pp-consulta-car) 45%, transparent) !important;
-}
-
-:host ::ng-deep .pp-consulta-register.p-button:hover,
-:host ::ng-deep .pp-consulta-register .p-button:hover {
-  background: var(--pp-consulta-car-soft) !important;
+  border-radius: var(--pp-radius-pill);
 }
 
 @media (min-width: 480px) {

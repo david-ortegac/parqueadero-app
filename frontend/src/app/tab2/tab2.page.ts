@@ -136,6 +136,23 @@ export class Tab2Page implements OnInit, OnDestroy {
     return plateFormatHint(this.vehicleClass);
   }
 
+  billingModeHint(mode: string): string {
+    switch (mode) {
+      case 'minute':
+        return 'Cobro exacto liquidado por minuto transcurrido.';
+      case 'hour':
+        return 'Cobro estándar liquidado por fracción o bloque de hora.';
+      case 'day':
+        return 'Tarifa por día completo (hasta 24 horas continuas).';
+      case 'week':
+        return 'Modalidad prepago semanal con fecha de vencimiento.';
+      case 'month':
+        return 'Modalidad mensualidad/abono con fecha de vencimiento.';
+      default:
+        return '';
+    }
+  }
+
   /** Deshabilita ingreso si hay texto en placa pero el formato aún no es válido. */
   get registerEntryDisabled(): boolean {
     const p = this.plate.trim();

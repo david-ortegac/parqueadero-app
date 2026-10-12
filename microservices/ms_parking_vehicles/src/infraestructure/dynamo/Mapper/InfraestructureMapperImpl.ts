@@ -25,12 +25,11 @@ export class InfraestructureMapperImpl implements IInfraestructureMapper {
 
   toEntity(domain: DomainVehicleEntity): DynamoVehicleItem {
     const now = new Date().toISOString();
-    return {
+    const entity: DynamoVehicleItem = {
       id: domain.id,
       plate: domain.plate,
       depositor_document: domain.depositor_document,
       vehicle_class: domain.vehicle_class,
-      owner_user_id: domain.owner_user_id || null,
       brand: domain.brand || null,
       color: domain.color || null,
       cylinder_cc: domain.cylinder_cc || null,
@@ -39,6 +38,12 @@ export class InfraestructureMapperImpl implements IInfraestructureMapper {
       created_at: domain.created_at || now,
       updated_at: now,
     };
+
+    if (domain.owner_user_id) {
+      entity.owner_user_id = domain.owner_user_id;
+    }
+
+    return entity;
   }
 
   toDomainList(items: DynamoVehicleItem[]): DomainVehicleEntity[] {

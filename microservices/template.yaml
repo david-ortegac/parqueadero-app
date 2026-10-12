@@ -27,7 +27,7 @@ Parameters:
   JwtSecretKey:
     Type: String
     NoEcho: true
-    Default: 'parqueadero-super-secret-key-change-in-production'
+    Default: 'ojMs4hPfPZTpwOppAXzZEip1rS0BJsouDpg3daquB20S2VG1NbyHTgykg47EO6KLxQN1QCvodKjNQOR7PLXxhf'
     Description: Clave secreta para firma y verificacion de tokens JWT
 
   LegacyBackendUrl:
@@ -213,8 +213,11 @@ Resources:
         AllowOrigins:
           - '*'
         AllowHeaders:
+          - '*'
           - Content-Type
           - Authorization
+          - Accept
+          - X-Requested-With
           - X-Api-Key
           - X-Amz-Date
           - X-Amz-Security-Token
@@ -226,6 +229,22 @@ Resources:
           - DELETE
           - OPTIONS
         MaxAge: 600
+
+  LegacyBackendIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref HttpApiGateway
+      IntegrationType: HTTP_PROXY
+      IntegrationUri: !Sub '${LegacyBackendUrl}/{proxy}'
+      IntegrationMethod: ANY
+      PayloadFormatVersion: '1.0'
+
+  LegacyDefaultRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref HttpApiGateway
+      RouteKey: 'ANY /{proxy+}'
+      Target: !Sub 'integrations/${LegacyBackendIntegration}'
 
   # =========================================================================
   # 3. FUNCIONES LAMBDA POR DOMINIO
@@ -247,25 +266,25 @@ Resources:
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/login
-            Method: POST
+            Method: ANY
         Register:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/register
-            Method: POST
+            Method: ANY
         Logout:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/logout
-            Method: POST
+            Method: ANY
         Me:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/me
-            Method: GET
+            Method: ANY
         AdminUsers:
           Type: HttpApi
           Properties:
@@ -283,13 +302,13 @@ Resources:
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/operator/vehicle-owners
-            Method: GET
+            Method: ANY
         OperatorVehicleOwnerDetail:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/operator/vehicle-owners/{user}
-            Method: PATCH
+            Method: ANY
 
   # Dominio 2: Tarifas, Capacidad y Configuración
   RatesConfigFunction:
@@ -337,7 +356,7 @@ Resources:
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/operator/parking-info
-            Method: GET
+            Method: ANY
 
   # Dominio 3: Vehículos
   VehiclesFunction:
@@ -355,7 +374,7 @@ Resources:
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/owner/vehicles
-            Method: GET
+            Method: ANY
         OwnerVehicleDetail:
           Type: HttpApi
           Properties:
@@ -367,13 +386,13 @@ Resources:
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/vehicles/by-plate/{plate}
-            Method: GET
+            Method: ANY
         VehiclesPost:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/vehicles
-            Method: POST
+            Method: ANY
 
   # Dominio 4: Sesiones de Parqueo, Facturación y Reportes
   SessionsFunction:
@@ -393,61 +412,61 @@ Resources:
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/operator/check-in
-            Method: POST
+            Method: ANY
         OperatorCheckOut:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/operator/sessions/{session}/check-out
-            Method: POST
+            Method: ANY
         OperatorActiveSessions:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/operator/sessions/active
-            Method: GET
+            Method: ANY
         OperatorDashboard:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/operator/dashboard
-            Method: GET
+            Method: ANY
         OperatorRevenue:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/operator/reports/revenue
-            Method: GET
+            Method: ANY
         OperatorDailyHistory:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/operator/reports/daily-history
-            Method: GET
+            Method: ANY
         PublicPlateLookup:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/public/sessions/by-plate/{plate}
-            Method: GET
+            Method: ANY
         PublicOccupancy:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/public/occupancy
-            Method: GET
+            Method: ANY
         OwnerActiveSession:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/owner/vehicles/{vehicle}/active-session
-            Method: GET
+            Method: ANY
         OwnerVehicleSessions:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/owner/vehicles/{vehicle}/sessions
-            Method: GET
+            Method: ANY
 
   # Dominio 5: Notificaciones Push
   NotificationsFunction:
@@ -465,13 +484,13 @@ Resources:
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/push-devices
-            Method: POST
+            Method: ANY
         NotificationsSend:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApiGateway
             Path: /v1/notifications/send
-            Method: POST
+            Method: ANY
 
 Outputs:
   HttpApiUrl:

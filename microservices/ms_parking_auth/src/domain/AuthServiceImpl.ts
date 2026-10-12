@@ -59,7 +59,16 @@ export class AuthServiceImpl implements IAuthService {
     email: string;
     document: string;
     password: string;
+    data_policy_accepted?: boolean;
+    is_at_least_14?: boolean;
   }): Promise<{ message: string; user: DomainUserEntity }> {
+    if (data.data_policy_accepted === false) {
+      throw new Error('Debe autorizar el tratamiento de datos personales para registrarse.');
+    }
+    if (data.is_at_least_14 === false) {
+      throw new Error('Debe tener al menos 14 años para utilizar la aplicación.');
+    }
+
     const docDigits = data.document.replace(/\D+/g, '');
     if (!docDigits) {
       throw new Error('El documento debe contener al menos un dígito.');
@@ -107,6 +116,65 @@ export class AuthServiceImpl implements IAuthService {
       throw new Error('Usuario no encontrado.');
     }
     return this.mapper.toDomain(item);
+  }
+
+  async updateProfile(
+    userId: string,
+    data: {
+      name?: string;
+      email?: string;
+      password?: string;
+    },
+  ): Promise<{ user: DomainUserEntity; token: string }> {
+    const existing = await this.repository.findById(userId);
+    if (!existing) {
+      throw new Error('Usuario no encontrado.');
+    }
+
+    if (data.email && data.email.toLowerCase().trim() !== existing.email.toLowerCase().trim()) {
+      const emailTaken = await this.repository.findByEmail(data.email);
+      if (emailTaken && emailTaken.id !== userId) {
+        throw new Error('El correo electrónico ya se encuentra registrado por otra cuenta.');
+      }
+    }
+
+    let hashedPassword = existing.password;
+    if (data.password && data.password.trim().length > 0) {
+      if (data.password.length < 6) {
+        throw new Error('La contraseña debe tener al menos 6 caracteres.');
+      }
+      hashedPassword = await JWTValidator.hashPassword(data.password);
+    }
+
+    const updatedItem = {
+      ...existing,
+      name: data.name !== undefined && data.name.trim() ? data.name.trim() : existing.name,
+      email: data.email !== undefined && data.email.trim() ? data.email.toLowerCase().trim() : existing.email,
+      password: hashedPassword,
+      updated_at: new Date().toISOString(),
+    };
+
+    const saved = await this.repository.update(updatedItem);
+    const domainUser = this.mapper.toDomain(saved);
+
+    const token = this.jwtValidator.generateToken({
+      userId: domainUser.id,
+      email: domainUser.email,
+      name: domainUser.name,
+      document: domainUser.document,
+      role: domainUser.role,
+      is_active: domainUser.is_active,
+    });
+
+    return { user: domainUser, token };
+  }
+
+  async deleteAccount(userId: string): Promise<void> {
+    const existing = await this.repository.findById(userId);
+    if (!existing) {
+      throw new Error('Usuario no encontrado.');
+    }
+    await this.repository.delete(userId);
   }
 
   async getUsers(): Promise<DomainUserEntity[]> {

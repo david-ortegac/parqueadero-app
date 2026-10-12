@@ -254,6 +254,7 @@
   <section class="pp-bento" aria-label="Resumen operativo">
     <header class="pp-bento-head">
       <p class="pp-period">
+        <span class="pp-live-radar-dot" aria-hidden="true"></span>
         <i class="pi pi-calendar pp-period-icon" aria-hidden="true"></i>
         <span>Resumen · {{ periodLabel }}</span>
       </p>
@@ -520,9 +521,20 @@
                 </ion-item>
                 <p class="pp-rate-cop-preview">{{ formatRateMoneyCop(rateDrafts[r.id].price) }}</p>
                 <ion-item lines="none" class="pp-rate-ion-item pp-rate-toggle-item">
-                  <ion-toggle [(ngModel)]="rateDrafts[r.id].is_active" name="active-{{ r.id }}">
-                    @if (rateDrafts[r.id].is_active) { Tarifa activa (disponible al ingresar
-                    vehículos) } @else { Tarifa inactiva (no se ofrece en nuevo ingreso) }
+                  <ion-toggle
+                    [(ngModel)]="rateDrafts[r.id].is_active"
+                    name="active-{{ r.id }}"
+                    justify="space-between"
+                  >
+                    <div class="pp-rate-toggle-text">
+                      <span class="pp-rate-toggle-title">
+                        {{ rateDrafts[r.id].is_active ? 'Tarifa activa' : 'Tarifa inactiva' }}
+                      </span>
+                      <span class="pp-rate-toggle-sub">
+                        {{ rateDrafts[r.id].is_active ? 'Disponible para nuevos ingresos' :
+                        'Inactiva para nuevos ingresos' }}
+                      </span>
+                    </div>
                   </ion-toggle>
                 </ion-item>
                 <ion-button

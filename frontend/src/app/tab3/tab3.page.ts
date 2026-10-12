@@ -1,10 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { ToastController } from '@ionic/angular';
-import { PushNotifications } from '@capacitor/push-notifications';
-import { Capacitor } from '@capacitor/core';
+import { AlertController, ToastController } from '@ionic/angular';
+import { DATA_PROCESSING_POLICY } from '../constants/data-policy.constant';
 import { AuthService } from '../services/auth.service';
 import { ParkingApiService, ParkingInfo } from '../services/parking-api.service';
 import { ThemeService } from '../services/theme.service';
+import { apiErrorMessage } from '../utils/api-error-message';
 
 @Component({
   selector: 'app-tab3',
@@ -16,9 +16,27 @@ export class Tab3Page implements OnInit {
   readonly auth = inject(AuthService);
   private readonly api = inject(ParkingApiService);
   private readonly toast = inject(ToastController);
+  private readonly alertCtrl = inject(AlertController);
   readonly theme = inject(ThemeService);
 
-  pushStatus = 'No inicializado';
+  readonly policy = DATA_PROCESSING_POLICY;
+  policyModalOpen = false;
+
+  // Profile fields
+  profileName = '';
+  profileEmail = '';
+  profilePassword = '';
+  profilePasswordConfirm = '';
+  savingProfile = false;
+  deletingAccount = false;
+
+  // Admin parking info fields
+  loadingInfo = false;
+  savingInfo = false;
+  editName: string | null = null;
+  editAddress: string | null = null;
+  editCarCapacity: number | null = null;
+  editMotoCapacity: number | null = null;
 
   displayRole(role: string): string {
     const roles: Record<string, string> = {
@@ -29,18 +47,142 @@ export class Tab3Page implements OnInit {
     return roles[role] || role;
   }
 
-  loadingInfo = false;
-  savingInfo = false;
-
-  editName: string | null = null;
-  editAddress: string | null = null;
-  editCarCapacity: number | null = null;
-  editMotoCapacity: number | null = null;
-
   ngOnInit(): void {
+    this.initProfileFields();
     if (this.auth.hasRole('admin')) {
       this.loadParkingInfo();
     }
+  }
+
+  ionViewWillEnter(): void {
+    this.initProfileFields();
+    if (this.auth.hasRole('admin')) {
+      this.loadParkingInfo();
+    }
+  }
+
+  private initProfileFields(): void {
+    const u = this.auth.getUser();
+    if (u) {
+      this.profileName = u.name || '';
+      this.profileEmail = u.email || '';
+      this.profilePassword = '';
+      this.profilePasswordConfirm = '';
+    }
+  }
+
+  async saveProfile(): Promise<void> {
+    const name = this.profileName.trim();
+    const email = this.profileEmail.trim();
+
+    if (!name || !email) {
+      const t = await this.toast.create({
+        message: 'Nombre y correo electrónico son requeridos.',
+        duration: 2500,
+        color: 'warning',
+      });
+      await t.present();
+      return;
+    }
+
+    if (this.profilePassword) {
+      if (this.profilePassword.length < 6) {
+        const t = await this.toast.create({
+          message: 'La nueva contraseña debe tener al menos 6 caracteres.',
+          duration: 3000,
+          color: 'warning',
+        });
+        await t.present();
+        return;
+      }
+      if (this.profilePassword !== this.profilePasswordConfirm) {
+        const t = await this.toast.create({
+          message: 'Las contraseñas no coinciden.',
+          duration: 3000,
+          color: 'warning',
+        });
+        await t.present();
+        return;
+      }
+    }
+
+    this.savingProfile = true;
+    this.auth
+      .updateProfile({
+        name,
+        email,
+        password: this.profilePassword || undefined,
+      })
+      .subscribe({
+        next: async res => {
+          this.savingProfile = false;
+          this.profilePassword = '';
+          this.profilePasswordConfirm = '';
+          const t = await this.toast.create({
+            message: res.message || 'Datos de cuenta actualizados correctamente.',
+            duration: 2500,
+            color: 'success',
+          });
+          await t.present();
+        },
+        error: async err => {
+          this.savingProfile = false;
+          const t = await this.toast.create({
+            message: apiErrorMessage(err, 'No se pudo actualizar la cuenta.'),
+            duration: 3500,
+            color: 'danger',
+          });
+          await t.present();
+        },
+      });
+  }
+
+  async confirmDeleteAccount(): Promise<void> {
+    const alert = await this.alertCtrl.create({
+      header: '¿Eliminar tu cuenta?',
+      subHeader: 'Esta acción no se puede deshacer',
+      message:
+        'Se eliminarán de forma definitiva tu perfil y tus credenciales de acceso al parqueadero. ¿Deseas continuar?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+        },
+        {
+          text: 'Eliminar mi cuenta',
+          role: 'destructive',
+          handler: () => {
+            this.executeDeleteAccount();
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  private executeDeleteAccount(): void {
+    this.deletingAccount = true;
+    this.auth.deleteAccount().subscribe({
+      next: async () => {
+        this.deletingAccount = false;
+        const t = await this.toast.create({
+          message: 'Tu cuenta ha sido eliminada exitosamente.',
+          duration: 3500,
+          color: 'success',
+        });
+        await t.present();
+      },
+      error: async err => {
+        this.deletingAccount = false;
+        const t = await this.toast.create({
+          message: apiErrorMessage(err, 'No se pudo eliminar la cuenta.'),
+          duration: 3500,
+          color: 'danger',
+        });
+        await t.present();
+      },
+    });
   }
 
   loadParkingInfo(): void {
@@ -97,65 +239,6 @@ export class Tab3Page implements OnInit {
         await t.present();
       },
     });
-  }
-
-  async setupPush(): Promise<void> {
-    if (!Capacitor.isNativePlatform()) {
-      this.pushStatus =
-        'Las push nativas requieren iOS/Android. En web usa PWA con soporte limitado.';
-      const t = await this.toast.create({
-        message: this.pushStatus,
-        duration: 3000,
-      });
-      await t.present();
-      return;
-    }
-
-    const perm = await PushNotifications.requestPermissions();
-    if (perm.receive !== 'granted') {
-      this.pushStatus = 'Permisos denegados';
-      return;
-    }
-
-    // 1. Add listeners BEFORE registering to avoid missing early events
-    await PushNotifications.addListener('registration', token => {
-      this.pushStatus = 'Token registrado en el dispositivo';
-      const platform = Capacitor.getPlatform() === 'ios' ? 'ios' : 'android';
-      this.api.registerPushDevice({ token: token.value, platform }).subscribe({
-        error: async () => {
-          const t = await this.toast.create({
-            message: 'No se pudo enviar el token al servidor',
-            color: 'warning',
-            duration: 2500,
-          });
-          await t.present();
-        },
-      });
-    });
-
-    await PushNotifications.addListener('registrationError', async err => {
-      this.pushStatus = `Error: ${err.error}`;
-    });
-
-    // 2. Add real-time foreground notification handler for premium real-time feel!
-    await PushNotifications.addListener('pushNotificationReceived', async notification => {
-      this.pushStatus = `Recibido: ${notification.title}`;
-      const t = await this.toast.create({
-        header: notification.title,
-        message: notification.body,
-        duration: 5000,
-        color: 'success',
-        buttons: [{ text: 'OK', role: 'cancel' }],
-      });
-      await t.present();
-    });
-
-    await PushNotifications.addListener('pushNotificationActionPerformed', async action => {
-      console.log('Push action performed', action);
-    });
-
-    // 3. Finally trigger native registration
-    await PushNotifications.register();
   }
 
   logout(): void {

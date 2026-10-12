@@ -7,9 +7,9 @@
 ---
 
 **Project:** Parqueadero
-**Generated:** 2026-07-24 18:03:26
-**Category:** LMS (Learning Management System)
-**Design Dials:** Variance 4/10 (Balanced / Modern) | Motion 4/10 (Standard) | Density 7/10 (Standard)
+**Design Architecture:** Apple Fluid Design & UI/UX Pro Max Intelligence
+**Category:** Parking Operations & Mobility SaaS
+**Design Dials:** Variance 4/10 (Balanced / Modern) | Motion 6/10 (Spring Physics) | Density 7/10 (Standard Mobile Inset)
 
 ---
 
@@ -17,211 +17,54 @@
 
 ### Color Palette
 
-| Role | Hex | CSS Variable |
-|------|-----|--------------|
-| Primary | `#2563EB` | `--color-primary` |
-| On Primary | `#FFFFFF` | `--color-on-primary` |
-| Secondary | `#059669` | `--color-secondary` |
-| Accent/CTA | `#DC2626` | `--color-accent` |
-| Background | `#F0F9FF` | `--color-background` |
-| Foreground | `#0F172A` | `--color-foreground` |
-| Muted | `#F1F5FD` | `--color-muted` |
-| Border | `#E4ECFC` | `--color-border` |
-| Destructive | `#DC2626` | `--color-destructive` |
-| Ring | `#2563EB` | `--color-ring` |
+| Role | Hex | CSS Variable | Semantic Note |
+|------|-----|--------------|---------------|
+| Primary | `#2563EB` | `--ion-color-primary` | Apple Ops Blue (Confianza & Operación) |
+| On Primary | `#FFFFFF` | `--ion-color-primary-contrast` | Texto de alto contraste sobre azul |
+| Secondary | `#0284C7` | `--ion-color-secondary` | Sky Blue complementario |
+| Success / Libre | `#059669` | `--ion-color-success` | Emerald Green (Cupos libres / Estado activo) |
+| Danger / Alerta | `#DC2626` | `--ion-color-danger` | Red (Cupos llenos / Vencido / Cobro) |
+| Warning / Motos | `#F59E0B` | `--ion-color-warning` | Amber (Motocicletas / Advertencia) |
+| Background Light | `#F8FAFC` | `--pp-page-bg` | Canvas sutil con gradientes radiales |
+| Background Dark | `#0B1120` | `--pp-page-bg` | Space Gray / Deep OLED |
+| Surface Light | `#FFFFFF` | `--pp-surface` | Inset Grouped surface |
+| Surface Dark | `#131C31` | `--pp-surface` | Deep Inset Grouped surface |
+| Plate Background | `#FEF08A` | `--pp-plate-bg` | Amarillo oficial placas colombianas |
+| Plate Foreground | `#1C1917` | `--pp-plate-fg` | Negro profundo de relieve |
+| Plate Border | `#CA8A04` | `--pp-plate-border` | Borde dorado/estampado |
 
-**Color Notes:** Available blue/green + occupied red
-
-### Typography
-
-- **Heading Font:** Calistoga
-- **Body Font:** Inter
-- **Mood:** saas, boutique, electric, warm, editorial, bold, premium, fintech, business, dual font, human warmth
-- **Google Fonts:** [Calistoga + Inter](https://fonts.googleapis.com/css2?family=Calistoga:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap)
-
-**CSS Import:**
-```css
-@import url('https://fonts.googleapis.com/css2?family=Calistoga:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-```
-
-### Spacing Variables
-
-*Density: 7/10 — Standard*
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--space-xs` | `4px` / `0.25rem` | Tight gaps |
-| `--space-sm` | `8px` / `0.5rem` | Icon gaps, inline spacing |
-| `--space-md` | `16px` / `1rem` | Standard padding |
-| `--space-lg` | `24px` / `1.5rem` | Section padding |
-| `--space-xl` | `32px` / `2rem` | Large gaps |
-| `--space-2xl` | `48px` / `3rem` | Section margins |
-| `--space-3xl` | `64px` / `4rem` | Hero padding |
-
-### Shadow Depths
-
-| Level | Value | Usage |
-|-------|-------|-------|
-| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)` | Subtle lift |
-| `--shadow-md` | `0 4px 6px rgba(0,0,0,0.1)` | Cards, buttons |
-| `--shadow-lg` | `0 10px 15px rgba(0,0,0,0.1)` | Modals, dropdowns |
-| `--shadow-xl` | `0 20px 25px rgba(0,0,0,0.15)` | Hero images, featured cards |
-
----
-
-## Component Specs
-
-### Buttons
+### Apple Materials & Translucency
 
 ```css
-/* Primary Button */
-.btn-primary {
-  background: #DC2626;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
-  cursor: pointer;
-}
-
-.btn-primary:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-/* Secondary Button */
-.btn-secondary {
-  background: transparent;
-  color: #2563EB;
-  border: 2px solid #2563EB;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
-  cursor: pointer;
-}
+/* Glassmorphism Frosted Chrome */
+backdrop-filter: blur(24px) saturate(190%);
+-webkit-backdrop-filter: blur(24px) saturate(190%);
+background: var(--pp-glass-bg); /* rgba(255, 255, 255, 0.78) en light / rgba(19, 28, 49, 0.8) en dark */
+border: 1px solid var(--pp-glass-border);
 ```
 
-### Cards
+### Apple Tactile Physics ("Kill Latency")
 
-```css
-.card {
-  background: #F0F9FF;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: var(--shadow-md);
-  transition: all 200ms ease;
-  cursor: pointer;
-}
+- **Feedback Inmediato:** Actuación instantánea en `:active` (`scale(0.975)` a `scale(0.92)` en pestañas).
+- **Curva de Resorte (Spring Easing):** `cubic-bezier(0.16, 1, 0.3, 1)` (resorte amortiguado críticamente sin oscilaciones molestas).
+- **Tabular Numbers:** Todo conteo, hora, dinero y placa vehicular utiliza `font-variant-numeric: tabular-nums` para evitar saltos de layout.
 
-.card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
-```
+### Floating Apple Tab Bar
 
-### Inputs
+- Barra inferior en formato cápsula flotante (`margin: 0 16px calc(10px + env(safe-area-inset-bottom)) 16px`).
+- Superficie translúcida con sombra difusa y micro-indicador activo con pill y punto lumínico.
 
-```css
-.input {
-  padding: 12px 16px;
-  border: 1px solid #E2E8F0;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 200ms ease;
-}
+### Bento Grid Dashboard (Tab 1 Inicio)
 
-.input:focus {
-  border-color: #2563EB;
-  outline: none;
-  box-shadow: 0 0 0 3px #2563EB20;
-}
-```
+- KPIs de 3 columnas (Total dentro, Carros, Motos) con gradientes suaves y micro-resorte en tap.
+- Indicador de estado en tiempo real con micro-pulso tipo radar (`pp-live-radar-dot`).
+- Gráfico circular concéntrico inspirado en anillos de actividad de Apple con leyenda estructurada.
 
-### Modals
+### Pre-Delivery Checklist
 
-```css
-.modal-overlay {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
-
-.modal {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: var(--shadow-xl);
-  max-width: 500px;
-  width: 90%;
-}
-```
-
----
-
-## Style Guidelines
-
-**Style:** SaaS Mobile (High-Tech Boutique)
-
-**Keywords:** saas, electric blue, gradient, fintech, spring animation, dual font, glassmorphism, boutique, premium, calistoga, inter, mono, tactile, haptic, bento
-
-**Best For:** B2B SaaS mobile dashboards, fintech apps, developer tool mobile companions, marketing analytics apps, HR/operations apps, modern business productivity
-
-**Key Effects:** Spring animations (mass:1 damping:15 stiffness:120); gradient buttons (0052FF→4D7CFF); scale press 0.96→1.0 with haptics; floating FAB with gentle bobbing (Reanimated); glassmorphism BlurView navigation bars; staggered fade-in entrance (Y:20→0 + opacity:0→1); pulsing status dot on section badges; layout transitions (LayoutAnimation or Reanimated entering)
-
-### Page Pattern
-
-**Pattern Name:** Real-Time / Operations Landing
-
-- **Conversion Strategy:** For ops/security/iot products. Demo or sandbox link. Trust signals.
-- **CTA Placement:** Primary CTA in nav + After metrics
-- **Section Order:** 1. Hero (product + live preview or status), 2. Key metrics/indicators, 3. How it works, 4. CTA (Start trial / Contact)
-
----
-
-## Motion
-
-**Stagger List** (Standard) — Trigger: load or scroll | Duration: 300-450ms | Easing: `back.out(1.4)`
-
-```js
-gsap.from('.grid-item', { opacity: 0, scale: 0.92, y: 16, duration: 0.4, stagger: { each: 0.06, from: 'start', grid: 'auto' }, ease: 'back.out(1.4)' });
-```
-
-**Framework notes:** grid: 'auto' lets GSAP infer rows/columns from a CSS grid layout for a natural wave stagger
-
-- ✅ Combine with from: 'center' for a bento-grid layout to draw the eye inward first
-- ❌ Don't use back.out on dense data tables; the overshoot reads as sloppy on informational UI
-- ⚡ Group DOM writes; avoid interleaving layout reads (getBoundingClientRect) between staggered tweens
-
----
-
-## Anti-Patterns (Do NOT Use)
-
-- ❌ Flat design without depth
-- ❌ Text-heavy pages
-
-### Additional Forbidden Patterns
-
-- ❌ **Emojis as icons** — Use SVG icons (Heroicons, Lucide, Simple Icons)
-- ❌ **Missing cursor:pointer** — All clickable elements must have cursor:pointer
-- ❌ **Layout-shifting hovers** — Avoid scale transforms that shift layout
-- ❌ **Low contrast text** — Maintain 4.5:1 minimum contrast ratio
-- ❌ **Instant state changes** — Always use transitions (150-300ms)
-- ❌ **Invisible focus states** — Focus states must be visible for a11y
-
----
-
-## Pre-Delivery Checklist
-
-Before delivering any UI code, verify:
-
-- [ ] No emojis used as icons (use SVG instead)
-- [ ] All icons from consistent icon set (Heroicons/Lucide)
-- [ ] `cursor-pointer` on all clickable elements
-- [ ] Hover states with smooth transitions (150-300ms)
-- [ ] Light mode: text contrast 4.5:1 minimum
-- [ ] Focus states visible for keyboard navigation
-- [ ] `prefers-reduced-motion` respected
-- [ ] Responsive: 375px, 768px, 1024px, 1440px
-- [ ] No content hidden behind fixed navbars
-- [ ] No horizontal scroll on mobile
+- [x] Sin emojis como íconos (uso estricto de IonIcons y PrimeIcons SVG).
+- [x] Cursor pointer y respuesta `:active` táctil en todos los elementos interactivos.
+- [x] Contraste mínimo 4.5:1 (WCAG 2.1 AA) en modos claro y oscuro.
+- [x] Respeto riguroso de `prefers-reduced-motion: reduce`.
+- [x] Cumplimiento del presupuesto de estilos de Angular (`maximumError: 16kb`).
+- [x] Totalmente adaptable a pantallas de 360px a 1440px.

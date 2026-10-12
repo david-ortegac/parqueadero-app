@@ -220,9 +220,17 @@ export class SessionRepositoryImpl implements SessionRepository {
   }
 
   async save(item: DynamoSessionItem): Promise<DynamoSessionItem> {
+    const itemToSave = { ...item };
+    if (!itemToSave.exit_date) {
+      delete itemToSave.exit_date;
+    }
+    if (!itemToSave.exited_at) {
+      delete itemToSave.exited_at;
+    }
+
     const command = new PutCommand({
       TableName: this.tableName,
-      Item: item,
+      Item: itemToSave,
     });
 
     await dynamoDocClient.send(command);

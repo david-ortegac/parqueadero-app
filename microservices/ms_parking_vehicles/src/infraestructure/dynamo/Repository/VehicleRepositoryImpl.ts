@@ -125,9 +125,14 @@ export class VehicleRepositoryImpl implements VehicleRepository {
   }
 
   async save(item: DynamoVehicleItem): Promise<DynamoVehicleItem> {
+    const itemToSave = { ...item };
+    if (!itemToSave.owner_user_id) {
+      delete itemToSave.owner_user_id;
+    }
+
     const command = new PutCommand({
       TableName: this.tableName,
-      Item: item,
+      Item: itemToSave,
     });
 
     await dynamoDocClient.send(command);

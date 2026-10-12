@@ -29,6 +29,101 @@
       </div>
     </div>
   </p-card>
+
+  <!-- Edición de Datos Personales y Contraseña (Para todos los usuarios) -->
+  <p-card
+    header="Datos personales y acceso"
+    subheader="Actualiza tu nombre, correo o contraseña"
+    styleClass="pp-card-shadow ion-margin-top"
+  >
+    <div class="pp-settings-stack">
+      <div class="pp-field">
+        <label class="pp-field-label" for="fld-profile-name">
+          <ion-icon name="person-outline" class="pp-field-icon" aria-hidden="true"></ion-icon>
+          Nombre completo
+        </label>
+        <input
+          id="fld-profile-name"
+          pInputText
+          [(ngModel)]="profileName"
+          placeholder="Tu nombre completo"
+          autocomplete="name"
+          class="w-full"
+        />
+      </div>
+
+      <div class="pp-field">
+        <label class="pp-field-label" for="fld-profile-email">
+          <ion-icon name="mail-outline" class="pp-field-icon" aria-hidden="true"></ion-icon>
+          Correo electrónico
+        </label>
+        <input
+          id="fld-profile-email"
+          pInputText
+          [(ngModel)]="profileEmail"
+          type="email"
+          placeholder="correo@ejemplo.com"
+          autocomplete="email"
+          class="w-full"
+        />
+        <p class="pp-field-hint">Se utiliza para iniciar sesión y recibir notificaciones.</p>
+      </div>
+
+      <p-divider />
+
+      <div class="pp-field">
+        <label class="pp-field-label" for="fld-profile-pass">
+          <ion-icon name="lock-closed-outline" class="pp-field-icon" aria-hidden="true"></ion-icon>
+          Nueva contraseña (opcional)
+        </label>
+        <p-password
+          inputId="fld-profile-pass"
+          [(ngModel)]="profilePassword"
+          [feedback]="false"
+          [toggleMask]="true"
+          placeholder="Dejar en blanco para mantener la actual"
+          styleClass="w-full"
+          [inputStyle]="{ width: '100%' }"
+          autocomplete="new-password"
+        />
+        <p class="pp-field-hint">Mínimo 6 caracteres si deseas cambiarla.</p>
+      </div>
+
+      @if (profilePassword && profilePassword.length > 0) {
+      <div class="pp-field">
+        <label class="pp-field-label" for="fld-profile-pass-confirm">
+          <ion-icon
+            name="shield-checkmark-outline"
+            class="pp-field-icon"
+            aria-hidden="true"
+          ></ion-icon>
+          Confirmar nueva contraseña
+        </label>
+        <p-password
+          inputId="fld-profile-pass-confirm"
+          [(ngModel)]="profilePasswordConfirm"
+          [feedback]="false"
+          [toggleMask]="true"
+          placeholder="Repite la nueva contraseña"
+          styleClass="w-full"
+          [inputStyle]="{ width: '100%' }"
+          autocomplete="new-password"
+        />
+      </div>
+      }
+    </div>
+
+    <div class="pp-settings-actions">
+      <p-button
+        label="Guardar cambios de cuenta"
+        icon="pi pi-check"
+        [loading]="savingProfile"
+        [disabled]="savingProfile"
+        styleClass="w-full pp-settings-save"
+        (onClick)="saveProfile()"
+      />
+    </div>
+  </p-card>
   } @if (auth.hasRole('admin')) {
   <p-card
     header="Configuración del parqueadero"
@@ -118,7 +213,7 @@
 
     <div class="pp-settings-actions">
       <p-button
-        label="Guardar cambios"
+        label="Guardar cambios del parqueadero"
         icon="pi pi-check"
         [loading]="savingInfo"
         [disabled]="savingInfo"
@@ -130,26 +225,114 @@
   </p-card>
   }
 
+  <!-- Sección de Tratamiento de Datos Personales (Accesible para todos) -->
   <p-card
-    header="Notificaciones push"
-    subheader="FCM en dispositivo nativo"
+    header="Tratamiento de datos personales"
+    subheader="Habeas Data · Ley 1581 de 2012"
     styleClass="pp-card-shadow ion-margin-top"
   >
-    <p class="pp-push-msg">{{ pushStatus }}</p>
+    <p class="pp-policy-card-desc">
+      Tus datos están protegidos conforme a la legislación colombiana. Conoce nuestras finalidades
+      de recolección, el tratamiento para mayores de 14 años y tus derechos de rectificación y
+      supresión.
+    </p>
     <p-button
-      label="Activar push (dispositivo)"
-      icon="pi pi-bell"
+      label="Ver Política de Tratamiento de Datos"
+      icon="pi pi-shield"
+      [outlined]="true"
       styleClass="w-full"
-      (onClick)="setupPush()"
+      (onClick)="policyModalOpen = true"
     />
+  </p-card>
+
+  <!-- Zona de Peligro: Eliminar Cuenta -->
+  <p-card
+    header="Zona de peligro"
+    subheader="Eliminación definitiva de tu cuenta"
+    styleClass="pp-card-shadow ion-margin-top pp-danger-card"
+  >
+    <div class="pp-danger-box">
+      <p class="pp-danger-desc">
+        Si decides eliminar tu cuenta, se borrarán definitivamente tus credenciales y tu perfil del
+        sistema. Esta acción no se puede deshacer.
+      </p>
+      <p-button
+        label="Eliminar mi cuenta"
+        icon="pi pi-trash"
+        severity="danger"
+        [loading]="deletingAccount"
+        [disabled]="deletingAccount"
+        styleClass="w-full"
+        (onClick)="confirmDeleteAccount()"
+      />
+    </div>
   </p-card>
 
   <p-button
     label="Cerrar sesión"
     icon="pi pi-sign-out"
-    severity="danger"
+    severity="secondary"
     styleClass="w-full ion-margin-top pp-logout-btn"
     [outlined]="true"
     (onClick)="logout()"
   />
+
+  <!-- Modal de Política de Tratamiento de Datos -->
+  <ion-modal
+    [isOpen]="policyModalOpen"
+    (didDismiss)="policyModalOpen = false"
+    class="pp-policy-modal"
+  >
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="pp-toolbar">
+          <ion-title>Tratamiento de Datos</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="policyModalOpen = false" fill="clear">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding pp-policy-modal-content">
+        <div class="pp-policy-doc">
+          <div class="pp-policy-badge">{{ policy.legalBasis }}</div>
+          <h2 class="pp-policy-heading">{{ policy.title }}</h2>
+          <p class="pp-policy-lead">{{ policy.summary }}</p>
+
+          <div class="pp-policy-callout">
+            <ion-icon
+              name="shield-checkmark-outline"
+              class="pp-policy-callout-icon"
+              aria-hidden="true"
+            ></ion-icon>
+            <div>
+              <strong class="pp-policy-callout-title">Requisito de edad mínima: 14 años</strong>
+              <p class="pp-policy-callout-copy">
+                De conformidad con la Ley 1581 de 2012 y el Código de la Infancia y la Adolescencia,
+                el uso de esta aplicación está restringido exclusivamente a personas que tengan al
+                menos 14 años de edad cumplidos.
+              </p>
+            </div>
+          </div>
+
+          @for (sec of policy.sections; track sec.title) {
+          <div class="pp-policy-sec">
+            <h3 class="pp-policy-sec-title">{{ sec.title }}</h3>
+            @for (par of sec.content; track par) {
+            <p class="pp-policy-sec-p">{{ par }}</p>
+            }
+          </div>
+          }
+        </div>
+
+        <div class="ion-padding-vertical">
+          <p-button
+            label="Entendido / Cerrar"
+            icon="pi pi-check"
+            styleClass="w-full"
+            (onClick)="policyModalOpen = false"
+          />
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

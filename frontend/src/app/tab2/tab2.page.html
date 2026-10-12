@@ -213,29 +213,36 @@
           Solo números, máximo 15 dígitos; letras y espacios no se guardan.
         </p>
       </div>
-      <div class="pp-field">
-        <label class="pp-field-label" for="fld-class">Tipo de vehículo</label>
-        <p-select
-          inputId="fld-class"
-          [options]="vehicleOptions"
-          [(ngModel)]="vehicleClass"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Seleccione"
-          styleClass="w-full"
-        ></p-select>
-      </div>
-      <div class="pp-field">
-        <label class="pp-field-label" for="fld-mode">Modalidad de cobro</label>
-        <p-select
-          inputId="fld-mode"
-          [options]="billingOptions"
-          [(ngModel)]="billingMode"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Seleccione"
-          styleClass="w-full"
-        ></p-select>
+      <div class="pp-form-grid-2">
+        <div class="pp-field">
+          <label class="pp-field-label" for="fld-class">Tipo de vehículo</label>
+          <p-select
+            inputId="fld-class"
+            [options]="vehicleOptions"
+            [(ngModel)]="vehicleClass"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleccione tipo"
+            [fluid]="true"
+            styleClass="w-full"
+            appendTo="body"
+          ></p-select>
+        </div>
+        <div class="pp-field">
+          <label class="pp-field-label" for="fld-mode">Modalidad de cobro</label>
+          <p-select
+            inputId="fld-mode"
+            [options]="billingOptions"
+            [(ngModel)]="billingMode"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleccione modalidad"
+            [fluid]="true"
+            styleClass="w-full"
+            appendTo="body"
+          ></p-select>
+          <p class="pp-field-hint">{{ billingModeHint(billingMode) }}</p>
+        </div>
       </div>
     </div>
     <p-button

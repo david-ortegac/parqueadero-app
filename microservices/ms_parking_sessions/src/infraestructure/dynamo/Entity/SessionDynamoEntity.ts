@@ -2,10 +2,10 @@ export interface DynamoSessionItem {
   id: string;
   vehicle_id: string;
   status: 'active' | 'completed';
-  exit_date?: string | null; // Format "YYYY-MM-DD" for DateIndex
+  exit_date?: string; // Format "YYYY-MM-DD" for DateIndex (must be omitted when active)
   billing_mode: 'minute' | 'hour' | 'day' | 'week' | 'month';
   entered_at: string;
-  exited_at?: string | null;
+  exited_at?: string; // Must be omitted when active
   amount_due: string;
   amount_paid?: string | null;
   period_starts_at?: string | null;
