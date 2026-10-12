@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   BILLING_MODE_LABEL,
@@ -25,6 +25,7 @@ export class PlateLookupPage implements OnInit, OnDestroy {
   private readonly auth = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   readonly coTimezone = PARKING_DISPLAY_TIMEZONE;
   readonly coLocale = PARKING_DISPLAY_LOCALE;
@@ -143,11 +144,13 @@ export class PlateLookupPage implements OnInit, OnDestroy {
       return;
     }
     const plate = this.normalizePlate(this.plate);
+    this.plate = plate;
     this.loading = true;
     this.errorMessage = null;
     this.searched = true;
     this.result = null;
-    this.plate = '';
+    this.cdr.markForCheck();
+
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { plate },
@@ -159,6 +162,7 @@ export class PlateLookupPage implements OnInit, OnDestroy {
         this.loading = false;
         this.result = row;
         this.nowMs = Date.now();
+        this.cdr.detectChanges();
         this.loadOccupancy();
       },
       error: err => {
@@ -167,6 +171,7 @@ export class PlateLookupPage implements OnInit, OnDestroy {
           err,
           'No se pudo consultar la placa. Intenta de nuevo.',
         );
+        this.cdr.detectChanges();
       },
     });
   }
@@ -177,13 +182,16 @@ export class PlateLookupPage implements OnInit, OnDestroy {
 
   private loadOccupancy(): void {
     this.loadingOccupancy = true;
+    this.cdr.markForCheck();
     this.api.getPublicOccupancy().subscribe({
       next: row => {
         this.occupancy = row;
         this.loadingOccupancy = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.loadingOccupancy = false;
+        this.cdr.detectChanges();
       },
     });
   }

@@ -4,7 +4,8 @@
     <ion-buttons slot="end">
       <ion-button
         (click)="theme.toggleDarkMode()"
-        [attr.aria-label]="theme.isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'"
+        aria-label="Cambiar tema visual"
+        [title]="theme.isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'"
       >
         <ion-icon
           slot="icon-only"

@@ -29,61 +29,181 @@
 .pp-policy-box {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-  margin-top: 0.5rem;
-  padding: 0.85rem;
-  background: rgba(15, 23, 42, 0.03);
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 14px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  margin-top: 0.75rem;
+  padding: 0.95rem 1rem;
+  background: rgba(248, 250, 252, 0.85);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
 
 :host-context(.dark) .pp-policy-box {
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(30, 41, 59, 0.4);
+  border-color: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .pp-policy-item {
   display: flex;
-  align-items: flex-start;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.pp-policy-item + .pp-policy-item {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+:host-context(.dark) .pp-policy-item + .pp-policy-item {
+  border-top-color: rgba(255, 255, 255, 0.08);
 }
 
 .pp-policy-checkbox {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   --size: 20px;
-  --checkbox-background-checked: #2563eb;
-  --border-color-checked: #2563eb;
-  font-size: 0.85rem;
-  line-height: 1.4;
-  color: var(--pp-text-color, #1e293b);
-  align-items: flex-start;
+  --border-radius: 6px;
+  --border-width: 1.5px;
+  --border-color: rgba(148, 163, 184, 0.7);
+  --checkbox-background: #ffffff;
+  --checkbox-background-checked: var(--ion-color-primary, #2563eb);
+  --border-color-checked: var(--ion-color-primary, #2563eb);
+  --checkmark-color: #ffffff;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--pp-text-color, #334155);
+
+  &::part(container) {
+    flex-shrink: 0;
+    margin-top: 1.5px;
+  }
+
+  &::part(label) {
+    display: block;
+    white-space: normal !important;
+    text-overflow: unset !important;
+    overflow: visible !important;
+    word-break: normal;
+    overflow-wrap: break-word;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    margin-inline-start: 0.65rem;
+    padding: 0;
+  }
+
+  ::ng-deep {
+    .label-text-wrapper {
+      display: block !important;
+      white-space: normal !important;
+      text-overflow: unset !important;
+      overflow: visible !important;
+      word-break: normal !important;
+      overflow-wrap: break-word !important;
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      margin-inline-start: 0.65rem !important;
+    }
+
+    .native-wrapper {
+      flex-shrink: 0 !important;
+      align-self: flex-start !important;
+      margin-top: 1.5px !important;
+    }
+
+    .checkbox-wrapper {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      align-items: flex-start !important;
+    }
+  }
 }
 
 :host-context(.dark) .pp-policy-checkbox {
-  color: #f1f5f9;
+  --checkbox-background: rgba(15, 23, 42, 0.6);
+  --border-color: rgba(255, 255, 255, 0.25);
+  color: #e2e8f0;
 }
 
 .pp-policy-text {
   display: block;
-  padding-left: 0.4rem;
-  font-size: 0.85rem;
-  line-height: 1.4;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: inherit;
+  white-space: normal !important;
+  word-break: normal;
+  overflow-wrap: break-word;
+  padding: 0;
+  margin: 0;
+
+  strong {
+    font-weight: 600;
+    color: var(--pp-text-strong, #0f172a);
+  }
+}
+
+:host-context(.dark) .pp-policy-text strong {
+  color: #f8fafc;
 }
 
 .pp-policy-btn-link {
-  background: none;
+  display: inline;
+  vertical-align: baseline;
+  white-space: normal !important;
+  word-break: normal;
+  overflow-wrap: break-word;
+  background: transparent;
   border: none;
   padding: 0;
   margin: 0;
   font-size: inherit;
   font-family: inherit;
   font-weight: 600;
-  color: #2563eb;
+  color: var(--ion-color-primary, #2563eb);
   text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
   cursor: pointer;
-  display: inline;
+  transition: color 150ms ease, opacity 150ms ease;
+
+  &:hover {
+    color: #1d4ed8;
+    opacity: 0.9;
+  }
+
+  &:active {
+    opacity: 0.75;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ion-color-primary, #2563eb);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
 }
 
-.pp-policy-btn-link:hover {
-  color: #1d4ed8;
+:host-context(.dark) .pp-policy-btn-link {
+  color: #60a5fa;
+
+  &:hover {
+    color: #93c5fd;
+  }
 }
 
 /* Estilos del modal de política */

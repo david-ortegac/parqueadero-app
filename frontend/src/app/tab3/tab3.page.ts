@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
 import { DATA_PROCESSING_POLICY } from '../constants/data-policy.constant';
 import { AuthService } from '../services/auth.service';
@@ -17,6 +17,7 @@ export class Tab3Page implements OnInit {
   private readonly api = inject(ParkingApiService);
   private readonly toast = inject(ToastController);
   private readonly alertCtrl = inject(AlertController);
+  private readonly cdr = inject(ChangeDetectorRef);
   readonly theme = inject(ThemeService);
 
   readonly policy = DATA_PROCESSING_POLICY;
@@ -107,6 +108,7 @@ export class Tab3Page implements OnInit {
     }
 
     this.savingProfile = true;
+    this.cdr.markForCheck();
     this.auth
       .updateProfile({
         name,
@@ -118,6 +120,7 @@ export class Tab3Page implements OnInit {
           this.savingProfile = false;
           this.profilePassword = '';
           this.profilePasswordConfirm = '';
+          this.cdr.detectChanges();
           const t = await this.toast.create({
             message: res.message || 'Datos de cuenta actualizados correctamente.',
             duration: 2500,
@@ -127,6 +130,7 @@ export class Tab3Page implements OnInit {
         },
         error: async err => {
           this.savingProfile = false;
+          this.cdr.detectChanges();
           const t = await this.toast.create({
             message: apiErrorMessage(err, 'No se pudo actualizar la cuenta.'),
             duration: 3500,
@@ -209,6 +213,7 @@ export class Tab3Page implements OnInit {
 
   saveParkingInfo(): void {
     this.savingInfo = true;
+    this.cdr.markForCheck();
     const body: Partial<ParkingInfo> = {
       name: this.editName?.trim() || null,
       address: this.editAddress?.trim() || null,
@@ -222,6 +227,7 @@ export class Tab3Page implements OnInit {
         this.editCarCapacity = info.car_capacity;
         this.editMotoCapacity = info.motorcycle_capacity;
         this.savingInfo = false;
+        this.cdr.detectChanges();
         const t = await this.toast.create({
           message: 'Información del parqueadero actualizada.',
           duration: 2000,
@@ -231,6 +237,7 @@ export class Tab3Page implements OnInit {
       },
       error: async () => {
         this.savingInfo = false;
+        this.cdr.detectChanges();
         const t = await this.toast.create({
           message: 'No se pudo guardar la información.',
           duration: 2500,

@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { Subject, takeUntil } from 'rxjs';
@@ -57,6 +58,7 @@ export class Tab2Page implements OnInit, OnDestroy {
   private readonly api = inject(ParkingApiService);
   private readonly toast = inject(ToastController);
   private readonly route = inject(ActivatedRoute);
+  private readonly cdr = inject(ChangeDetectorRef);
   readonly theme = inject(ThemeService);
 
   readonly documentMaxDigits = DOCUMENT_MAX_DIGITS;
@@ -87,6 +89,9 @@ export class Tab2Page implements OnInit, OnDestroy {
   readonly activeSessionsAccordion = new AccordionController();
   expandedRows: { [key: string]: boolean } = {};
   vehicles: OwnerVehicle[] = [];
+  vehiclesError: string | null = null;
+  sessionsError: string | null = null;
+  historyError: string | null = null;
   loadingList = false;
 
   parkingInfo: ParkingInfo | null = null;
@@ -175,6 +180,8 @@ export class Tab2Page implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.refresh();
+    this.loadParkingInfo();
     this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const raw = params.get('plate');
       this.plateFromRouteNormalized = this.normalizePlateQueryParam(raw);
@@ -239,6 +246,8 @@ export class Tab2Page implements OnInit, OnDestroy {
     const role = this.auth.getUser()?.role;
     if (role === 'vehicle_owner') {
       this.loadingList = true;
+      this.vehiclesError = null;
+      this.cdr.markForCheck();
       this.api.getOwnerVehicles().subscribe({
         next: v => {
           this.vehicles = v;
@@ -251,11 +260,14 @@ export class Tab2Page implements OnInit, OnDestroy {
           this.loadingList = false;
           this.startOwnerParkingTimers();
           this.applyOwnerPlateFromRoute();
+          this.cdr.detectChanges();
         },
-        error: async () => {
+        error: async (err: unknown) => {
           this.loadingList = false;
+          this.vehiclesError = this.apiErrorMessage(err, 'No se pudieron cargar tus vehículos');
+          this.cdr.detectChanges();
           const t = await this.toast.create({
-            message: 'No se pudieron cargar tus vehículos',
+            message: this.vehiclesError,
             duration: 2500,
             color: 'danger',
           });
@@ -267,6 +279,8 @@ export class Tab2Page implements OnInit, OnDestroy {
 
     if (role === 'admin' || role === 'operator') {
       this.loadingList = true;
+      this.sessionsError = null;
+      this.cdr.markForCheck();
       this.api.getActiveSessions().subscribe({
         next: s => {
           this.activeSessions = s;
@@ -274,11 +288,14 @@ export class Tab2Page implements OnInit, OnDestroy {
             s.map(x => this.activeSessionAccordionKey(x.id)),
           );
           this.loadingList = false;
+          this.cdr.detectChanges();
         },
-        error: async () => {
+        error: async (err: unknown) => {
           this.loadingList = false;
+          this.sessionsError = this.apiErrorMessage(err, 'No se pudieron cargar las sesiones activas');
+          this.cdr.detectChanges();
           const t = await this.toast.create({
-            message: 'No se pudieron cargar las sesiones',
+            message: this.sessionsError,
             duration: 2500,
             color: 'danger',
           });
@@ -302,22 +319,32 @@ export class Tab2Page implements OnInit, OnDestroy {
       return;
     }
     this.loadingHistory = true;
+    this.historyError = null;
+    this.cdr.markForCheck();
     this.api.getDailyHistory(this.historyDate).subscribe({
       next: h => {
         this.dailyHistory = h;
         this.loadingHistory = false;
+        this.cdr.detectChanges();
       },
-      error: async () => {
+      error: async (err: unknown) => {
         this.loadingHistory = false;
         this.dailyHistory = null;
+        this.historyError = this.apiErrorMessage(err, 'No se pudo cargar el historial del día');
+        this.cdr.detectChanges();
         const t = await this.toast.create({
-          message: 'No se pudo cargar el historial del día',
+          message: this.historyError,
           duration: 2500,
           color: 'danger',
         });
         await t.present();
       },
     });
+  }
+
+  clearActiveSessionsFilter(): void {
+    this.activeSessionsPlateFilter = '';
+    this.onActiveSessionsFilterChange();
   }
 
   onHistoryDateChange(): void {
@@ -568,16 +595,35 @@ export class Tab2Page implements OnInit, OnDestroy {
           this.ownerParkingAccordionOpen = undefined;
         }
         this.startOwnerParkingTimers();
+        this.cdr.detectChanges();
       },
-      error: async () => {
+      error: async (err: unknown) => {
         const t = await this.toast.create({
-          message: 'No se pudo actualizar el estado del parqueo.',
+          message: this.apiErrorMessage(err, 'No se pudo actualizar el estado del parqueo.'),
           duration: 2500,
           color: 'danger',
         });
         await t.present();
+        this.cdr.detectChanges();
       },
     });
+  }
+
+  private apiErrorMessage(err: unknown, fallback: string): string {
+    if (!(err instanceof HttpErrorResponse) || !err.error || typeof err.error !== 'object') {
+      return fallback;
+    }
+    const body = err.error as { message?: string; errors?: Record<string, string[]> };
+    if (typeof body.message === 'string' && body.message.length > 0) {
+      return body.message;
+    }
+    if (body.errors) {
+      const first = Object.values(body.errors)[0]?.[0];
+      if (first) {
+        return first;
+      }
+    }
+    return fallback;
   }
 
   displayOwnerAmount(s: OwnerActiveSession | null): string {

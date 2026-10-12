@@ -4,7 +4,8 @@
     <ion-buttons slot="end">
       <ion-button
         (click)="theme.toggleDarkMode()"
-        [attr.aria-label]="theme.isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'"
+        aria-label="Cambiar tema visual"
+        [title]="theme.isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'"
       >
         <ion-icon
           slot="icon-only"
@@ -29,12 +30,54 @@
       <strong>Inicio</strong>: identifica el vehículo por la placa y despliega el detalle.
     </p>
     @if (loadingList) {
-    <div class="pp-center"><ion-spinner name="crescent" color="primary"></ion-spinner></div>
+    <div class="pp-owner-state-box pp-owner-state-box--loading">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p class="pp-owner-state-text">Consultando estado en parqueadero...</p>
+    </div>
+    } @else if (vehiclesError) {
+    <div class="pp-owner-state-box pp-owner-state-box--error" role="alert">
+      <div class="pp-owner-state-icon pp-owner-state-icon--error">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      </div>
+      <div class="pp-owner-state-body">
+        <h4 class="pp-owner-state-title">No se pudo consultar el parqueadero</h4>
+        <p class="pp-owner-state-desc">{{ vehiclesError }}</p>
+      </div>
+      <p-button
+        label="Reintentar"
+        icon="pi pi-refresh"
+        severity="danger"
+        [outlined]="true"
+        size="small"
+        styleClass="pp-owner-state-action"
+        (onClick)="refresh()"
+      />
+    </div>
     } @else if (!vehicles.length) {
-    <p class="pp-muted">
-      No hay vehículos vinculados a tu cuenta. Debes estar activado y los ingresos deben usar tu
-      misma cédula.
-    </p>
+    <div class="pp-owner-state-box pp-owner-state-box--error" role="alert">
+      <div class="pp-owner-state-icon pp-owner-state-icon--error">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      </div>
+      <div class="pp-owner-state-body">
+        <h4 class="pp-owner-state-title">No se encontraron vehículos en el sistema</h4>
+        <p class="pp-owner-state-desc">
+          No hay ningún vehículo vinculado a tu documento de identidad en este momento. Al ingresar al parqueadero, indica tu número de cédula para asociar tu vehículo automáticamente.
+        </p>
+        <div class="pp-owner-doc-pill">
+          <ion-icon name="id-card-outline" aria-hidden="true"></ion-icon>
+          <span>Documento consultado: <strong>{{ auth.getUser()?.document || '—' }}</strong></span>
+        </div>
+      </div>
+      <p-button
+        label="Comprobar de nuevo"
+        icon="pi pi-refresh"
+        severity="danger"
+        [outlined]="true"
+        size="small"
+        styleClass="pp-owner-state-action"
+        (onClick)="refresh()"
+      />
+    </div>
     } @else {
     <ion-accordion-group
       class="pp-easy-acc-group"
@@ -260,9 +303,48 @@
     styleClass="pp-card-shadow ion-margin-top"
   >
     @if (loadingList) {
-    <div class="pp-center"><ion-spinner name="crescent" color="primary"></ion-spinner></div>
+    <div class="pp-owner-state-box pp-owner-state-box--loading">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p class="pp-owner-state-text">Cargando sesiones activas...</p>
+    </div>
+    } @else if (sessionsError) {
+    <div class="pp-owner-state-box pp-owner-state-box--error" role="alert">
+      <div class="pp-owner-state-icon pp-owner-state-icon--error">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      </div>
+      <div class="pp-owner-state-body">
+        <h4 class="pp-owner-state-title">Error al cargar sesiones activas</h4>
+        <p class="pp-owner-state-desc">{{ sessionsError }}</p>
+      </div>
+      <p-button
+        label="Reintentar"
+        icon="pi pi-refresh"
+        severity="danger"
+        [outlined]="true"
+        size="small"
+        styleClass="pp-owner-state-action"
+        (onClick)="refresh()"
+      />
+    </div>
     } @else if (!activeSessions.length) {
-    <p class="pp-muted">No hay vehículos dentro del parqueadero.</p>
+    <div class="pp-owner-state-box pp-owner-state-box--error" role="alert">
+      <div class="pp-owner-state-icon pp-owner-state-icon--error">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      </div>
+      <div class="pp-owner-state-body">
+        <h4 class="pp-owner-state-title">No hay vehículos en el parqueadero</h4>
+        <p class="pp-owner-state-desc">No se encontró ninguna sesión activa en patio en este momento. Registra un nuevo ingreso para iniciar una estadía.</p>
+      </div>
+      <p-button
+        label="Actualizar sesiones"
+        icon="pi pi-refresh"
+        severity="danger"
+        [outlined]="true"
+        size="small"
+        styleClass="pp-owner-state-action"
+        (onClick)="refresh()"
+      />
+    </div>
     } @else {
     <div class="pp-field ion-margin-bottom">
       <label class="pp-field-label" for="fld-active-plate-filter">Buscar por placa</label>
@@ -278,7 +360,26 @@
       />
     </div>
     @if (!filteredActiveSessions.length) {
-    <p class="pp-muted">Ninguna sesión coincide con el filtro.</p>
+    <div class="pp-owner-state-box pp-owner-state-box--error" role="alert">
+      <div class="pp-owner-state-icon pp-owner-state-icon--error">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      </div>
+      <div class="pp-owner-state-body">
+        <h4 class="pp-owner-state-title">No se encontró ningún vehículo</h4>
+        <p class="pp-owner-state-desc">
+          No hay ninguna sesión activa en patio que coincida con la placa «<strong>{{ activeSessionsPlateFilter }}</strong>».
+        </p>
+      </div>
+      <p-button
+        label="Limpiar filtro de placa"
+        icon="pi pi-times"
+        severity="danger"
+        [outlined]="true"
+        size="small"
+        styleClass="pp-owner-state-action"
+        (onClick)="clearActiveSessionsFilter()"
+      />
+    </div>
     } @else {
     <ion-accordion-group
       class="pp-easy-acc-group"
@@ -428,7 +529,29 @@
       />
     </div>
     @if (loadingHistory) {
-    <div class="pp-center"><ion-spinner name="crescent" color="primary"></ion-spinner></div>
+    <div class="pp-owner-state-box pp-owner-state-box--loading">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p class="pp-owner-state-text">Cargando salidas del día...</p>
+    </div>
+    } @else if (historyError) {
+    <div class="pp-owner-state-box pp-owner-state-box--error" role="alert">
+      <div class="pp-owner-state-icon pp-owner-state-icon--error">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      </div>
+      <div class="pp-owner-state-body">
+        <h4 class="pp-owner-state-title">Error al consultar el historial</h4>
+        <p class="pp-owner-state-desc">{{ historyError }}</p>
+      </div>
+      <p-button
+        label="Reintentar"
+        icon="pi pi-refresh"
+        severity="danger"
+        [outlined]="true"
+        size="small"
+        styleClass="pp-owner-state-action"
+        (onClick)="loadDailyHistory()"
+      />
+    </div>
     } @else if (dailyHistory) {
     <p class="pp-muted pp-history-meta">
       Zona horaria informe: {{ dailyHistory.timezone }} · Fecha: {{ dailyHistory.date }}
@@ -436,7 +559,24 @@
 
     <h3 class="pp-history-section-title">Salidas del día</h3>
     @if (!dailyHistory.completed_exits.length) {
-    <p class="pp-muted">No hay salidas registradas en este día.</p>
+    <div class="pp-owner-state-box pp-owner-state-box--error" role="alert">
+      <div class="pp-owner-state-icon pp-owner-state-icon--error">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      </div>
+      <div class="pp-owner-state-body">
+        <h4 class="pp-owner-state-title">No se encontraron salidas registradas</h4>
+        <p class="pp-owner-state-desc">No hay ningún cobro ni salida completada para el día seleccionado ({{ dailyHistory.date }}).</p>
+      </div>
+      <p-button
+        label="Actualizar fecha"
+        icon="pi pi-refresh"
+        severity="danger"
+        [outlined]="true"
+        size="small"
+        styleClass="pp-owner-state-action"
+        (onClick)="loadDailyHistory()"
+      />
+    </div>
     } @else {
     <p-table
       [value]="dailyHistory.completed_exits"

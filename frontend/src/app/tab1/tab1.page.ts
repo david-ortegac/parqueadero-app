@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { Subject, forkJoin, takeUntil } from 'rxjs';
@@ -38,6 +38,7 @@ export class Tab1Page implements OnInit, OnDestroy {
   private readonly toast = inject(ToastController);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly cdr = inject(ChangeDetectorRef);
   readonly theme = inject(ThemeService);
 
   readonly billingModeLabel = billingModeCatalogLabel;
@@ -64,6 +65,7 @@ export class Tab1Page implements OnInit, OnDestroy {
   /** Propietario: vehículos y edición en Inicio. */
   ownerVehicles: OwnerVehicle[] = [];
   loadingOwnerVehicles = false;
+  ownerVehiclesError: string | null = null;
   ownerEditDrafts: Record<number, { brand: string; color: string; cylinder_cc: string }> = {};
   savingOwnerVehicleId: number | null = null;
   ownerHistoryVisible = false;
@@ -179,6 +181,7 @@ export class Tab1Page implements OnInit, OnDestroy {
     if (user.role === 'vehicle_owner') {
       this.loading = false;
       this.loadOwnerVehicles();
+      this.cdr.markForCheck();
       return;
     }
 
@@ -188,10 +191,12 @@ export class Tab1Page implements OnInit, OnDestroy {
         this.syncChart();
         this.loading = false;
         this.loadVehicleOwnersIfStaff();
+        this.cdr.detectChanges();
       },
       error: (err: unknown) => {
         this.error = this.dashboardLoadErrorMessage(err);
         this.loading = false;
+        this.cdr.detectChanges();
       },
     });
 
@@ -391,6 +396,7 @@ export class Tab1Page implements OnInit, OnDestroy {
       return;
     }
     this.loadingOwners = true;
+    this.cdr.markForCheck();
     this.api.getOperatorVehicleOwners().subscribe({
       next: rows => {
         this.vehicleOwners = rows;
@@ -398,9 +404,11 @@ export class Tab1Page implements OnInit, OnDestroy {
           rows.map(owner => this.vehicleOwnerAccordionKey(owner.id)),
         );
         this.loadingOwners = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.loadingOwners = false;
+        this.cdr.detectChanges();
       },
     });
   }
@@ -528,6 +536,8 @@ export class Tab1Page implements OnInit, OnDestroy {
 
   loadOwnerVehicles(): void {
     this.loadingOwnerVehicles = true;
+    this.ownerVehiclesError = null;
+    this.cdr.markForCheck();
     this.api.getOwnerVehicles().subscribe({
       next: list => {
         this.ownerVehicles = list;
@@ -535,12 +545,15 @@ export class Tab1Page implements OnInit, OnDestroy {
         this.ownerAccordion.syncWithValues(list.map(x => this.ownerAccordionKey(x.id)));
         this.loadingOwnerVehicles = false;
         this.applyOwnerPlateQueryToAccordion();
+        this.cdr.detectChanges();
       },
-      error: async () => {
+      error: async (err: unknown) => {
         this.loadingOwnerVehicles = false;
+        this.ownerVehiclesError = this.apiErrorMessage(err, 'No se pudieron cargar tus vehículos.');
+        this.cdr.detectChanges();
         const t = await this.toast.create({
-          message: 'No se pudieron cargar tus vehículos.',
-          duration: 2800,
+          message: this.ownerVehiclesError,
+          duration: 3200,
           color: 'danger',
         });
         await t.present();

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
@@ -14,6 +14,7 @@ export class LoginPage {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastController);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   email = '';
   password = '';
@@ -27,6 +28,7 @@ export class LoginPage {
   clearError(): void {
     if (this.errorMessage !== null) {
       this.errorMessage = null;
+      this.cdr.markForCheck();
     }
   }
 
@@ -36,9 +38,11 @@ export class LoginPage {
     }
     this.loading = true;
     this.errorMessage = null;
+    this.cdr.markForCheck();
     this.auth.login(this.email.trim(), this.password).subscribe({
       next: async () => {
         this.loading = false;
+        this.cdr.detectChanges();
         await this.router.navigate(['/inicio']);
       },
       error: async err => {
@@ -47,6 +51,7 @@ export class LoginPage {
           err,
           'No se pudo iniciar sesión. Revisa correo y contraseña.',
         );
+        this.cdr.detectChanges();
         const t = await this.toast.create({
           message: this.errorMessage,
           duration: 3200,

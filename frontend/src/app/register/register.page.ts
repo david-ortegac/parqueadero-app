@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { DATA_PROCESSING_POLICY } from '../constants/data-policy.constant';
@@ -22,6 +22,9 @@ export class RegisterPage {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastController);
+  private readonly cdr = inject(ChangeDetectorRef);
+
+  errorMessage: string | null = null;
 
   readonly documentMaxDigits = DOCUMENT_MAX_DIGITS;
   readonly policy = DATA_PROCESSING_POLICY;
@@ -104,6 +107,8 @@ export class RegisterPage {
     }
 
     this.loading = true;
+    this.errorMessage = null;
+    this.cdr.markForCheck();
     this.auth
       .register({
         name: this.name.trim(),
@@ -116,6 +121,7 @@ export class RegisterPage {
       .subscribe({
         next: async res => {
           this.loading = false;
+          this.cdr.detectChanges();
           const t = await this.toast.create({
             message: res.message ?? 'Registro creado.',
             duration: 4500,
@@ -126,8 +132,10 @@ export class RegisterPage {
         },
         error: async err => {
           this.loading = false;
+          this.errorMessage = apiErrorMessage(err, 'No se pudo registrar.');
+          this.cdr.detectChanges();
           const t = await this.toast.create({
-            message: apiErrorMessage(err, 'No se pudo registrar.'),
+            message: this.errorMessage,
             duration: 3500,
             color: 'danger',
           });

@@ -127,6 +127,7 @@
                 [disabled]="loading"
                 justify="start"
                 labelPlacement="end"
+                alignment="start"
                 class="pp-policy-checkbox"
               >
                 <span class="pp-policy-text">
@@ -150,6 +151,7 @@
                 [disabled]="loading"
                 justify="start"
                 labelPlacement="end"
+                alignment="start"
                 class="pp-policy-checkbox"
               >
                 <span class="pp-policy-text">
@@ -165,6 +167,13 @@
           Un administrador u operador debe activar tu cuenta antes de iniciar sesión. Los ingresos
           con tu cédula quedarán vinculados al activarte.
         </p>
+
+        @if (errorMessage) {
+        <p class="pp-auth-error" role="alert" aria-live="assertive">
+          <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+          <span>{{ errorMessage }}</span>
+        </p>
+        }
 
         <div class="pp-auth-actions">
           <p-button

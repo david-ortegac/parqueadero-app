@@ -4,7 +4,8 @@
     <ion-buttons slot="end">
       <ion-button
         (click)="theme.toggleDarkMode()"
-        [attr.aria-label]="theme.isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'"
+        aria-label="Cambiar tema visual"
+        [title]="theme.isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'"
       >
         <ion-icon
           slot="icon-only"
@@ -50,14 +51,54 @@
     styleClass="pp-card-shadow pp-inicio-card pp-bento-card ion-margin-top pp-owner-vehicles-card"
   >
     @if (loadingOwnerVehicles) {
-    <div class="pp-loading">
+    <div class="pp-owner-state-box pp-owner-state-box--loading">
       <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p class="pp-owner-state-text">Cargando tus vehículos vinculados...</p>
+    </div>
+    } @else if (ownerVehiclesError) {
+    <div class="pp-owner-state-box pp-owner-state-box--error" role="alert">
+      <div class="pp-owner-state-icon pp-owner-state-icon--error">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      </div>
+      <div class="pp-owner-state-body">
+        <h4 class="pp-owner-state-title">No se pudieron cargar tus vehículos</h4>
+        <p class="pp-owner-state-desc">{{ ownerVehiclesError }}</p>
+      </div>
+      <p-button
+        label="Reintentar"
+        icon="pi pi-refresh"
+        severity="danger"
+        [outlined]="true"
+        size="small"
+        styleClass="pp-owner-state-action"
+        (onClick)="loadOwnerVehicles()"
+      />
     </div>
     } @else if (!ownerVehicles.length) {
-    <p class="pp-muted">
-      Aún no hay vehículos vinculados. Debes estar activado y los ingresos deben registrarse con tu
-      misma cédula.
-    </p>
+    <div class="pp-owner-state-box pp-owner-state-box--error" role="alert">
+      <div class="pp-owner-state-icon pp-owner-state-icon--error">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      </div>
+      <div class="pp-owner-state-body">
+        <h4 class="pp-owner-state-title">No se encontraron vehículos vinculados</h4>
+        <p class="pp-owner-state-desc">
+          No hay vehículos registrados para tu cuenta en este momento. Los vehículos se vinculan automáticamente a tu perfil cuando ingresan al parqueadero con tu número de documento.
+        </p>
+        <div class="pp-owner-doc-pill">
+          <ion-icon name="id-card-outline" aria-hidden="true"></ion-icon>
+          <span>Documento consultado: <strong>{{ auth.getUser()?.document || '—' }}</strong></span>
+        </div>
+      </div>
+      <p-button
+        label="Comprobar de nuevo"
+        icon="pi pi-refresh"
+        severity="danger"
+        [outlined]="true"
+        size="small"
+        styleClass="pp-owner-state-action"
+        (onClick)="loadOwnerVehicles()"
+      />
+    </div>
     } @else {
     <ion-accordion-group
       class="pp-easy-acc-group"

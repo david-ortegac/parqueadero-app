@@ -101,6 +101,7 @@
               styleClass="pp-auth-submit pp-consulta-search-btn"
               [loading]="loading"
               [disabled]="loading || !canSearch"
+              (onClick)="search()"
             />
           </div>
         </div>
@@ -113,14 +114,31 @@
       </p>
       } @if (searched && result && !errorMessage) {
       <div class="pp-consulta-result" [class.pp-consulta-result--parked]="result.is_parked">
-        @if (result.is_parked && entryClockParts) {
+        @if (result.is_parked) {
         <p class="pp-consulta-result-kicker">
           {{ result.plate }} · {{ vehicleClassLabel(result.vehicle_class) }} · en parqueadero
         </p>
+        @if (entryClockParts) {
         <p class="pp-consulta-clock" aria-label="Hora de ingreso">
           <span class="pp-consulta-clock-time">{{ entryClockParts.time }}</span>
           <span class="pp-consulta-clock-date">{{ entryClockParts.date }}</span>
         </p>
+        }
+        @if (entryTimeLabel) {
+        <p class="pp-consulta-elapsed">
+          Tiempo: <strong>{{ entryTimeLabel }}</strong>
+        </p>
+        }
+        <dl class="pp-consulta-meta">
+          <div>
+            <dt>Modalidad</dt>
+            <dd>{{ billingModeLabel(result.billing_mode) }}</dd>
+          </div>
+          <div>
+            <dt>{{ result.uses_live_estimate ? 'Estimado hoy' : 'Cobro' }}</dt>
+            <dd>{{ amountLabel(result) }}</dd>
+          </div>
+        </dl>
         } @else {
         <p class="pp-consulta-result-kicker">{{ result.plate }}</p>
         <p class="pp-consulta-empty-title">Sin sesión activa</p>
