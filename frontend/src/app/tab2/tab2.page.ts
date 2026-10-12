@@ -512,7 +512,7 @@ export class Tab2Page implements OnInit, OnDestroy {
     });
   }
 
-  ownerParkingAccordionKey(vehicleId: number): string {
+  ownerParkingAccordionKey(vehicleId: number | string): string {
     return `park-v-${vehicleId}`;
   }
 
@@ -576,7 +576,7 @@ export class Tab2Page implements OnInit, OnDestroy {
     this.expandedRows = { ...this.expandedRows };
   }
 
-  ownerParkingAccordionGlyph(vehicleId: number): string {
+  ownerParkingAccordionGlyph(vehicleId: number | string): string {
     return this.ownerParkingAccordionOpen === this.ownerParkingAccordionKey(vehicleId) ? '−' : '+';
   }
 

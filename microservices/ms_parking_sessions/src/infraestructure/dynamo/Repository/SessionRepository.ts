@@ -10,4 +10,10 @@ export interface SessionRepository {
   findDailyCompleted(dateStr: string): Promise<DynamoSessionItem[]>;
   findOpenStays(endOfDayIso: string): Promise<DynamoSessionItem[]>;
   save(item: DynamoSessionItem): Promise<DynamoSessionItem>;
+  ensureVehicle(data: {
+    plate: string;
+    vehicle_class: string;
+    depositor_document: string;
+    owner_user_id?: string | number | null;
+  }): Promise<void>;
 }

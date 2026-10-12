@@ -52,7 +52,7 @@ export interface DailyHistoryResponse {
 }
 
 export interface OwnerVehicle {
-  id: number;
+  id: number | string;
   plate: string;
   vehicle_class: string;
   brand: string | null;
@@ -73,7 +73,7 @@ export interface OperatorVehicleOwnerRow {
 }
 
 export interface OwnerActiveSession {
-  id: number;
+  id: number | string;
   billing_mode: string;
   entered_at: string;
   amount_due: string;
@@ -181,20 +181,20 @@ export class ParkingApiService {
     return this.http.post<{ message: string }>(`${this.base}/push-devices`, body);
   }
 
-  getOwnerActiveSession(vehicleId: number): Observable<OwnerActiveSession> {
+  getOwnerActiveSession(vehicleId: number | string): Observable<OwnerActiveSession> {
     return this.http.get<OwnerActiveSession>(
       `${this.base}/owner/vehicles/${vehicleId}/active-session`,
     );
   }
 
-  getOwnerVehicleSessions(vehicleId: number): Observable<OwnerSessionHistoryRow[]> {
+  getOwnerVehicleSessions(vehicleId: number | string): Observable<OwnerSessionHistoryRow[]> {
     return this.http.get<OwnerSessionHistoryRow[]>(
       `${this.base}/owner/vehicles/${vehicleId}/sessions`,
     );
   }
 
   patchOwnerVehicle(
-    vehicleId: number,
+    vehicleId: number | string,
     body: { brand?: string | null; color?: string | null; cylinder_cc?: string | null },
   ): Observable<OwnerVehicle> {
     return this.http.patch<OwnerVehicle>(`${this.base}/owner/vehicles/${vehicleId}`, body);

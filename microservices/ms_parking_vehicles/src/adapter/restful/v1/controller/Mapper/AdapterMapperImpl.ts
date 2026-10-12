@@ -18,6 +18,7 @@ export class AdapterMapperImpl implements IAdapterMapper {
       cylinder_cc: domain.cylinder_cc,
       photo_url: domain.photo_path,
       created_at: domain.created_at,
+      active_session: domain.active_session || null,
     };
   }
 

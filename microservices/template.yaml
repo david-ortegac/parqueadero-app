@@ -368,6 +368,10 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref VehiclesTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref SessionsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref RatesConfigTable
       Events:
         OwnerVehicles:
           Type: HttpApi
@@ -406,6 +410,8 @@ Resources:
             TableName: !Ref SessionsTable
         - DynamoDBReadPolicy:
             TableName: !Ref RatesConfigTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref VehiclesTable
       Events:
         OperatorCheckIn:
           Type: HttpApi

@@ -24,6 +24,10 @@ export class SessionRepositoryImpl implements SessionRepository {
   }
 
   async findActiveByVehicleId(vehicleId: string): Promise<DynamoSessionItem | null> {
+    const rawVid = vehicleId.trim();
+    const cleanVid = rawVid.startsWith('VEH_') ? rawVid : `VEH_${rawVid.toUpperCase()}`;
+    const plate = rawVid.replace(/^VEH_/, '').toUpperCase();
+
     try {
       const command = new QueryCommand({
         TableName: this.tableName,
@@ -34,7 +38,7 @@ export class SessionRepositoryImpl implements SessionRepository {
           '#st': 'status',
         },
         ExpressionAttributeValues: {
-          ':vid': vehicleId,
+          ':vid': cleanVid,
           ':st': 'active',
         },
       });
@@ -47,20 +51,27 @@ export class SessionRepositoryImpl implements SessionRepository {
       // Fallback
     }
 
-    const scan = new ScanCommand({
-      TableName: this.tableName,
-      FilterExpression: 'vehicle_id = :vid AND #st = :st',
-      ExpressionAttributeNames: {
-        '#st': 'status',
-      },
-      ExpressionAttributeValues: {
-        ':vid': vehicleId,
-        ':st': 'active',
-      },
-    });
+    try {
+      const scan = new ScanCommand({
+        TableName: this.tableName,
+        FilterExpression:
+          '(vehicle_id = :cleanVid OR vehicle_id = :rawVid OR vehicle_plate = :p) AND #st = :st',
+        ExpressionAttributeNames: {
+          '#st': 'status',
+        },
+        ExpressionAttributeValues: {
+          ':cleanVid': cleanVid,
+          ':rawVid': rawVid,
+          ':p': plate,
+          ':st': 'active',
+        },
+      });
 
-    const scanResult = await dynamoDocClient.send(scan);
-    return (scanResult.Items?.[0] as DynamoSessionItem) || null;
+      const scanResult = await dynamoDocClient.send(scan);
+      return (scanResult.Items?.[0] as DynamoSessionItem) || null;
+    } catch {
+      return null;
+    }
   }
 
   async findActiveSessions(): Promise<DynamoSessionItem[]> {
@@ -108,36 +119,47 @@ export class SessionRepositoryImpl implements SessionRepository {
   }
 
   async findSessionsByVehicleId(vehicleId: string): Promise<DynamoSessionItem[]> {
+    const rawVid = vehicleId.trim();
+    const cleanVid = rawVid.startsWith('VEH_') ? rawVid : `VEH_${rawVid.toUpperCase()}`;
+    const plate = rawVid.replace(/^VEH_/, '').toUpperCase();
+
     try {
       const command = new QueryCommand({
         TableName: this.tableName,
         IndexName: 'VehicleIndex',
         KeyConditionExpression: 'vehicle_id = :vid',
         ExpressionAttributeValues: {
-          ':vid': vehicleId,
+          ':vid': cleanVid,
         },
         ScanIndexForward: false,
       });
 
       const result = await dynamoDocClient.send(command);
-      if (result.Items) {
+      if (result.Items && result.Items.length > 0) {
         return result.Items as DynamoSessionItem[];
       }
     } catch {
       // Fallback
     }
 
-    const scan = new ScanCommand({
-      TableName: this.tableName,
-      FilterExpression: 'vehicle_id = :vid',
-      ExpressionAttributeValues: {
-        ':vid': vehicleId,
-      },
-    });
+    try {
+      const scan = new ScanCommand({
+        TableName: this.tableName,
+        FilterExpression:
+          'vehicle_id = :cleanVid OR vehicle_id = :rawVid OR vehicle_plate = :p',
+        ExpressionAttributeValues: {
+          ':cleanVid': cleanVid,
+          ':rawVid': rawVid,
+          ':p': plate,
+        },
+      });
 
-    const scanResult = await dynamoDocClient.send(scan);
-    const items = (scanResult.Items as DynamoSessionItem[]) || [];
-    return items.sort((a, b) => (b.entered_at || '').localeCompare(a.entered_at || ''));
+      const scanResult = await dynamoDocClient.send(scan);
+      const items = (scanResult.Items as DynamoSessionItem[]) || [];
+      return items.sort((a, b) => (b.entered_at || '').localeCompare(a.entered_at || ''));
+    } catch {
+      return [];
+    }
   }
 
   async findCompletedSessions(fromDate?: string, toDate?: string): Promise<DynamoSessionItem[]> {
@@ -235,5 +257,65 @@ export class SessionRepositoryImpl implements SessionRepository {
 
     await dynamoDocClient.send(command);
     return item;
+  }
+
+  async ensureVehicle(data: {
+    plate: string;
+    vehicle_class: string;
+    depositor_document: string;
+    owner_user_id?: string | number | null;
+  }): Promise<void> {
+    const vehiclesTable = process.env.VEHICLES_TABLE || 'ParkingVehicles';
+    const plate = data.plate.toUpperCase().trim();
+    const vehicleId = `VEH_${plate}`;
+    const now = new Date().toISOString();
+
+    try {
+      const item: Record<string, any> = {
+        id: vehicleId,
+        plate,
+        depositor_document: data.depositor_document,
+        vehicle_class: data.vehicle_class,
+        created_at: now,
+        updated_at: now,
+      };
+      if (data.owner_user_id) {
+        item.owner_user_id = String(data.owner_user_id);
+      }
+
+      const existing = await dynamoDocClient.send(
+        new GetCommand({
+          TableName: vehiclesTable,
+          Key: { id: vehicleId },
+        }),
+      );
+
+      if (existing.Item) {
+        const updated = {
+          ...existing.Item,
+          depositor_document: data.depositor_document,
+          vehicle_class: data.vehicle_class,
+          owner_user_id: data.owner_user_id
+            ? String(data.owner_user_id)
+            : existing.Item.owner_user_id,
+          updated_at: now,
+        };
+        await dynamoDocClient.send(
+          new PutCommand({
+            TableName: vehiclesTable,
+            Item: updated,
+          }),
+        );
+      } else {
+        await dynamoDocClient.send(
+          new PutCommand({
+            TableName: vehiclesTable,
+            Item: item,
+          }),
+        );
+      }
+    } catch (err) {
+      console.warn('[SessionRepositoryImpl] Error ensuring vehicle in ParkingVehicles:', err);
+    }
   }
 }

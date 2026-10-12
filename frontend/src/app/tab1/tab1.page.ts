@@ -66,11 +66,11 @@ export class Tab1Page implements OnInit, OnDestroy {
   ownerVehicles: OwnerVehicle[] = [];
   loadingOwnerVehicles = false;
   ownerVehiclesError: string | null = null;
-  ownerEditDrafts: Record<number, { brand: string; color: string; cylinder_cc: string }> = {};
-  savingOwnerVehicleId: number | null = null;
+  ownerEditDrafts: Record<string | number, { brand: string; color: string; cylinder_cc: string }> = {};
+  savingOwnerVehicleId: number | string | null = null;
   ownerHistoryVisible = false;
   ownerHistoryLoading = false;
-  ownerHistoryByVehicleId: Record<number, OwnerSessionHistoryRow[]> = {};
+  ownerHistoryByVehicleId: Record<string | number, OwnerSessionHistoryRow[]> = {};
 
   /** Acordeón vehículos (una sección abierta a la vez). */
   readonly ownerAccordion = new AccordionController();
@@ -514,7 +514,7 @@ export class Tab1Page implements OnInit, OnDestroy {
     });
   }
 
-  ownerAccordionKey(vehicleId: number): string {
+  ownerAccordionKey(vehicleId: number | string): string {
     return `owner-v-${vehicleId}`;
   }
 
@@ -530,7 +530,7 @@ export class Tab1Page implements OnInit, OnDestroy {
     this.ownerAccordion.close();
   }
 
-  ownerAccordionToggleGlyph(vehicleId: number): string {
+  ownerAccordionToggleGlyph(vehicleId: number | string): string {
     return this.ownerAccordion.toggleGlyph(this.ownerAccordionKey(vehicleId));
   }
 
@@ -562,7 +562,7 @@ export class Tab1Page implements OnInit, OnDestroy {
   }
 
   private syncOwnerEditDrafts(): void {
-    const next: Record<number, { brand: string; color: string; cylinder_cc: string }> = {};
+    const next: Record<string | number, { brand: string; color: string; cylinder_cc: string }> = {};
     for (const v of this.ownerVehicles) {
       next[v.id] = {
         brand: v.brand ?? '',
@@ -615,7 +615,7 @@ export class Tab1Page implements OnInit, OnDestroy {
     this.ownerHistoryLoading = true;
     forkJoin(this.ownerVehicles.map(v => this.api.getOwnerVehicleSessions(v.id))).subscribe({
       next: all => {
-        const map: Record<number, OwnerSessionHistoryRow[]> = {};
+        const map: Record<string | number, OwnerSessionHistoryRow[]> = {};
         this.ownerVehicles.forEach((v, i) => {
           map[v.id] = all[i] ?? [];
         });

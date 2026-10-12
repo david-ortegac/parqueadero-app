@@ -147,4 +147,99 @@ export class VehicleRepositoryImpl implements VehicleRepository {
 
     await dynamoDocClient.send(command);
   }
+
+  async findSessionsByDocumentOrOwner(
+    document?: string,
+    ownerUserId?: string,
+  ): Promise<Record<string, any>[]> {
+    const sessionsTable = process.env.SESSIONS_TABLE || 'ParkingSessions';
+    const cleanDoc = document ? document.replace(/\D+/g, '') : '';
+    if (!cleanDoc && !ownerUserId) return [];
+
+    try {
+      const scanCommand = new ScanCommand({
+        TableName: sessionsTable,
+        FilterExpression: 'depositor_document = :doc OR owner_user_id = :owner',
+        ExpressionAttributeValues: {
+          ':doc': cleanDoc || 'NONE',
+          ':owner': ownerUserId || 'NONE',
+        },
+      });
+      const result = await dynamoDocClient.send(scanCommand);
+      return (result.Items as Record<string, any>[]) || [];
+    } catch (err) {
+      console.warn('[VehicleRepositoryImpl] Error scanning sessions by doc/owner:', err);
+      return [];
+    }
+  }
+
+  async findActiveSession(
+    plate: string,
+    vehicleId?: string,
+  ): Promise<Record<string, any> | null> {
+    const sessionsTable = process.env.SESSIONS_TABLE || 'ParkingSessions';
+    const normalizedPlate = plate.toUpperCase().trim();
+    const targetVid = vehicleId || `VEH_${normalizedPlate}`;
+
+    try {
+      const queryCmd = new QueryCommand({
+        TableName: sessionsTable,
+        IndexName: 'VehicleIndex',
+        KeyConditionExpression: 'vehicle_id = :vid',
+        FilterExpression: '#st = :active',
+        ExpressionAttributeNames: { '#st': 'status' },
+        ExpressionAttributeValues: {
+          ':vid': targetVid,
+          ':active': 'active',
+        },
+      });
+      const res = await dynamoDocClient.send(queryCmd);
+      if (res.Items && res.Items.length > 0) {
+        return res.Items[0] as Record<string, any>;
+      }
+    } catch {
+      // Fallback to scan
+    }
+
+    try {
+      const scanCmd = new ScanCommand({
+        TableName: sessionsTable,
+        FilterExpression: '#st = :active AND (vehicle_plate = :p OR vehicle_id = :vid)',
+        ExpressionAttributeNames: { '#st': 'status' },
+        ExpressionAttributeValues: {
+          ':active': 'active',
+          ':p': normalizedPlate,
+          ':vid': targetVid,
+        },
+      });
+      const res = await dynamoDocClient.send(scanCmd);
+      return (res.Items?.[0] as Record<string, any>) || null;
+    } catch (err) {
+      console.warn('[VehicleRepositoryImpl] Error finding active session:', err);
+      return null;
+    }
+  }
+
+  async findRate(
+    vehicleClass: string,
+    billingMode: string,
+  ): Promise<Record<string, any> | null> {
+    const ratesTable = process.env.RATES_CONFIG_TABLE || 'ParkingRatesConfig';
+    try {
+      const getCmd = new GetCommand({
+        TableName: ratesTable,
+        Key: {
+          pk: 'RATE',
+          sk: `${vehicleClass}#${billingMode}`,
+        },
+      });
+      const res = await dynamoDocClient.send(getCmd);
+      if (res.Item && res.Item.is_active) {
+        return res.Item as Record<string, any>;
+      }
+    } catch (err) {
+      console.warn('[VehicleRepositoryImpl] Error getting rate:', err);
+    }
+    return null;
+  }
 }

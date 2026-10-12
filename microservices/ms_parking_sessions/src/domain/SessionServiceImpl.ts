@@ -135,6 +135,19 @@ export class SessionServiceImpl implements ISessionService {
 
     const item = this.mapper.toEntity(domainEntity);
     const saved = await this.repository.save(item);
+
+    // Sync / create vehicle in ParkingVehicles table
+    try {
+      await this.repository.ensureVehicle({
+        plate: normalizedPlate,
+        vehicle_class: data.vehicle_class,
+        depositor_document: docDigits,
+        owner_user_id: data.owner_user_id ? String(data.owner_user_id) : undefined,
+      });
+    } catch (err) {
+      console.warn('[SessionServiceImpl] ensureVehicle warning:', err);
+    }
+
     return this.mapper.toDomain(saved);
   }
 

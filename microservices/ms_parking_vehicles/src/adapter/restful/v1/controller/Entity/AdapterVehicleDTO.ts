@@ -1,3 +1,18 @@
+export interface AdapterActiveSessionDTO {
+  id: string | number;
+  billing_mode: string;
+  entered_at: string;
+  amount_due: string;
+  amount_due_live: string;
+  uses_live_estimate: boolean;
+  period_starts_at?: string | null;
+  period_ends_at?: string | null;
+  subscription_entry_day?: number | null;
+  subscription_period_days?: number | null;
+  rate_unit_price: string | null;
+  rate_currency: string;
+}
+
 export interface AdapterVehicleDTO {
   id: string | number;
   plate: string;
@@ -9,4 +24,5 @@ export interface AdapterVehicleDTO {
   cylinder_cc?: string | null;
   photo_url?: string | null;
   created_at?: string;
+  active_session?: AdapterActiveSessionDTO | null;
 }
